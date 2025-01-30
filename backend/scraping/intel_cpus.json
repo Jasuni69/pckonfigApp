@@ -1,0 +1,167 @@
+[
+    {
+        "name": "Intel Core i9-14900K",
+        "specs": "Socket 1700 Raptor Lake-S / 24-core / 3.2 GHz / 36 MB",
+        "price": "6 389 kr"
+    },
+    {
+        "name": "Intel Core i7-14700F",
+        "specs": "Socket 1700 Raptor Lake-S / 20-core / 2.1 GHz / 33 MB",
+        "price": "4 089 kr"
+    },
+    {
+        "name": "Intel Core Ultra 7 265K",
+        "specs": "Socket 1851 Arrow Lake / 20-core / 3.9 GHz / 30 MB",
+        "price": "5 389 kr"
+    },
+    {
+        "name": "Intel Core i5-14600K",
+        "specs": "Socket 1700 Raptor Lake-S / 14-core / 3.5 GHz / 24 MB",
+        "price": "3 289 kr"
+    },
+    {
+        "name": "Intel Core i7-14700KF",
+        "specs": "Socket 1700 Raptor Lake-S / 20-core / 3.4 GHz / 33 MB",
+        "price": "4 789 kr"
+    },
+    {
+        "name": "Intel Core i3-12100F",
+        "specs": "Socket 1700 Alder Lake / 4-kärnor / 3.3 GHz / 12 MB",
+        "price": "1 039 kr"
+    },
+    {
+        "name": "Intel Core i5-12400F",
+        "specs": "Socket 1700 Alder Lake / 6-kärnor / 2.5 GHz / 18 MB",
+        "price": "1 429 kr"
+    },
+    {
+        "name": "Intel Core Ultra 9 285K",
+        "specs": "Socket 1851 Arrow Lake / 24-core / 3.7 GHz / 36 MB",
+        "price": "7 890 kr"
+    },
+    {
+        "name": "Intel Core i5-12400",
+        "specs": "Socket 1700 Alder Lake / 6-kärnor / 2.5 GHz / 18 MB",
+        "price": "1 890 kr"
+    },
+    {
+        "name": "Intel Core i5-14400F",
+        "specs": "Socket 1700 Raptor Lake-S / 10-kärnor / 2.5 GHz / 20 MB",
+        "price": "2 189 kr"
+    },
+    {
+        "name": "Intel Core i5-14500",
+        "specs": "Socket 1700 Raptor Lake-S / 14-core / 2.6 GHz / 24 MB",
+        "price": "3 389 kr"
+    },
+    {
+        "name": "Intel Core i7-14700K",
+        "specs": "Socket 1700 Raptor Lake-S / 20-core / 3.4 GHz / 33 MB",
+        "price": "5 089 kr"
+    },
+    {
+        "name": "Intel Core i3-14100",
+        "specs": "Socket 1700 Raptor Lake-S / 4-kärnor / 3.5 GHz / 12 MB",
+        "price": "1 579 kr"
+    },
+    {
+        "name": "Intel Core Ultra 7 265KF",
+        "specs": "Socket 1851 Arrow Lake / 20-core / 3.9 GHz / 30 MB",
+        "price": "5 090 kr"
+    },
+    {
+        "name": "Intel Core i9-14900KS / 24 Cores / 32 Threads / 3,2Ghz",
+        "specs": "Socket 1700 Raptor Lake-S / 24-core / 3.2 GHz / 36 MB",
+        "price": "9 489 kr"
+    },
+    {
+        "name": "Intel Core i3-13100F",
+        "specs": "Socket 1700 Raptor Lake / 4-kärnor / 3.4 GHz / 12 MB",
+        "price": "1 089 kr"
+    },
+    {
+        "name": "Intel Core Ultra 5 245K",
+        "specs": "Socket 1851 Arrow Lake / 14-core / 4.2 GHz / 24 MB",
+        "price": "3 990 kr"
+    },
+    {
+        "name": "Intel Core i7-14700",
+        "specs": "Socket 1700 Raptor Lake-S / 20-core / 2.1 GHz / 33 MB",
+        "price": "4 489 kr"
+    },
+    {
+        "name": "Intel Core i5-13500",
+        "specs": "Socket 1700 Raptor Lake / 14-core / 2.5 GHz / 24 MB",
+        "price": "3 339 kr"
+    },
+    {
+        "name": "Intel Core Ultra 5 245KF",
+        "specs": "Socket 1851 Arrow Lake / 14-core / 4.2 GHz / 26 MB",
+        "price": "3 790 kr"
+    },
+    {
+        "name": "Intel Core i9-14900F",
+        "specs": "Socket 1700 Raptor Lake-S / 24-core / 2 GHz / 36 MB",
+        "price": "6 789 kr"
+    },
+    {
+        "name": "Intel Core i3-14100F",
+        "specs": "Socket 1700 Raptor Lake-S / 4-kärnor / 3.5 GHz / 12 MB",
+        "price": "1 098 kr"
+    },
+    {
+        "name": "Intel Core i9-12900K",
+        "specs": "Socket 1700 Alder Lake / 16-kärnor / 3.2 GHz / 30 MB",
+        "price": "5 190 kr"
+    },
+    {
+        "name": "Intel Core i9-13900",
+        "specs": "Socket 1700 Raptor Lake",
+        "price": "7 659 kr"
+    },
+    {
+        "name": "Intel Core i9-13900F",
+        "specs": "Socket 1700 Raptor Lake",
+        "price": "7 590 kr"
+    },
+    {
+        "name": "Intel Core i9-14900",
+        "specs": "Socket 1700 Raptor Lake-S / 24-core / 2 GHz / 36 MB",
+        "price": "7 989 kr"
+    },
+    {
+        "name": "Intel Core i9-14900KF",
+        "specs": "Socket 1700 Raptor Lake-S / 24-core / 3.2 GHz / 36 MB",
+        "price": "5 990 kr"
+    },
+    {
+        "name": "Intel Core i5-13400F",
+        "specs": "Socket 1700 Raptor Lake / 10-kärnor / 2.5 GHz / 20 MB",
+        "price": "2 049 kr"
+    },
+    {
+        "name": "Intel Core i5-14600KF",
+        "specs": "Socket 1700 Raptor Lake-S / 14-core / 3.5 GHz / 24 MB",
+        "price": "2 889 kr"
+    },
+    {
+        "name": "Intel Core i3-12100",
+        "specs": "Socket 1700 Alder Lake / 4-kärnor / 3.3 GHz / 12 MB",
+        "price": "1 449 kr"
+    },
+    {
+        "name": "Intel Core i3 13100",
+        "specs": "Socket 1700 Raptor Lake / 4-kärnor / 3.4 GHz / 12 MB",
+        "price": "1 499 kr"
+    },
+    {
+        "name": "Intel Core i5-13400",
+        "specs": "Socket 1700 Raptor Lake / 10-kärnor / 2.5 GHz / 20 MB",
+        "price": "2 629 kr"
+    },
+    {
+        "name": "Intel Core i5-14400",
+        "specs": "Socket 1700 Raptor Lake-S / 10-kärnor / 2.5 GHz / 20 MB",
+        "price": "2 629 kr"
+    }
+]

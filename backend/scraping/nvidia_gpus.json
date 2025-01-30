@@ -1,0 +1,647 @@
+[
+    {
+        "name": "ASUS Dual GeForce RTX 4070 EVO 12GB GDDR6",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 490 kr"
+    },
+    {
+        "name": "PNY GeForce RTX 4070 Ti Super XLR8 OC 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 / 16 GB / 2340 MHz",
+        "price": "11 590 kr"
+    },
+    {
+        "name": "Palit GeForce RTX 4070 Dual 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 1920 MHz",
+        "price": "7 347 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 3050 6GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 6 GB",
+        "price": "2 489 kr"
+    },
+    {
+        "name": "PNY GeForce RTX 4060 VERTO DUAL 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB / 1830 MHz",
+        "price": "3 999 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 Super 12GB EVO",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "8 789 kr"
+    },
+    {
+        "name": "PNY GeForce RTX 4060 Ti VERTO DUAL 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB / 2310 MHz",
+        "price": "5 122 kr"
+    },
+    {
+        "name": "MSI GeForce GT 1030 4GB HD4 LP OC",
+        "specs": "NVIDIA Geforce / PCI Express 3.0 x16 (x4-läge) / 4 GB",
+        "price": "1 290 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 3050 LP 6GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 (x8 mode) / 6 GB",
+        "price": "2 595 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 3050 VENTUS 2X 6GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 (x8 mode) / 6 GB",
+        "price": "2 499 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 4060 Ti EAGLE OC 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB / 2550 MHz",
+        "price": "5 790 kr"
+    },
+    {
+        "name": "PNY GeForce RTX 4070 SUPER VERTO DUAL 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 / 12 GB / 1980 MHz",
+        "price": "8 190 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4060 Ti 8GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB",
+        "price": "6 499 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 VENTUS 2X WHITE 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 699 kr"
+    },
+    {
+        "name": "Palit GeForce RTX 4060 Ti StormX 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB / 2310 MHz",
+        "price": "5 190 kr"
+    },
+    {
+        "name": "Palit GeForce RTX 4070 GamingPro 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 1920 MHz",
+        "price": "8 290 kr"
+    },
+    {
+        "name": "PNY GeForce RTX 4070 Verto Dual 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 / 12 GB / 1920 MHz",
+        "price": "7 999 kr"
+    },
+    {
+        "name": "GIGABYTE GeForce RTX™ 5080 Aorus Master 16GB",
+        "specs": "2025 / NVIDIA Geforce / PCI Express 5.0 / 16 GB",
+        "price": "17 729 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 5080 WINDFORCE SFF 16GB",
+        "specs": "2025-01-30 / NVIDIA Geforce / PCI Express 5.0 / 16 GB",
+        "price": "99 999 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 5090 WINDFORCE OC 32GB",
+        "specs": "2025-01-30 / NVIDIA Geforce / PCI Express 5.0 / 32 GB",
+        "price": "99 999 kr"
+    },
+    {
+        "name": "Gainward GeForce RTX 4080 Super Phoenix 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 / 16 GB / 2295 MHz",
+        "price": "14 990 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4080 Super 16GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "14 979 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 EVO 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB",
+        "price": "3 990 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 Ti EVO 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB",
+        "price": "5 239 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 4060 WINDFORCE OC 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB / 2475 MHz",
+        "price": "3 889 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 12GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "8 590 kr"
+    },
+    {
+        "name": "ASUS TUF Gaming GeForce RTX 4070 Ti Super 16GB OC - White",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "13 449 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX GeForce RTX 4070 Ti Super 16GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "13 490 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 Dual OC 12GB White Edition",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 890 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti VENTUS 2X BLACK 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "5 190 kr"
+    },
+    {
+        "name": "ASUS ProArt GeForce RTX 4070 Ti SUPER 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB / 2640 MHz",
+        "price": "11 890 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 SUPER VENTUS 2X 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "8 390 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX GeForce RTX 4070 Super 12GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "10 489 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 3060 12GB OC V2 (LHR)",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 / 12 GB",
+        "price": "3 889 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 4070 SUPER WINDFORCE OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 2505 MHz",
+        "price": "8 489 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 3050 VENTUS 2X E 6G OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 (x8 mode) / 6 GB",
+        "price": "2 499 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 Super 12GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 190 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 4060 EAGLE OC 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB / 2505 MHz",
+        "price": "3 990 kr"
+    },
+    {
+        "name": "MSI GeForce GT 710 2GB D3H LP",
+        "specs": "NVIDIA Geforce / PCI Express 2.0 x16 / 2 GB / 954 MHz",
+        "price": "599 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 Ti 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB",
+        "price": "5 490 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 Ti SUPER 16GB VENTUS 2X OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "10 890 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 Super 12GB OC - White",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 090 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 VENTUS 2X BLACK 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "3 890 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 AERO ITX 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "3 990 kr"
+    },
+    {
+        "name": "ASUS GeForce GT 1030 Silent 2GB",
+        "specs": "NVIDIA Geforce / PCI Express 3.0 / 2 GB / 1266 MHz",
+        "price": "1 090 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 4070 Ti SUPER WINDFORCE OC 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB / 2625 MHz",
+        "price": "10 990 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 Super EVO OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "8 166 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 GAMING X 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "4 490 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 4060 WINDFORCE OC 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB / 2475 MHz",
+        "price": "3 889 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 12GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "8 590 kr"
+    },
+    {
+        "name": "ASUS TUF Gaming GeForce RTX 4070 Ti Super 16GB OC - White",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "13 449 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX GeForce RTX 4070 Ti Super 16GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "13 490 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 Dual OC 12GB White Edition",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 890 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti VENTUS 2X BLACK 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "5 190 kr"
+    },
+    {
+        "name": "ASUS ProArt GeForce RTX 4070 Ti SUPER 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB / 2640 MHz",
+        "price": "11 890 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 SUPER VENTUS 2X 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "8 390 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX GeForce RTX 4070 Super 12GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "10 489 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 3060 12GB OC V2 (LHR)",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 / 12 GB",
+        "price": "3 889 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 4070 SUPER WINDFORCE OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 2505 MHz",
+        "price": "8 489 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 3050 VENTUS 2X E 6G OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 (x8 mode) / 6 GB",
+        "price": "2 499 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 Super 12GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 190 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 4060 EAGLE OC 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB / 2505 MHz",
+        "price": "3 990 kr"
+    },
+    {
+        "name": "MSI GeForce GT 710 2GB D3H LP",
+        "specs": "NVIDIA Geforce / PCI Express 2.0 x16 / 2 GB / 954 MHz",
+        "price": "599 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 Ti 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB",
+        "price": "5 490 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 Ti SUPER 16GB VENTUS 2X OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "10 890 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 Super 12GB OC - White",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 090 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 VENTUS 2X BLACK 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "3 890 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 AERO ITX 8GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "3 990 kr"
+    },
+    {
+        "name": "ASUS GeForce GT 1030 Silent 2GB",
+        "specs": "NVIDIA Geforce / PCI Express 3.0 / 2 GB / 1266 MHz",
+        "price": "1 090 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 4070 Ti SUPER WINDFORCE OC 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB / 2625 MHz",
+        "price": "10 990 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 Super EVO OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "8 166 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 GAMING X 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "4 490 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti VENTUS 2X BLACK 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 (x8 mode) / 16 GB",
+        "price": "6 290 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX GeForce RTX 4070 Super 12GB GAMING",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 989 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 EVO 12GB GDDR6 OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 490 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 3060 WINDFORCE OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 / 12 GB / 1792 MHz",
+        "price": "3 890 kr"
+    },
+    {
+        "name": "ASUS PRIME GeForce RTX 4070 SUPER 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 2520 MHz",
+        "price": "8 989 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 Ti Super 16GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "11 999 kr"
+    },
+    {
+        "name": "Palit GeForce RTX 4070 Ti JetStream 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 2310 MHz",
+        "price": "9 489 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 Ti EVO 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "6 390 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 VENTUS 2X E1 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "6 890 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 Ti EVO 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "6 290 kr"
+    },
+    {
+        "name": "ASUS ProArt GeForce RTX 4060 Ti 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "6 745 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 SUPER GAMING X SLIM 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 199 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti GAMING X SLIM 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 16 GB",
+        "price": "6 929 kr"
+    },
+    {
+        "name": "Palit GeForce RTX 4060 Dual 8GB GDDR6",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB / 1830 MHz",
+        "price": "4 007 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 EVO 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 325 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti GAMING X 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "5 499 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 TI Super 16GB Gaming",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "11 989 kr"
+    },
+    {
+        "name": "Palit RTX 4080 Super GamingPro 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB / 2295 MHz",
+        "price": "13 795 kr"
+    },
+    {
+        "name": "Palit RTX 4070 Super JetStream OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 1980 MHz",
+        "price": "8 482 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti VENTUS 2X BLACK 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 (x8 mode) / 16 GB",
+        "price": "6 290 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX GeForce RTX 4070 Super 12GB GAMING",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 989 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 EVO 12GB GDDR6 OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 490 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 3060 WINDFORCE OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 / 12 GB / 1792 MHz",
+        "price": "3 890 kr"
+    },
+    {
+        "name": "ASUS PRIME GeForce RTX 4070 SUPER 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 2520 MHz",
+        "price": "8 989 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 Ti Super 16GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "11 999 kr"
+    },
+    {
+        "name": "Palit GeForce RTX 4070 Ti JetStream 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 2310 MHz",
+        "price": "9 489 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 Ti EVO 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "6 390 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 VENTUS 2X E1 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "6 890 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 Ti EVO 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "6 290 kr"
+    },
+    {
+        "name": "ASUS ProArt GeForce RTX 4060 Ti 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "6 745 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 SUPER GAMING X SLIM 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 199 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti GAMING X SLIM 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 16 GB",
+        "price": "6 929 kr"
+    },
+    {
+        "name": "Palit GeForce RTX 4060 Dual 8GB GDDR6",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB / 1830 MHz",
+        "price": "4 007 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 EVO 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 325 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti GAMING X 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "5 499 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 TI Super 16GB Gaming",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "11 989 kr"
+    },
+    {
+        "name": "Palit RTX 4080 Super GamingPro 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB / 2295 MHz",
+        "price": "13 795 kr"
+    },
+    {
+        "name": "Palit RTX 4070 Super JetStream OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 1980 MHz",
+        "price": "8 482 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti VENTUS 2X BLACK 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 (x8 mode) / 16 GB",
+        "price": "6 290 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX GeForce RTX 4070 Super 12GB GAMING",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 989 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 EVO 12GB GDDR6 OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 490 kr"
+    },
+    {
+        "name": "Gigabyte GeForce RTX 3060 WINDFORCE OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x16 / 12 GB / 1792 MHz",
+        "price": "3 890 kr"
+    },
+    {
+        "name": "ASUS PRIME GeForce RTX 4070 SUPER 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 2520 MHz",
+        "price": "8 989 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 Ti Super 16GB Gaming OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "11 999 kr"
+    },
+    {
+        "name": "Palit GeForce RTX 4070 Ti JetStream 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 2310 MHz",
+        "price": "9 489 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 Ti EVO 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "6 390 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 VENTUS 2X E1 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "6 890 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4060 Ti EVO 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "6 290 kr"
+    },
+    {
+        "name": "ASUS ProArt GeForce RTX 4060 Ti 16GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "6 745 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4070 SUPER GAMING X SLIM 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "9 199 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti GAMING X SLIM 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 16 GB",
+        "price": "6 929 kr"
+    },
+    {
+        "name": "Palit GeForce RTX 4060 Dual 8GB GDDR6",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 8 GB / 1830 MHz",
+        "price": "4 007 kr"
+    },
+    {
+        "name": "ASUS Dual GeForce RTX 4070 EVO 12GB OC",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB",
+        "price": "7 325 kr"
+    },
+    {
+        "name": "MSI GeForce RTX 4060 Ti GAMING X 8GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 x8 / 8 GB",
+        "price": "5 499 kr"
+    },
+    {
+        "name": "ASUS TUF GeForce RTX 4070 TI Super 16GB Gaming",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB",
+        "price": "11 989 kr"
+    },
+    {
+        "name": "Palit RTX 4080 Super GamingPro 16GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 16 GB / 2295 MHz",
+        "price": "13 795 kr"
+    },
+    {
+        "name": "Palit RTX 4070 Super JetStream OC 12GB",
+        "specs": "NVIDIA Geforce / PCI Express 4.0 / 12 GB / 1980 MHz",
+        "price": "8 482 kr"
+    }
+]

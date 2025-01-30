@@ -1,0 +1,242 @@
+[
+    {
+        "name": "ASUS TUF Gaming X870-PLUS WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870 / DDR5 SDRAM",
+        "price": "4 790 kr"
+    },
+    {
+        "name": "MSI MPG X870E CARBON WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870E / DDR5 SDRAM",
+        "price": "6 239 kr"
+    },
+    {
+        "name": "ASRock X870E NOVA WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870E / DDR5 SDRAM",
+        "price": "5 190 kr"
+    },
+    {
+        "name": "ASUS PRIME B650M-A WIFI II",
+        "specs": "Socket AM5 / Socket AM5 / Micro ATX / AMD B650 / DDR5 SDRAM",
+        "price": "1 849 kr"
+    },
+    {
+        "name": "MSI MAG X870 TOMAHAWK WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870 / DDR5 SDRAM",
+        "price": "4 090 kr"
+    },
+    {
+        "name": "ASUS TUF GAMING A520M-PLUS WIFI",
+        "specs": "Socket AM4 / Micro ATX / AMD A520 / DDR4 SDRAM",
+        "price": "1 390 kr"
+    },
+    {
+        "name": "ASUS ROG Strix X870E-E Gaming WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870E / DDR5 SDRAM",
+        "price": "7 299 kr"
+    },
+    {
+        "name": "MSI B650 Gaming Plus WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B650 / DDR5 SDRAM",
+        "price": "1 999 kr"
+    },
+    {
+        "name": "ASRock A520M Phantom Gaming 4",
+        "specs": "Socket AM4 / Micro ATX / AMD A520 / DDR4 SDRAM",
+        "price": "949 kr"
+    },
+    {
+        "name": "ASUS TUF GAMING B650-PLUS WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B650 / DDR5 SDRAM",
+        "price": "2 289 kr"
+    },
+    {
+        "name": "ASRock B650M-HDV/M.2 D5",
+        "specs": "Socket AM5 / Socket AM5 / Micro ATX / AMD B650 / DDR5 SDRAM",
+        "price": "1 590 kr"
+    },
+    {
+        "name": "ASRock X870 PRO RS WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870 / DDR5 SDRAM",
+        "price": "3 290 kr"
+    },
+    {
+        "name": "ASUS ROG Strix X870-F GAMING WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870 / DDR5 SDRAM",
+        "price": "5 989 kr"
+    },
+    {
+        "name": "ASUS TUF GAMING B650-PLUS",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B650 / DDR5 SDRAM",
+        "price": "2 699 kr"
+    },
+    {
+        "name": "ASRock X870 PRO RS",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870 / DDR5 SDRAM",
+        "price": "3 090 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX B650E-I GAMING WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ITX / AMD B650 / DDR5 SDRAM",
+        "price": "3 489 kr"
+    },
+    {
+        "name": "ASRock B650 Steel Legend WIFI D5",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B650 / DDR5 SDRAM",
+        "price": "2 789 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX B550-F GAMING",
+        "specs": "Socket AM4 / ATX / AMD B550 / DDR4 SDRAM",
+        "price": "1 989 kr"
+    },
+    {
+        "name": "ASUS ProArt X870E-Creator WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870E / DDR5 SDRAM",
+        "price": "6 990 kr"
+    },
+    {
+        "name": "ASUS PRIME X870-P",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870 / DDR5 SDRAM",
+        "price": "3 790 kr"
+    },
+    {
+        "name": "ASRock X870E TAICHI",
+        "specs": "Socket AM5 / Socket AM5 / Utökad ATX / AMD X870E / DDR5 SDRAM",
+        "price": "6 690 kr"
+    },
+    {
+        "name": "MSI MAG B650 TOMAHAWK WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B650 / DDR5 SDRAM",
+        "price": "2 489 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX X670E-F GAMING WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X670 / DDR5 SDRAM",
+        "price": "4 790 kr"
+    },
+    {
+        "name": "ASRock A620M PRO RS WIFI D5",
+        "specs": "Socket AM5 / Socket AM5 / Micro ATX / AMD A620 / DDR5 SDRAM",
+        "price": "1 629 kr"
+    },
+    {
+        "name": "MSI MAG X670E TOMAHAWK WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X670 / DDR5 SDRAM",
+        "price": "3 690 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX B850-I GAMING WIFI",
+        "specs": "Socket AM5 / Socket AM5 / Mini ITX / AMD B850 / DDR5 SDRAM",
+        "price": "4 690 kr"
+    },
+    {
+        "name": "Gigabyte B650 EAGLE AX WIFI D5",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B650 / DDR5 SDRAM",
+        "price": "2 289 kr"
+    },
+    {
+        "name": "MSI A520M-A PRO",
+        "specs": "Socket AM4 / Micro ATX / AMD A520 / DDR4 SDRAM",
+        "price": "809 kr"
+    },
+    {
+        "name": "ASRock X870 RIPTIDE WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870 / DDR5 SDRAM",
+        "price": "3 899 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX B850-E GAMING WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B850 / DDR5 SDRAM",
+        "price": "5 490 kr"
+    },
+    {
+        "name": "MSI MPG B550 GAMING PLUS",
+        "specs": "Socket AM4 / ATX / AMD B550 / DDR4 SDRAM",
+        "price": "1 549 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX B850-F GAMING WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B850 / DDR5 SDRAM",
+        "price": "4 490 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX B850-A GAMING WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B850 / DDR5 SDRAM",
+        "price": "4 390 kr"
+    },
+    {
+        "name": "ASUS TUF GAMING B850M-PLUS WIFI",
+        "specs": "Socket AM5 / Socket AM5 / Micro ATX / AMD B850 / DDR5 SDRAM",
+        "price": "3 390 kr"
+    },
+    {
+        "name": "ASUS TUF GAMING B850M-PLUS",
+        "specs": "Socket AM5 / Socket AM5 / Micro ATX / AMD B850 / DDR5 SDRAM",
+        "price": "3 290 kr"
+    },
+    {
+        "name": "ASUS PRIME B840M-A WIFI",
+        "specs": "Socket AM5 / Socket AM5 / Micro ATX / AMD B840 / DDR5 SDRAM",
+        "price": "2 590 kr"
+    },
+    {
+        "name": "ASUS PRIME B840M-A",
+        "specs": "Socket AM5 / Socket AM5 / Micro ATX / AMD B840 / DDR5 SDRAM",
+        "price": "2 390 kr"
+    },
+    {
+        "name": "ASRock X870 STEEL LEGEND WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870 / DDR5 SDRAM",
+        "price": "3 519 kr"
+    },
+    {
+        "name": "ASUS TUF GAMING X670E-PLUS WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X670E / DDR5 SDRAM",
+        "price": "3 790 kr"
+    },
+    {
+        "name": "ASUS ROG Strix X870-I Gaming WIFI",
+        "specs": "Socket AM5 / Socket AM5 / Mini ITX / AMD X870 / DDR5 SDRAM",
+        "price": "6 590 kr"
+    },
+    {
+        "name": "ASUS ROG Strix X870-A Gaming WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870 / DDR5 SDRAM",
+        "price": "5 689 kr"
+    },
+    {
+        "name": "MSI X670E GAMING PLUS WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X670E / DDR5 SDRAM",
+        "price": "3 389 kr"
+    },
+    {
+        "name": "Gigabyte B550 GAMING X V2",
+        "specs": "Socket AM4 / ATX / AMD B550 / DDR4 SDRAM",
+        "price": "1 390 kr"
+    },
+    {
+        "name": "MSI PRO B650-S WIFI",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD B650 / DDR5 SDRAM",
+        "price": "2 095 kr"
+    },
+    {
+        "name": "MSI B550M PRO-VDH WIFI",
+        "specs": "Socket AM4 / Micro ATX / AMD B550 / DDR4 SDRAM",
+        "price": "1 399 kr"
+    },
+    {
+        "name": "ASUS PRIME B550M-K ARGB",
+        "specs": "Socket AM4 / Micro ATX / AMD B550 / DDR4 SDRAM",
+        "price": "1 385 kr"
+    },
+    {
+        "name": "ASUS ROG STRIX B550-F GAMING WIFI II",
+        "specs": "Socket AM4 / ATX / AMD B550 / DDR4 SDRAM",
+        "price": "2 098 kr"
+    },
+    {
+        "name": "ASUS ROG Crosshair X870E Hero",
+        "specs": "Socket AM5 / Socket AM5 / ATX / AMD X870E / DDR5 SDRAM",
+        "price": "8 989 kr"
+    }
+]

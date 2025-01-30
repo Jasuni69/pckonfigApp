@@ -1,0 +1,187 @@
+[
+    {
+        "name": "AMD Ryzen 7 9800X3D",
+        "specs": "Socket AM5 / 8-kärnor / 4.7 GHz / 96 MB",
+        "price": "6 890 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 7700X",
+        "specs": "Socket AM5 / 8-kärnor / 4.5 GHz / 32 MB",
+        "price": "3 990 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 5700X3D",
+        "specs": "Socket AM4 / 8-kärnor / 3 GHz / 96 MB",
+        "price": "3 090 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 7600X",
+        "specs": "Socket AM5 / 6-kärnor / 4.7 GHz / 32 MB",
+        "price": "2 789 kr"
+    },
+    {
+        "name": "AMD Ryzen 9 9950X / 16 Cores / 32 Threads / 4.3 Ghz",
+        "specs": "Socket AM5 / 16-kärnor / 4.3 GHz / 64 MB",
+        "price": "7 489 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 5800X",
+        "specs": "Socket AM4 / 8-kärnor / 3.8 GHz / 32 MB",
+        "price": "2 229 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 5600X",
+        "specs": "Socket AM4 / 6-kärnor / 3.7 GHz / 32 MB",
+        "price": "1 790 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 5500",
+        "specs": "Socket AM4 / 6-kärnor / 3.6 GHz / 16 MB",
+        "price": "1 066 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 7600",
+        "specs": "Socket AM5 / 6-kärnor / 3.8 GHz / 32 MB",
+        "price": "2 590 kr"
+    },
+    {
+        "name": "AMD Ryzen 9 7900",
+        "specs": "Socket AM5 / 12-core / 3.7 GHz / 64 MB",
+        "price": "4 490 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 8600G",
+        "specs": "Socket AM5 / 6-kärnor / 4.3 GHz / 16 MB",
+        "price": "2 339 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 7800X3D",
+        "specs": "Socket AM5 / 8-kärnor / 4.2 GHz / 96 MB",
+        "price": "6 190 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 5700X",
+        "specs": "Socket AM4 / 8-kärnor / 3.4 GHz / 32 MB",
+        "price": "2 190 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 5600G",
+        "specs": "Socket AM4 / 6-kärnor / 3.9 GHz / 16 MB",
+        "price": "1 749 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 8700F",
+        "specs": "Socket AM5 / 8-kärnor / 4.1 GHz / 16 MB",
+        "price": "2 999 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 7700",
+        "specs": "Socket AM5 / 8-kärnor / 3.8 GHz / 32 MB",
+        "price": "3 990 kr"
+    },
+    {
+        "name": "AMD Ryzen 9 7950X",
+        "specs": "Socket AM5 / 16-kärnor / 4.5 GHz / 64 MB",
+        "price": "6 590 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 9600X / 6 Cores / 12 Threads / 3.9 Ghz",
+        "specs": "Socket AM5 / 6-kärnor / 3.9 GHz / 32 MB",
+        "price": "3 189 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 9700X / 8 Cores / 16 Threads / 3.8 Ghz",
+        "specs": "Socket AM5 / 8-kärnor / 3.8 GHz / 32 MB",
+        "price": "4 490 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 8700G",
+        "specs": "Socket AM5 / 8-kärnor / 4.2 GHz / 16 MB",
+        "price": "3 390 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 5600GT",
+        "specs": "Socket AM4 / 6-kärnor / 3.6 GHz / 16 MB",
+        "price": "1 690 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 4500",
+        "specs": "Socket AM4 / 6-kärnor / 3.6 GHz / 8 MB",
+        "price": "949 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 8400F",
+        "specs": "Socket AM5 / 6-kärnor / 4.2 GHz / 16 MB",
+        "price": "1 690 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 5800XT",
+        "specs": "Socket AM4 / 8-kärnor / 3.8 GHz / 32 MB",
+        "price": "2 590 kr"
+    },
+    {
+        "name": "AMD Ryzen 9 5900XT",
+        "specs": "Socket AM4 / 16-kärnor / 3.3 GHz / 64 MB",
+        "price": "4 379 kr"
+    },
+    {
+        "name": "AMD Ryzen 9 7900X",
+        "specs": "Socket AM5 / 12-core / 4.7 GHz / 64 MB",
+        "price": "4 749 kr"
+    },
+    {
+        "name": "AMD Ryzen 9 7950X3D",
+        "specs": "Socket AM5 / 16-kärnor / 4.2 GHz / 128 MB",
+        "price": "8 390 kr"
+    },
+    {
+        "name": "AMD Ryzen 9 5950X",
+        "specs": "Socket AM4 / 16-kärnor / 3.4 GHz / 64 MB",
+        "price": "4 149 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 5600",
+        "specs": "Socket AM4 / 6-kärnor / 3.5 GHz / 32 MB",
+        "price": "1 599 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 8500G",
+        "specs": "Socket AM5 / 6-kärnor / 3.5 GHz / 16 MB",
+        "price": "1 789 kr"
+    },
+    {
+        "name": "AMD Ryzen 9 9900X / 12 Cores / 24 Threads / 4.4 Ghz",
+        "specs": "Socket AM5 / 12-core / 4.4 GHz / 64 MB",
+        "price": "5 389 kr"
+    },
+    {
+        "name": "AMD Ryzen 7 5700G",
+        "specs": "Socket AM4 / 8-kärnor / 3.8 GHz / 16 MB",
+        "price": "2 190 kr"
+    },
+    {
+        "name": "AMD Ryzen 5 5500GT",
+        "specs": "Socket AM4 / 6-kärnor / 3.6 GHz / 16 MB",
+        "price": "1 449 kr"
+    },
+    {
+        "name": "AMD Ryzen 9 7900X3D",
+        "specs": "Socket AM5 / 12-core / 4.4 GHz / 128 MB",
+        "price": "6 289 kr"
+    },
+    {
+        "name": "AMD Ryzen Threadripper 7980X / 64 Cores / 128 Threads / 5.1 GHz",
+        "specs": "Threadripper / 64-core / 3.2 GHz / 256 MB",
+        "price": "68 490 kr"
+    },
+    {
+        "name": "AMD Ryzen Threadripper 7970X / 32 Cores / 64 Threads / 5.3 GHz",
+        "specs": "Threadripper / 32-core / 4 GHz / 128 MB",
+        "price": "33 489 kr"
+    },
+    {
+        "name": "AMD Ryzen Threadripper 7960X / 24 Cores / 48 Threads / 5.3 Ghz",
+        "specs": "Threadripper / 24-core / 4.2 GHz / 128 MB",
+        "price": "20 689 kr"
+    }
+]

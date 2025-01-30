@@ -1,0 +1,107 @@
+[
+    {
+        "name": "Kingston Fury Renegade 500GB",
+        "specs": "M.2 2280 / 500 GB / PCI Express 4.0 (NVMe) / 7300 MBps",
+        "price": "749 kr"
+    },
+    {
+        "name": "WD Black SSD SN770 2TB",
+        "specs": "M.2 2280 / 2 TB / PCI Express 4.0 x4 (NVMe) / 5150 MBps",
+        "price": "1 789 kr"
+    },
+    {
+        "name": "Kingston NV3 M.2 2TB",
+        "specs": "M.2 2280 / 2 TB / PCI Express 4.0 x4 (NVMe) / 6000 MBps",
+        "price": "1 590 kr"
+    },
+    {
+        "name": "Kingston NV3 M.2 500GB",
+        "specs": "M.2 2280 / 500 GB / PCI Express 4.0 x4 (NVMe) / 5000 MBps",
+        "price": "599 kr"
+    },
+    {
+        "name": "Kingston Fury Renegade Heatsink 1TB",
+        "specs": "M.2 2280 / 1 TB / PCI Express 4.0 x4 (NVMe) / 7300 MBps",
+        "price": "1 289 kr"
+    },
+    {
+        "name": "Samsung 990 EVO Plus 1TB",
+        "specs": "M.2 2280 / 1 TB / PCI Express 5.0 x2 (NVMe), PCI Express 4.0 x4 (NVMe) / 7150 MBps",
+        "price": "1 290 kr"
+    },
+    {
+        "name": "Kingston KC3000 M.2 4TB",
+        "specs": "M.2 2280 / 4096 GB / PCI Express 4.0 (NVMe) / 7000 MBps",
+        "price": "3 490 kr"
+    },
+    {
+        "name": "WD SSD Blue SN580 2TB",
+        "specs": "M.2 2280 / 2 TB / PCI Express 4.0 x4 (NVMe) / 4150 MBps",
+        "price": "1 599 kr"
+    },
+    {
+        "name": "Kingston Fury Renegade Heatsink 2TB",
+        "specs": "M.2 2280 / 2 TB / PCI Express 4.0 x4 (NVMe) / 7300 MBps",
+        "price": "2 189 kr"
+    },
+    {
+        "name": "Samsung 990 Pro with Heatsink 1TB",
+        "specs": "M.2 2280 / 1 TB / PCI Express 4.0 x4 (NVMe) / 7450 MBps",
+        "price": "1 590 kr"
+    },
+    {
+        "name": "WD SSD Blue SN580 1TB",
+        "specs": "M.2 2280 / 1 TB / PCI Express 4.0 x4 (NVMe) / 4150 MBps",
+        "price": "979 kr"
+    },
+    {
+        "name": "Corsair MP600 PRO NH 1TB",
+        "specs": "M.2 2280 / 1 TB / PCI Express 4.0 x4 (NVMe) / 7000 MBps",
+        "price": "1 399 kr"
+    },
+    {
+        "name": "Corsair MP600 CORE XT 2TB",
+        "specs": "M.2 2280 / 2 TB / PCI Express 4.0 x4 (NVMe)",
+        "price": "2 299 kr"
+    },
+    {
+        "name": "Seagate FireCuda 510 SSD 1TB M.2 NVMe",
+        "specs": "M.2 2280 / 1 TB / PCI Express 3.0 x4 (NVMe) / 3450 MBps",
+        "price": "2 149 kr"
+    },
+    {
+        "name": "Corsair MP600 PRO NH 8TB",
+        "specs": "M.2 2280 / 8 TB / PCI Express 4.0 x4 (NVMe) / 7000 MBps",
+        "price": "12 569 kr"
+    },
+    {
+        "name": "Kingston Fury Renegade M.2 2TB + be quiet! MC1 heatsink",
+        "specs": "M.2 2280 / 2 TB / PCI Express 4.0 x4 (NVMe)",
+        "price": "1 829 kr"
+    },
+    {
+        "name": "Corsair MP700 Pro - 2TB",
+        "specs": "M.2 2280 / 2 TB / PCI Express 5.0 x4 (NVMe) / 12400 MBps",
+        "price": "4 190 kr"
+    },
+    {
+        "name": "Samsung 990 Pro with Heatsink 4TB",
+        "specs": "M.2 2280 / 4 TB / PCI Express 4.0 x4 (NVMe) / 7450 MBps",
+        "price": "3 889 kr"
+    },
+    {
+        "name": "Corsair MP700 Pro - 1TB",
+        "specs": "M.2 2280 / 1 TB / PCI Express 5.0 x4 (NVMe) / 11700 MBps",
+        "price": "2 599 kr"
+    },
+    {
+        "name": "Kingston NV2 M.2 500GB",
+        "specs": "M.2 2280 / 500 GB / PCI Express 4.0 x4 (NVMe) / 3500 MBps",
+        "price": "549 kr"
+    },
+    {
+        "name": "Samsung 990 Pro 4TB",
+        "specs": "M.2 2280 / 4 TB / PCI Express 4.0 x4 (NVMe) / 7450 MBps",
+        "price": "3 990 kr"
+    }
+]
