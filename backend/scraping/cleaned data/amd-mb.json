@@ -1,0 +1,434 @@
+[
+    {
+        "name":"ASUS TUF Gaming X870-PLUS WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":4790
+    },
+    {
+        "name":"MSI MPG X870E CARBON WIFI",
+        "brand":"MSI",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870E",
+        "memory_type":"DDR5 SDRAM",
+        "price":6239
+    },
+    {
+        "name":"ASRock X870E NOVA WIFI",
+        "brand":"ASRock",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870E",
+        "memory_type":"DDR5 SDRAM",
+        "price":5190
+    },
+    {
+        "name":"ASUS PRIME B650M-A WIFI II",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":1849
+    },
+    {
+        "name":"MSI MAG X870 TOMAHAWK WIFI",
+        "brand":"MSI",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":4090
+    },
+    {
+        "name":"ASUS TUF GAMING A520M-PLUS WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM4",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD A520",
+        "memory_type":"DDR4 SDRAM",
+        "price":1390
+    },
+    {
+        "name":"ASUS ROG Strix X870E-E Gaming WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870E",
+        "memory_type":"DDR5 SDRAM",
+        "price":7299
+    },
+    {
+        "name":"MSI B650 Gaming Plus WIFI",
+        "brand":"MSI",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":1999
+    },
+    {
+        "name":"ASRock A520M Phantom Gaming 4",
+        "brand":"ASRock",
+        "socket":"Socket AM4",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD A520",
+        "memory_type":"DDR4 SDRAM",
+        "price":949
+    },
+    {
+        "name":"ASUS TUF GAMING B650-PLUS WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":2289
+    },
+    {
+        "name":"ASRock B650M-HDV\/M.2 D5",
+        "brand":"ASRock",
+        "socket":"Socket AM5",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":1590
+    },
+    {
+        "name":"ASRock X870 PRO RS WIFI",
+        "brand":"ASRock",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":3290
+    },
+    {
+        "name":"ASUS ROG Strix X870-F GAMING WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":5989
+    },
+    {
+        "name":"ASUS TUF GAMING B650-PLUS",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":2699
+    },
+    {
+        "name":"ASRock X870 PRO RS",
+        "brand":"ASRock",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":3090
+    },
+    {
+        "name":"ASUS ROG STRIX B650E-I GAMING WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ITX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":3489
+    },
+    {
+        "name":"ASRock B650 Steel Legend WIFI D5",
+        "brand":"ASRock",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":2789
+    },
+    {
+        "name":"ASUS ROG STRIX B550-F GAMING",
+        "brand":"ASUS",
+        "socket":"Socket AM4",
+        "form_factor":"ATX",
+        "chipset":"AMD B550",
+        "memory_type":"DDR4 SDRAM",
+        "price":1989
+    },
+    {
+        "name":"ASUS ProArt X870E-Creator WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870E",
+        "memory_type":"DDR5 SDRAM",
+        "price":6990
+    },
+    {
+        "name":"ASUS PRIME X870-P",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":3790
+    },
+    {
+        "name":"ASRock X870E TAICHI",
+        "brand":"ASRock",
+        "socket":"Socket AM5",
+        "form_factor":"Utökad ATX",
+        "chipset":"AMD X870E",
+        "memory_type":"DDR5 SDRAM",
+        "price":6690
+    },
+    {
+        "name":"MSI MAG B650 TOMAHAWK WIFI",
+        "brand":"MSI",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":2489
+    },
+    {
+        "name":"ASUS ROG STRIX X670E-F GAMING WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X670",
+        "memory_type":"DDR5 SDRAM",
+        "price":4790
+    },
+    {
+        "name":"ASRock A620M PRO RS WIFI D5",
+        "brand":"ASRock",
+        "socket":"Socket AM5",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD A620",
+        "memory_type":"DDR5 SDRAM",
+        "price":1629
+    },
+    {
+        "name":"MSI MAG X670E TOMAHAWK WIFI",
+        "brand":"MSI",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X670",
+        "memory_type":"DDR5 SDRAM",
+        "price":3690
+    },
+    {
+        "name":"ASUS ROG STRIX B850-I GAMING WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"Mini ITX",
+        "chipset":"AMD B850",
+        "memory_type":"DDR5 SDRAM",
+        "price":4690
+    },
+    {
+        "name":"Gigabyte B650 EAGLE AX WIFI D5",
+        "brand":"Gigabyte",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":2289
+    },
+    {
+        "name":"MSI A520M-A PRO",
+        "brand":"MSI",
+        "socket":"Socket AM4",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD A520",
+        "memory_type":"DDR4 SDRAM",
+        "price":809
+    },
+    {
+        "name":"ASRock X870 RIPTIDE WIFI",
+        "brand":"ASRock",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":3899
+    },
+    {
+        "name":"ASUS ROG STRIX B850-E GAMING WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B850",
+        "memory_type":"DDR5 SDRAM",
+        "price":5490
+    },
+    {
+        "name":"MSI MPG B550 GAMING PLUS",
+        "brand":"MSI",
+        "socket":"Socket AM4",
+        "form_factor":"ATX",
+        "chipset":"AMD B550",
+        "memory_type":"DDR4 SDRAM",
+        "price":1549
+    },
+    {
+        "name":"ASUS ROG STRIX B850-F GAMING WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B850",
+        "memory_type":"DDR5 SDRAM",
+        "price":4490
+    },
+    {
+        "name":"ASUS ROG STRIX B850-A GAMING WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B850",
+        "memory_type":"DDR5 SDRAM",
+        "price":4390
+    },
+    {
+        "name":"ASUS TUF GAMING B850M-PLUS WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD B850",
+        "memory_type":"DDR5 SDRAM",
+        "price":3390
+    },
+    {
+        "name":"ASUS TUF GAMING B850M-PLUS",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD B850",
+        "memory_type":"DDR5 SDRAM",
+        "price":3290
+    },
+    {
+        "name":"ASUS PRIME B840M-A WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD B840",
+        "memory_type":"DDR5 SDRAM",
+        "price":2590
+    },
+    {
+        "name":"ASUS PRIME B840M-A",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD B840",
+        "memory_type":"DDR5 SDRAM",
+        "price":2390
+    },
+    {
+        "name":"ASRock X870 STEEL LEGEND WIFI",
+        "brand":"ASRock",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":3519
+    },
+    {
+        "name":"ASUS TUF GAMING X670E-PLUS WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X670E",
+        "memory_type":"DDR5 SDRAM",
+        "price":3790
+    },
+    {
+        "name":"ASUS ROG Strix X870-I Gaming WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"Mini ITX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":6590
+    },
+    {
+        "name":"ASUS ROG Strix X870-A Gaming WIFI",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870",
+        "memory_type":"DDR5 SDRAM",
+        "price":5689
+    },
+    {
+        "name":"MSI X670E GAMING PLUS WIFI",
+        "brand":"MSI",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X670E",
+        "memory_type":"DDR5 SDRAM",
+        "price":3389
+    },
+    {
+        "name":"Gigabyte B550 GAMING X V2",
+        "brand":"Gigabyte",
+        "socket":"Socket AM4",
+        "form_factor":"ATX",
+        "chipset":"AMD B550",
+        "memory_type":"DDR4 SDRAM",
+        "price":1390
+    },
+    {
+        "name":"MSI PRO B650-S WIFI",
+        "brand":"MSI",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD B650",
+        "memory_type":"DDR5 SDRAM",
+        "price":2095
+    },
+    {
+        "name":"MSI B550M PRO-VDH WIFI",
+        "brand":"MSI",
+        "socket":"Socket AM4",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD B550",
+        "memory_type":"DDR4 SDRAM",
+        "price":1399
+    },
+    {
+        "name":"ASUS PRIME B550M-K ARGB",
+        "brand":"ASUS",
+        "socket":"Socket AM4",
+        "form_factor":"Micro ATX",
+        "chipset":"AMD B550",
+        "memory_type":"DDR4 SDRAM",
+        "price":1385
+    },
+    {
+        "name":"ASUS ROG STRIX B550-F GAMING WIFI II",
+        "brand":"ASUS",
+        "socket":"Socket AM4",
+        "form_factor":"ATX",
+        "chipset":"AMD B550",
+        "memory_type":"DDR4 SDRAM",
+        "price":2098
+    },
+    {
+        "name":"ASUS ROG Crosshair X870E Hero",
+        "brand":"ASUS",
+        "socket":"Socket AM5",
+        "form_factor":"ATX",
+        "chipset":"AMD X870E",
+        "memory_type":"DDR5 SDRAM",
+        "price":8989
+    }
+]

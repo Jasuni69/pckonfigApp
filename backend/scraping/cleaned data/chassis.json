@@ -1,0 +1,412 @@
+[
+    {
+        "name":"Phanteks XT Pro Ultra",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"999 kr"
+    },
+    {
+        "name":"Montech King 95 Pro \/ Curved Glass \/",
+        "specs":"ATX, Micro ATX, Mini Mini ITX \/ Ingen strömförsörjning \/ Svart \/ 6x ARGB Fans",
+        "price":"1 790 kr"
+    },
+    {
+        "name":"Fractal Design North XL \/ Chalk",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Kritvit",
+        "price":"2 490 kr"
+    },
+    {
+        "name":"Montech X3 Mesh",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"639 kr"
+    },
+    {
+        "name":"ASUS PRIME AP201",
+        "specs":"Micro ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 089 kr"
+    },
+    {
+        "name":"Jonsbo N2 Mini-ITX Case",
+        "specs":"Mini ITX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 648 kr"
+    },
+    {
+        "name":"Montech X3 Glass",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"639 kr"
+    },
+    {
+        "name":"Lian Li Lancool 216 \/ TG \/  \/ ARGB",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart \/ Svart",
+        "price":"1 248 kr"
+    },
+    {
+        "name":"Lian Li Lancool III \/ TG",
+        "specs":"Utökad ATX, Mini Mini ITX, ATX, Micro ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 845 kr"
+    },
+    {
+        "name":"Fractal Design Define C",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 249 kr"
+    },
+    {
+        "name":"ASUS AP201 PRIME TG",
+        "specs":"Micro ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 090 kr"
+    },
+    {
+        "name":"Lian Li Lancool 216 \/ TG \/",
+        "specs":"ATX, Mini Mini ITX, Micro ATX \/ Svart",
+        "price":"1 190 kr"
+    },
+    {
+        "name":"Corsair 3500X \/ Tempered Glass",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Vit",
+        "price":"1 190 kr"
+    },
+    {
+        "name":"Fractal Design Mood \/ Black",
+        "specs":"Mini Mini ITX \/ Ingen strömförsörjning \/ Ljusgrå",
+        "price":"2 179 kr"
+    },
+    {
+        "name":"Lian Li Lancool III \/ TG \/ A-RGB",
+        "specs":"Micro ATX, ATX, Utökad ATX, Mini Mini ITX \/ Ingen strömförsörjning \/ Svart",
+        "price":"2 079 kr"
+    },
+    {
+        "name":"HYTE Y40 Miditower",
+        "specs":"Mini Mini ITX, Micro ATX, ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 949 kr"
+    },
+    {
+        "name":"Phanteks NV5 MK II",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 490 kr"
+    },
+    {
+        "name":"Phanteks Eclipse G400A \/ Tempered Glass \/ DRGB",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 399 kr"
+    },
+    {
+        "name":"Corsair iCUE 5000D RGB Airflow \/ TG \/",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart \/ Svart",
+        "price":"2 299 kr"
+    },
+    {
+        "name":"Phanteks XT View",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Matt vit",
+        "price":"1 049 kr"
+    },
+    {
+        "name":"Fractal Design Focus 2 RGB TG Clear Tint",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"999 kr"
+    },
+    {
+        "name":"Fractal Design Focus 2 Solid",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 039 kr"
+    },
+    {
+        "name":"Phanteks Eclipse G500A \/ Tempered Glass \/ DRGB \/ 3x140mm",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Vit",
+        "price":"1 790 kr"
+    },
+    {
+        "name":"Phanteks Eclipse P600S Tempered Glass",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Grå",
+        "price":"1 799 kr"
+    },
+    {
+        "name":"Phanteks NV Series NV7 \/ Tempered Glass Windows \/ DRGB",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Matt vit",
+        "price":"2 390 kr"
+    },
+    {
+        "name":"Lian Li O11D EVO RGB",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"3 989 kr"
+    },
+    {
+        "name":"Phanteks Eclipse G360A \/ Tempered Glass \/ DRGB",
+        "specs":"Utökad ATX \/ Vit",
+        "price":"1 049 kr"
+    },
+    {
+        "name":"Fractal Design Torrent Compact \/ TG Dark Tint \/",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart \/ Svart",
+        "price":"1 790 kr"
+    },
+    {
+        "name":"Phanteks XT Pro Silent",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 099 kr"
+    },
+    {
+        "name":"Corsair iCUE 5000T RGB \/ Tempered Glass",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Vit",
+        "price":"3 790 kr"
+    },
+    {
+        "name":"Fractal Design Define 7 Compact TG \/ Light Tint",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 423 kr"
+    },
+    {
+        "name":"Corsair 3000D RGB Tempered Glass Mid-Tower",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 189 kr"
+    },
+    {
+        "name":"Corsair 3000D Tempered Glass Mid-Tower",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Vit",
+        "price":"890 kr"
+    },
+    {
+        "name":"Corsair iCUE 4000D RGB Airflow \/ TG \/",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart \/ Svart",
+        "price":"1 999 kr"
+    },
+    {
+        "name":"Lian Li PC-O11 Dynamic MINI \/ TG",
+        "specs":"Micro ATX, Mini Mini ITX, Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 290 kr"
+    },
+    {
+        "name":"Fractal Design Terra",
+        "specs":"Mini Mini ITX \/ Nätaggregat \/ Silver \/ Silver",
+        "price":"2 249 kr"
+    },
+    {
+        "name":"ASUS TUF Gaming GT502",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"2 090 kr"
+    },
+    {
+        "name":"Fractal Design Torrent Compact \/ A-RGB \/ Black TG Light Tint \/",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart \/ Svart",
+        "price":"1 689 kr"
+    },
+    {
+        "name":"Lian Li V3000 Plus \/ TG \/",
+        "specs":"Utökad ATX\/SSI EEB \/ Ingen strömförsörjning \/ Vit \/ Vit",
+        "price":"6 089 kr"
+    },
+    {
+        "name":"Phanteks Enthoo Luxe",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Grå",
+        "price":"1 699 kr"
+    },
+    {
+        "name":"Phanteks Enthoo Evolv X \/ A-RGB \/ Tempered Glass",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Silver",
+        "price":"2 649 kr"
+    },
+    {
+        "name":"Phanteks Eclipse P400A \/ A-RGB \/ Tempered Glass",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Vit",
+        "price":"1 549 kr"
+    },
+    {
+        "name":"Phanteks Evolv Shift 2 \/ Tempered Glass \/ A-RGB",
+        "specs":"Mini Mini ITX \/ Ingen strömförsörjning \/ Grå",
+        "price":"1 499 kr"
+    },
+    {
+        "name":"Phanteks Evolv Shift Air 2 \/ Fabric Mesh Panel \/ A-RGB",
+        "specs":"Mini Mini ITX \/ Antracitgrå",
+        "price":"1 399 kr"
+    },
+    {
+        "name":"Corsair iCUE 4000D RGB Airflow \/ TG \/",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Vit \/ Vit",
+        "price":"2 149 kr"
+    },
+    {
+        "name":"Corsair iCUE 5000D RGB Airflow \/ TG \/",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Vit \/ Vit",
+        "price":"2 799 kr"
+    },
+    {
+        "name":"Fractal Design Mood \/ Light Grey",
+        "specs":"Mini Mini ITX \/ Ingen strömförsörjning \/ Ljusgrå",
+        "price":"2 179 kr"
+    },
+    {
+        "name":"Lian Li SUP-01",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 989 kr"
+    },
+    {
+        "name":"Fractal Design North XL \/ Charcoal",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"2 490 kr"
+    },
+    {
+        "name":"Fractal Design North \/ TG Clear Tint \/",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Kritvit \/ Vit",
+        "price":"1 889 kr"
+    },
+    {
+        "name":"Fractal Design Meshify 2 Compact \/ Solid",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 590 kr"
+    },
+    {
+        "name":"Lian Li O11 Vision",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Vit",
+        "price":"1 890 kr"
+    },
+    {
+        "name":"Phanteks XT Pro",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"749 kr"
+    },
+    {
+        "name":"Fractal Design North \/",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart \/ Kolsvart",
+        "price":"1 889 kr"
+    },
+    {
+        "name":"Corsair Frame 4000D",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 199 kr"
+    },
+    {
+        "name":"Fractal Design Terra Graphite",
+        "specs":"Mini Mini ITX \/ Nätaggregat \/ Grafit",
+        "price":"2 490 kr"
+    },
+    {
+        "name":"Fractal Design North \/ TG Dark Tint \/",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart \/ Kolsvart",
+        "price":"1 889 kr"
+    },
+    {
+        "name":"Fractal Design Torrent Black Solid",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"2 390 kr"
+    },
+    {
+        "name":"Fractal Design Ridge \/ PCIe 4.0 \/",
+        "specs":"Mini Mini ITX \/ Ingen strömförsörjning \/ Svart \/ Svart",
+        "price":"1 799 kr"
+    },
+    {
+        "name":"Fractal Design Pop Silent Black Solid",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 190 kr"
+    },
+    {
+        "name":"Corsair 5000D Airflow \/ Tempered Glass",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"2 179 kr"
+    },
+    {
+        "name":"Kolink Observatory HF \/ Mesh \/ ARGB",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"649 kr"
+    },
+    {
+        "name":"Fractal Design Meshify 2 XL \/ TG Dark Tint \/",
+        "specs":"Förbättrad utökad ATX \/ Ingen strömförsörjning \/ Svart \/ Svart",
+        "price":"2 690 kr"
+    },
+    {
+        "name":"ASUS GR701 ROG Hyperion",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Vit",
+        "price":"5 690 kr"
+    },
+    {
+        "name":"Corsair 4000D Airflow \/ Tempered Glass",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 229 kr"
+    },
+    {
+        "name":"Fractal Design North XL \/ Chalk TG Clear",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Kritvit",
+        "price":"2 490 kr"
+    },
+    {
+        "name":"Lian Li O11 Air Mini \/ TG \/",
+        "specs":"ATX, Micro ATX, Mini Mini ITX \/ Svart",
+        "price":"1 219 kr"
+    },
+    {
+        "name":"Corsair Frame 4000D RS RGB \/",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Vit \/ Vit",
+        "price":"1 499 kr"
+    },
+    {
+        "name":"Corsair Frame 4000D RS RGB",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 499 kr"
+    },
+    {
+        "name":"Fractal Design Define 7 \/ Solid",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"2 279 kr"
+    },
+    {
+        "name":"Fractal Design Define 7 XL \/ Solid \/",
+        "specs":"Utökad ATX\/SSI EEB \/ Ingen strömförsörjning \/ Svart \/ Svart",
+        "price":"2 790 kr"
+    },
+    {
+        "name":"Kolink Inspire Series K12 Midi Tower ARGB Gaming Case",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"539 kr"
+    },
+    {
+        "name":"Kolink Observatory HF \/ Glass \/ ARGB",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"649 kr"
+    },
+    {
+        "name":"Fractal Design Ridge \/ PCIe 4.0 \/",
+        "specs":"Mini Mini ITX \/ Ingen strömförsörjning \/ Vit \/ Vit",
+        "price":"1 790 kr"
+    },
+    {
+        "name":"Fractal Design Meshify 2 \/ Solid \/",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart \/ Svart",
+        "price":"1 899 kr"
+    },
+    {
+        "name":"Fractal Design North XL \/ Charcoal TG Dark",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"2 490 kr"
+    },
+    {
+        "name":"ASUS PA602 PROART",
+        "specs":"Utökad ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"3 090 kr"
+    },
+    {
+        "name":"Fractal Design North \/",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Kritvit \/ Vit",
+        "price":"1 889 kr"
+    },
+    {
+        "name":"Fractal Design Terra",
+        "specs":"Mini Mini ITX \/ Nätaggregat \/ Jade \/ Jade",
+        "price":"2 490 kr"
+    },
+    {
+        "name":"Fractal Design Define 7 Compact \/ Solid",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 590 kr"
+    },
+    {
+        "name":"Fractal Design Pop Air RGB Black TG Clear Tint",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 390 kr"
+    },
+    {
+        "name":"Fractal Design Meshify 2 Compact \/ TG Light Tint",
+        "specs":"ATX \/ Ingen strömförsörjning \/ Svart",
+        "price":"1 490 kr"
+    }
+]

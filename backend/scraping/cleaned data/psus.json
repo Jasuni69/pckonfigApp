@@ -1,0 +1,425 @@
+[
+    {
+        "name":"ASUS TUF Gaming 1000W Gold",
+        "brand":"ASUS",
+        "wattage":1000,
+        "efficiency":"80 PLUS Gold",
+        "size":15.0,
+        "color":"Svart",
+        "price":1890
+    },
+    {
+        "name":"Corsair RM850e 2023",
+        "brand":"Corsair",
+        "wattage":850,
+        "efficiency":"80 PLUS Gold",
+        "size":14.0,
+        "color":"Svart",
+        "price":1699
+    },
+    {
+        "name":"ASUS TUF Gaming 750W Gold",
+        "brand":"ASUS",
+        "wattage":750,
+        "efficiency":"80 PLUS Gold",
+        "size":150.0,
+        "color":"Svart",
+        "price":1399
+    },
+    {
+        "name":"Corsair SF850",
+        "brand":"Corsair",
+        "wattage":850,
+        "efficiency":"80 PLUS Platinum",
+        "size":12.0,
+        "color":"Svart",
+        "price":2190
+    },
+    {
+        "name":"be quiet! Pure Power 12 M 850W",
+        "brand":"be",
+        "wattage":850,
+        "efficiency":"80 PLUS Gold",
+        "size":160.0,
+        "color":"Svart",
+        "price":1689
+    },
+    {
+        "name":"Thermalright TR-TB650S",
+        "brand":"Thermalright",
+        "wattage":650,
+        "efficiency":"80 PLUS Bronze",
+        "size":null,
+        "color":"Svart",
+        "price":599
+    },
+    {
+        "name":"Corsair CX650",
+        "brand":"Corsair",
+        "wattage":650,
+        "efficiency":"80 PLUS Bronze",
+        "size":12.0,
+        "color":"Svart",
+        "price":799
+    },
+    {
+        "name":"Corsair RM850x",
+        "brand":"Corsair",
+        "wattage":850,
+        "efficiency":null,
+        "size":16.0,
+        "color":"Svart",
+        "price":2039
+    },
+    {
+        "name":"Thermalright TR-TB550S",
+        "brand":"Thermalright",
+        "wattage":550,
+        "efficiency":"80 PLUS Bronze",
+        "size":null,
+        "color":"Svart",
+        "price":539
+    },
+    {
+        "name":"Corsair RM750e 2023",
+        "brand":"Corsair",
+        "wattage":750,
+        "efficiency":"80 PLUS Gold",
+        "size":14.0,
+        "color":"Svart",
+        "price":1488
+    },
+    {
+        "name":"Corsair RM1000x",
+        "brand":"Corsair",
+        "wattage":1000,
+        "efficiency":null,
+        "size":16.0,
+        "color":"Svart",
+        "price":2489
+    },
+    {
+        "name":"Corsair RM750x Shift",
+        "brand":"Corsair",
+        "wattage":750,
+        "efficiency":"80 PLUS Gold",
+        "size":180.0,
+        "color":"Svart",
+        "price":1865
+    },
+    {
+        "name":"Corsair RM1000e 2023",
+        "brand":"Corsair",
+        "wattage":1000,
+        "efficiency":"80 PLUS Gold",
+        "size":14.0,
+        "color":"Svart",
+        "price":2039
+    },
+    {
+        "name":"Corsair SF1000",
+        "brand":"Corsair",
+        "wattage":1000,
+        "efficiency":"80 PLUS Platinum",
+        "size":12.0,
+        "color":"Svart",
+        "price":2590
+    },
+    {
+        "name":"be quiet! Pure Power 12 M 750W",
+        "brand":"be",
+        "wattage":750,
+        "efficiency":"80 PLUS Gold",
+        "size":160.0,
+        "color":"Svart",
+        "price":1490
+    },
+    {
+        "name":"Corsair CX550",
+        "brand":"Corsair",
+        "wattage":550,
+        "efficiency":"80 PLUS Bronze",
+        "size":15.0,
+        "color":"Svart",
+        "price":729
+    },
+    {
+        "name":"be quiet! Pure Power 12 M 550W",
+        "brand":"be",
+        "wattage":550,
+        "efficiency":"80 PLUS Gold",
+        "size":160.0,
+        "color":"Svart",
+        "price":1149
+    },
+    {
+        "name":"be quiet! Pure Power 12 M 650W",
+        "brand":"be",
+        "wattage":650,
+        "efficiency":"80 PLUS Gold",
+        "size":160.0,
+        "color":"Svart",
+        "price":1379
+    },
+    {
+        "name":"be quiet! Pure Power 12 M 1000W",
+        "brand":"be",
+        "wattage":1000,
+        "efficiency":"80 PLUS Gold",
+        "size":160.0,
+        "color":"Svart",
+        "price":2039
+    },
+    {
+        "name":"Lian Li SP850 Gold SFX 80 PLUS",
+        "brand":"Lian",
+        "wattage":850,
+        "efficiency":"80 PLUS Gold",
+        "size":100.0,
+        "color":"Svart",
+        "price":1890
+    },
+    {
+        "name":"Cooler Master MWE 650W V2",
+        "brand":"Cooler",
+        "wattage":650,
+        "efficiency":"80 PLUS Gold",
+        "size":14.0,
+        "color":"Svart",
+        "price":1279
+    },
+    {
+        "name":"ASUS ROG Loki SFX-L 850W Platinum White Edition",
+        "brand":"ASUS",
+        "wattage":850,
+        "efficiency":"80 PLUS Platinum",
+        "size":125.0,
+        "color":"Vit",
+        "price":2690
+    },
+    {
+        "name":"Corsair RM750x",
+        "brand":"Corsair",
+        "wattage":750,
+        "efficiency":null,
+        "size":16.0,
+        "color":"Svart",
+        "price":1889
+    },
+    {
+        "name":"Corsair HXi Series HX1500i 80 PLUS Platinum",
+        "brand":"Corsair",
+        "wattage":1500,
+        "efficiency":"80 PLUS Platinum",
+        "size":null,
+        "color":"Svart",
+        "price":4189
+    },
+    {
+        "name":"Lian Li SP750",
+        "brand":"Lian",
+        "wattage":750,
+        "efficiency":"80 PLUS Gold",
+        "size":10.0,
+        "color":"Svart",
+        "price":1649
+    },
+    {
+        "name":"Corsair HXi Series HX1000i 80 PLUS Platinum",
+        "brand":"Corsair",
+        "wattage":1000,
+        "efficiency":"80 PLUS Platinum",
+        "size":null,
+        "color":"Svart",
+        "price":3099
+    },
+    {
+        "name":"Corsair RM850X 2021",
+        "brand":"Corsair",
+        "wattage":850,
+        "efficiency":"80 PLUS Gold",
+        "size":160.0,
+        "color":"Svart",
+        "price":1899
+    },
+    {
+        "name":"ASUS Prime 750W Gold",
+        "brand":"ASUS",
+        "wattage":750,
+        "efficiency":"80 PLUS Gold",
+        "size":15.0,
+        "color":"Vit, Svart",
+        "price":1490
+    },
+    {
+        "name":"ASUS ROG Loki SFX-L 750W Platinum",
+        "brand":"ASUS",
+        "wattage":750,
+        "efficiency":"80 PLUS Platinum",
+        "size":125.0,
+        "color":"Svart, Silver",
+        "price":2249
+    },
+    {
+        "name":"Corsair SF750",
+        "brand":"Corsair",
+        "wattage":750,
+        "efficiency":"80 PLUS Platinum",
+        "size":10.0,
+        "color":"Svart",
+        "price":2116
+    },
+    {
+        "name":"Corsair RM1000X 2021",
+        "brand":"Corsair",
+        "wattage":1000,
+        "efficiency":"80 PLUS Gold",
+        "size":160.0,
+        "color":"Svart",
+        "price":2499
+    },
+    {
+        "name":"Corsair SF1000L",
+        "brand":"Corsair",
+        "wattage":1000,
+        "efficiency":"80 PLUS Gold",
+        "size":130.0,
+        "color":"Svart",
+        "price":2629
+    },
+    {
+        "name":"Corsair SF850L",
+        "brand":"Corsair",
+        "wattage":850,
+        "efficiency":"80 PLUS Gold",
+        "size":130.0,
+        "color":"Svart",
+        "price":2319
+    },
+    {
+        "name":"Corsair AX1600i",
+        "brand":"Corsair",
+        "wattage":1600,
+        "efficiency":"80 PLUS Titanium",
+        "size":20.0,
+        "color":"Svart",
+        "price":6299
+    },
+    {
+        "name":"Cooler Master MWE 550W V2",
+        "brand":"Cooler",
+        "wattage":550,
+        "efficiency":"80 PLUS Bronze",
+        "size":14.0,
+        "color":"Svart",
+        "price":999
+    },
+    {
+        "name":"ASUS TUF Gaming 850W Gold",
+        "brand":"ASUS",
+        "wattage":850,
+        "efficiency":"80 PLUS Gold",
+        "size":150.0,
+        "color":"Svart",
+        "price":1879
+    },
+    {
+        "name":"Corsair CX750",
+        "brand":"Corsair",
+        "wattage":750,
+        "efficiency":"80 PLUS Bronze",
+        "size":12.0,
+        "color":"Svart",
+        "price":939
+    },
+    {
+        "name":"Thermalright TR-TB750S",
+        "brand":"Thermalright",
+        "wattage":750,
+        "efficiency":"80 PLUS Bronze",
+        "size":null,
+        "color":"Svart",
+        "price":659
+    },
+    {
+        "name":"ASUS TUF Gaming 1000W Gold - White",
+        "brand":"ASUS",
+        "wattage":1000,
+        "efficiency":"80 PLUS Gold",
+        "size":15.0,
+        "color":"Vit",
+        "price":2439
+    },
+    {
+        "name":"ASUS ROG Strix 1000W Gold Aura Edition",
+        "brand":"ASUS",
+        "wattage":1000,
+        "efficiency":"80 PLUS Gold",
+        "size":180.0,
+        "color":"Svart",
+        "price":2790
+    },
+    {
+        "name":"Thermalright TR-TB450S",
+        "brand":"Thermalright",
+        "wattage":450,
+        "efficiency":"80 PLUS Bronze",
+        "size":null,
+        "color":"Svart",
+        "price":499
+    },
+    {
+        "name":"ASUS TUF Gaming 750W",
+        "brand":"ASUS",
+        "wattage":750,
+        "efficiency":"80 PLUS Bronze",
+        "size":15.0,
+        "color":"Svart",
+        "price":1199
+    },
+    {
+        "name":"ASUS Prime 850W Gold",
+        "brand":"ASUS",
+        "wattage":850,
+        "efficiency":"80 PLUS Gold",
+        "size":15.0,
+        "color":"Vit, Svart",
+        "price":1590
+    },
+    {
+        "name":"Corsair RM850x Shift",
+        "brand":"Corsair",
+        "wattage":850,
+        "efficiency":"80 PLUS Gold",
+        "size":180.0,
+        "color":"Svart",
+        "price":2039
+    },
+    {
+        "name":"ASUS ROG Thor 1600W Titanium",
+        "brand":"ASUS",
+        "wattage":1600,
+        "efficiency":"80 PLUS Titanium",
+        "size":190.0,
+        "color":"Silver, Svart",
+        "price":8290
+    },
+    {
+        "name":"ASUS TUF Gaming 1200W Gold",
+        "brand":"ASUS",
+        "wattage":1200,
+        "efficiency":"80 PLUS Gold",
+        "size":15.0,
+        "color":"Svart",
+        "price":2689
+    },
+    {
+        "name":"ASUS ROG Thor 1000W Platinum II 80+",
+        "brand":"ASUS",
+        "wattage":1000,
+        "efficiency":"80 PLUS Platinum",
+        "size":19.0,
+        "color":"Silver, Svart",
+        "price":3990
+    }
+]

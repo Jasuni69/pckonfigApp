@@ -1,0 +1,211 @@
+[
+    {
+        "name":"Toshiba MG10 22TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":22.0,
+        "interface":null,
+        "rpm":7200.0,
+        "read_speed":271.0,
+        "write_speed":null,
+        "price":5049
+    },
+    {
+        "name":"Toshiba MG09 18TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":18.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":281.0,
+        "write_speed":null,
+        "price":4119
+    },
+    {
+        "name":"WD Red Plus 6TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":6.0,
+        "interface":"Serial ATA-600",
+        "rpm":5400.0,
+        "read_speed":180.0,
+        "write_speed":null,
+        "price":2099
+    },
+    {
+        "name":"WD Red Plus 10TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":10.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":215.0,
+        "write_speed":null,
+        "price":3649
+    },
+    {
+        "name":"Seagate Barracuda 8TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":8.0,
+        "interface":null,
+        "rpm":null,
+        "read_speed":190.0,
+        "write_speed":null,
+        "price":1899
+    },
+    {
+        "name":"WD Red Plus 12TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":12.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":196.0,
+        "write_speed":null,
+        "price":3899
+    },
+    {
+        "name":"Seagate Barracuda 2TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":2.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":210.0,
+        "write_speed":null,
+        "price":799
+    },
+    {
+        "name":"Seagate Barracuda 4TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":4.0,
+        "interface":"Serial ATA-600",
+        "rpm":5400.0,
+        "read_speed":190.0,
+        "write_speed":null,
+        "price":1249
+    },
+    {
+        "name":"WD Red Plus 8TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":8.0,
+        "interface":"Serial ATA-600",
+        "rpm":5640.0,
+        "read_speed":215.0,
+        "write_speed":null,
+        "price":2690
+    },
+    {
+        "name":"Seagate IronWolf 8TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":8.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":210.0,
+        "write_speed":null,
+        "price":2499
+    },
+    {
+        "name":"Toshiba MG10 20TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":20.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":268.0,
+        "write_speed":null,
+        "price":4539
+    },
+    {
+        "name":"Toshiba MG08 16TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":16.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":null,
+        "write_speed":null,
+        "price":3589
+    },
+    {
+        "name":"Toshiba N300 10TB (NAS)",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":10.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":248.0,
+        "write_speed":null,
+        "price":3089
+    },
+    {
+        "name":"Toshiba N300 6TB (NAS)",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":6.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":239.0,
+        "write_speed":null,
+        "price":1990
+    },
+    {
+        "name":"Toshiba N300 8TB (NAS)",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":8.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":248.0,
+        "write_speed":null,
+        "price":2399
+    },
+    {
+        "name":"Seagate Exos X24 24TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":24.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":285.0,
+        "write_speed":null,
+        "price":6249
+    },
+    {
+        "name":"Toshiba MG07 14TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":14.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":248.0,
+        "write_speed":null,
+        "price":3399
+    },
+    {
+        "name":"WD Red Plus 4TB",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":4.0,
+        "interface":"Serial ATA-600",
+        "rpm":5400.0,
+        "read_speed":180.0,
+        "write_speed":null,
+        "price":1490
+    },
+    {
+        "name":"Toshiba N300 4TB (NAS)",
+        "type":"HDD",
+        "form_factor":"3.5\"",
+        "capacity":4.0,
+        "interface":"Serial ATA-600",
+        "rpm":7200.0,
+        "read_speed":232.0,
+        "write_speed":null,
+        "price":1449
+    }
+]

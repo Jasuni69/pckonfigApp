@@ -1,0 +1,672 @@
+[
+    {
+        "name":"ASUS Dual GeForce RTX 4070 EVO 12GB GDDR6",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":7490,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"PNY GeForce RTX 4070 Ti Super XLR8 OC 16GB",
+        "brand":"PNY",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":2340.0,
+        "price":11590,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"Palit GeForce RTX 4070 Dual 12GB",
+        "brand":"Palit",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":1920.0,
+        "price":7347,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 3050 6GB OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"6 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":2489,
+        "recommended_wattage":500.0
+    },
+    {
+        "name":"PNY GeForce RTX 4060 VERTO DUAL 8GB",
+        "brand":"PNY",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":1830.0,
+        "price":3999,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4070 Super 12GB EVO",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":8789,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"PNY GeForce RTX 4060 Ti VERTO DUAL 8GB",
+        "brand":"PNY",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":2310.0,
+        "price":5122,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce GT 1030 4GB HD4 LP OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"4 GB",
+        "interface":"PCI Express 3.0 x16 (x4-l\u00e4ge)",
+        "base_clock":null,
+        "price":1290,
+        "recommended_wattage":null
+    },
+    {
+        "name":"MSI GeForce RTX 3050 LP 6GB OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"6 GB",
+        "interface":"PCI Express 4.0 x16 (x8 mode)",
+        "base_clock":null,
+        "price":2595,
+        "recommended_wattage":500.0
+    },
+    {
+        "name":"MSI GeForce RTX 3050 VENTUS 2X 6GB OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"6 GB",
+        "interface":"PCI Express 4.0 x16 (x8 mode)",
+        "base_clock":null,
+        "price":2499,
+        "recommended_wattage":500.0
+    },
+    {
+        "name":"Gigabyte GeForce RTX 4060 Ti EAGLE OC 8GB",
+        "brand":"Gigabyte",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2550.0,
+        "price":5790,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"PNY GeForce RTX 4070 SUPER VERTO DUAL 12GB",
+        "brand":"PNY",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":1980.0,
+        "price":8190,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS TUF GeForce RTX 4060 Ti 8GB Gaming OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":6499,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4070 VENTUS 2X WHITE 12GB OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":7699,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"Palit GeForce RTX 4060 Ti StormX 8GB",
+        "brand":"Palit",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2310.0,
+        "price":5190,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"Palit GeForce RTX 4070 GamingPro 12GB",
+        "brand":"Palit",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":1920.0,
+        "price":8290,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"PNY GeForce RTX 4070 Verto Dual 12GB",
+        "brand":"PNY",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":1920.0,
+        "price":7999,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"GIGABYTE GeForce RTX\u2122 5080 Aorus Master 16GB",
+        "brand":"GIGABYTE",
+        "model":"2025",
+        "memory":"16 GB",
+        "interface":"PCI Express 5.0",
+        "base_clock":null,
+        "price":17729,
+        "recommended_wattage":null
+    },
+    {
+        "name":"Gigabyte GeForce RTX 5080 WINDFORCE SFF 16GB",
+        "brand":"Gigabyte",
+        "model":"2025-01-30",
+        "memory":"16 GB",
+        "interface":"PCI Express 5.0",
+        "base_clock":null,
+        "price":99999,
+        "recommended_wattage":850.0
+    },
+    {
+        "name":"Gigabyte GeForce RTX 5090 WINDFORCE OC 32GB",
+        "brand":"Gigabyte",
+        "model":"2025-01-30",
+        "memory":"32 GB",
+        "interface":"PCI Express 5.0",
+        "base_clock":null,
+        "price":99999,
+        "recommended_wattage":1000.0
+    },
+    {
+        "name":"Gainward GeForce RTX 4080 Super Phoenix 16GB",
+        "brand":"Gainward",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":2295.0,
+        "price":14990,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"ASUS TUF GeForce RTX 4080 Super 16GB Gaming OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":14979,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4060 EVO 8GB OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":3990,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4060 Ti EVO 8GB OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":5239,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"Gigabyte GeForce RTX 4060 WINDFORCE OC 8GB",
+        "brand":"Gigabyte",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2475.0,
+        "price":3889,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS TUF GeForce RTX 4070 12GB Gaming OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":8590,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS TUF Gaming GeForce RTX 4070 Ti Super 16GB OC - White",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":13449,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS ROG STRIX GeForce RTX 4070 Ti Super 16GB Gaming OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":13490,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4070 Dual OC 12GB White Edition",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":7890,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4060 Ti VENTUS 2X BLACK 8GB OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":null,
+        "price":5190,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS ProArt GeForce RTX 4070 Ti SUPER 16GB OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2640.0,
+        "price":11890,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4070 SUPER VENTUS 2X 12GB OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":8390,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS ROG STRIX GeForce RTX 4070 Super 12GB Gaming OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":10489,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 3060 12GB OC V2 (LHR)",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":3889,
+        "recommended_wattage":600.0
+    },
+    {
+        "name":"Gigabyte GeForce RTX 4070 SUPER WINDFORCE OC 12GB",
+        "brand":"Gigabyte",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2505.0,
+        "price":8489,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 3050 VENTUS 2X E 6G OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"6 GB",
+        "interface":"PCI Express 4.0 x16 (x8 mode)",
+        "base_clock":null,
+        "price":2499,
+        "recommended_wattage":500.0
+    },
+    {
+        "name":"ASUS TUF GeForce RTX 4070 Super 12GB Gaming OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":9190,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"Gigabyte GeForce RTX 4060 EAGLE OC 8GB",
+        "brand":"Gigabyte",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2505.0,
+        "price":3990,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce GT 710 2GB D3H LP",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"2 GB",
+        "interface":"PCI Express 2.0 x16",
+        "base_clock":954.0,
+        "price":599,
+        "recommended_wattage":null
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4060 Ti 8GB OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":5490,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4070 Ti SUPER 16GB VENTUS 2X OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":10890,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4070 Super 12GB OC - White",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":9090,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4060 VENTUS 2X BLACK 8GB OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":null,
+        "price":3890,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4060 AERO ITX 8GB OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":null,
+        "price":3990,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS GeForce GT 1030 Silent 2GB",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"2 GB",
+        "interface":"PCI Express 3.0",
+        "base_clock":1266.0,
+        "price":1090,
+        "recommended_wattage":null
+    },
+    {
+        "name":"Gigabyte GeForce RTX 4070 Ti SUPER WINDFORCE OC 16GB",
+        "brand":"Gigabyte",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2625.0,
+        "price":10990,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4070 Super EVO OC 12GB",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":8166,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4060 GAMING X 8GB",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":null,
+        "price":4490,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4060 Ti VENTUS 2X BLACK 16GB OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x16 (x8 mode)",
+        "base_clock":null,
+        "price":6290,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS ROG STRIX GeForce RTX 4070 Super 12GB GAMING",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":9989,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4070 EVO 12GB GDDR6 OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":7490,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"Gigabyte GeForce RTX 3060 WINDFORCE OC 12GB",
+        "brand":"Gigabyte",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":1792.0,
+        "price":3890,
+        "recommended_wattage":600.0
+    },
+    {
+        "name":"ASUS PRIME GeForce RTX 4070 SUPER 12GB OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2520.0,
+        "price":8989,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS TUF GeForce RTX 4070 Ti Super 16GB Gaming OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":11999,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"Palit GeForce RTX 4070 Ti JetStream 12GB",
+        "brand":"Palit",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2310.0,
+        "price":9489,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4060 Ti EVO 16GB OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":6390,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4070 VENTUS 2X E1 12GB OC",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":6890,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4060 Ti EVO 16GB",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":6290,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS ProArt GeForce RTX 4060 Ti 16GB OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":6745,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4070 SUPER GAMING X SLIM 12GB",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":9199,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4060 Ti GAMING X SLIM 16GB",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":null,
+        "price":6929,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"Palit GeForce RTX 4060 Dual 8GB GDDR6",
+        "brand":"Palit",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":1830.0,
+        "price":4007,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS Dual GeForce RTX 4070 EVO 12GB OC",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":7325,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"MSI GeForce RTX 4060 Ti GAMING X 8GB",
+        "brand":"MSI",
+        "model":"NVIDIA Geforce",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":null,
+        "price":5499,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"ASUS TUF GeForce RTX 4070 TI Super 16GB Gaming",
+        "brand":"ASUS",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":11989,
+        "recommended_wattage":650.0
+    },
+    {
+        "name":"Palit RTX 4080 Super GamingPro 16GB",
+        "brand":"Palit",
+        "model":"NVIDIA Geforce",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2295.0,
+        "price":13795,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"Palit RTX 4070 Super JetStream OC 12GB",
+        "brand":"Palit",
+        "model":"NVIDIA Geforce",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":1980.0,
+        "price":8482,
+        "recommended_wattage":650.0
+    }
+]

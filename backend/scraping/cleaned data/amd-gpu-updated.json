@@ -1,0 +1,322 @@
+[
+    {
+        "name":"ASRock Radeon RX 7600 Challenger OC 8GB",
+        "brand":"ASRock",
+        "model":"AMD Radeon",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":1770.0,
+        "price":3099,
+        "recommended_wattage":550.0
+    },
+    {
+        "name":"Sapphire PULSE RX 7900 XT 20GB GAMING OC",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"20 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":9490,
+        "recommended_wattage":850.0
+    },
+    {
+        "name":"Sapphire PURE RX 7800 XT 16GB GAMING OC",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":7189,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"ASUS Dual Radeon RX 7600 8GB V2 OC",
+        "brand":"ASUS",
+        "model":"AMD Radeon",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":3190,
+        "recommended_wattage":550.0
+    },
+    {
+        "name":"Sapphire PULSE RX 7600 XT GAMING OC",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":null,
+        "price":4549,
+        "recommended_wattage":550.0
+    },
+    {
+        "name":"Sapphire NITRO+ RX 7900 XTX 24GB Gaming OC Vapor-X",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"24 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":13790,
+        "recommended_wattage":850.0
+    },
+    {
+        "name":"ASUS Dual Radeon RX 7700XT 12GB OC",
+        "brand":"ASUS",
+        "model":"AMD Radeon",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":5490,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"Sapphire Nitro+ RX 7800 XT 16GB GAMING OC",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":7490,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"ASRock Radeon RX 7900 XTX Phantom Gaming OC 24GB",
+        "brand":"ASRock",
+        "model":"AMD Radeon",
+        "memory":"24 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":11990,
+        "recommended_wattage":850.0
+    },
+    {
+        "name":"Sapphire PULSE RX 7700 XT 12GB GAMING",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":5390,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"Sapphire PULSE RX 7900 XTX 24GB",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"24 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":12621,
+        "recommended_wattage":850.0
+    },
+    {
+        "name":"Sapphire Nitro+ RX 7700 XT 12GB GAMING OC",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":6189,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"ASRock Radeon RX 6500 XT Phantom Gaming D OC 4GB",
+        "brand":"ASRock",
+        "model":"AMD Radeon",
+        "memory":"4 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2365.0,
+        "price":2199,
+        "recommended_wattage":500.0
+    },
+    {
+        "name":"Sapphire PULSE RX 7600 8GB GAMING",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":null,
+        "price":3499,
+        "recommended_wattage":550.0
+    },
+    {
+        "name":"PowerColor Radeon RX 7700XT Red Devil 12GB",
+        "brand":"PowerColor",
+        "model":"AMD Radeon",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":6795,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"ASRock Radeon RX 7700 XT Challenger OC 12GB",
+        "brand":"ASRock",
+        "model":"AMD Radeon",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":5449,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"Sapphire Nitro+ RX 7900 XT GAMING OC VAPOR-X",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"20 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":10990,
+        "recommended_wattage":850.0
+    },
+    {
+        "name":"PowerColor Radeon RX 7700XT Hellhound 12GB",
+        "brand":"PowerColor",
+        "model":"AMD Radeon",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":6399,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"Sapphire PURE RX 7700 XT 12GB GAMING OC",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":6099,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"XFX RX 7700XT Speedster QICK 319 Black",
+        "brand":"XFX",
+        "model":"AMD Radeon",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":1785.0,
+        "price":6219,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"PowerColor Radeon RX 7700XT Fighter 12GB",
+        "brand":"PowerColor",
+        "model":"AMD Radeon",
+        "memory":"12 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":6099,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"ASRock Radeon RX 7900 XT Phantom Gaming White 20GB OC",
+        "brand":"ASRock",
+        "model":"AMD Radeon",
+        "memory":"20 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":10190,
+        "recommended_wattage":850.0
+    },
+    {
+        "name":"ASRock Radeon RX 7600 XT Challenger OC 16GB",
+        "brand":"ASRock",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x8",
+        "base_clock":null,
+        "price":4349,
+        "recommended_wattage":550.0
+    },
+    {
+        "name":"ASRock Radeon RX 6600 Challenger D 8GB",
+        "brand":"ASRock",
+        "model":"AMD Radeon",
+        "memory":"8 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":1626.0,
+        "price":2729,
+        "recommended_wattage":500.0
+    },
+    {
+        "name":"Sapphire PULSE RX 7800 XT 16GB GAMING",
+        "brand":"Sapphire",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":6290,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"Gigabyte Radeon RX 7800 XT GAMING OC 16GB",
+        "brand":"Gigabyte",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":6790,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"ASRock Radeon RX 7800 XT Challenger OC 16GB",
+        "brand":"ASRock",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":null,
+        "price":6719,
+        "recommended_wattage":750.0
+    },
+    {
+        "name":"ASUS Dual Radeon RX 7600 XT 16GB OC",
+        "brand":"ASUS",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":2513.0,
+        "price":4490,
+        "recommended_wattage":550.0
+    },
+    {
+        "name":"Gigabyte Radeon RX 7600 XT GAMING OC 16GB",
+        "brand":"Gigabyte",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":4489,
+        "recommended_wattage":550.0
+    },
+    {
+        "name":"ASRock Radeon RX 7900 XT Phantom Gaming 20GB",
+        "brand":"ASRock",
+        "model":"AMD Radeon",
+        "memory":"20 GB",
+        "interface":"PCI Express 4.0 x16",
+        "base_clock":2075.0,
+        "price":9490,
+        "recommended_wattage":850.0
+    },
+    {
+        "name":"ASUS TUF Radeon RX 7900 XT 20GB OC",
+        "brand":"ASUS",
+        "model":"AMD Radeon",
+        "memory":"20 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":9890,
+        "recommended_wattage":850.0
+    },
+    {
+        "name":"ASUS TUF Gaming Radeon RX 7800 XT 16GB OC",
+        "brand":"ASUS",
+        "model":"AMD Radeon",
+        "memory":"16 GB",
+        "interface":"PCI Express 4.0",
+        "base_clock":null,
+        "price":7498,
+        "recommended_wattage":750.0
+    }
+]

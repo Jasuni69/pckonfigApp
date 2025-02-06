@@ -1,0 +1,702 @@
+[
+    {
+        "name":"Kingston Fury Beast Black 32GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":32.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":1389
+    },
+    {
+        "name":"Kingston Fury Beast Black 64GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":64.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":2749
+    },
+    {
+        "name":"Kingston Fury Beast 32GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":32.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":777
+    },
+    {
+        "name":"G.Skill Flare X5 32GB",
+        "brand":"G.Skill",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":32.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":1349
+    },
+    {
+        "name":"Corsair Vengeance LPX Black 64GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL18",
+        "capacity":64.0,
+        "speed":3600.0,
+        "memory_type":"DDR4",
+        "price":1589
+    },
+    {
+        "name":"Corsair Vengeance 64GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":64.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":3059
+    },
+    {
+        "name":"Corsair Vengeance 96GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":96.0,
+        "speed":3000.0,
+        "memory_type":"DDR5",
+        "price":4539
+    },
+    {
+        "name":"Corsair Vengeance RGB 32GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL36",
+        "capacity":32.0,
+        "speed":5600.0,
+        "memory_type":"DDR5",
+        "price":1290
+    },
+    {
+        "name":"G.Skill Trident Z5 Neo RGB 32GB",
+        "brand":"G.Skill",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":32.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":1590
+    },
+    {
+        "name":"Kingston Fury Impact 64GB",
+        "brand":"Kingston",
+        "type":"SODIMM DDR4",
+        "latency":"CL20",
+        "capacity":64.0,
+        "speed":3200.0,
+        "memory_type":"SODIMM DDR4",
+        "price":1549
+    },
+    {
+        "name":"Kingston Fury Impact 64GB\/",
+        "brand":"Kingston",
+        "type":"SODIMM DDR5",
+        "latency":"CL40",
+        "capacity":64.0,
+        "speed":5600.0,
+        "memory_type":"SODIMM DDR5",
+        "price":2390
+    },
+    {
+        "name":"Corsair Vengeance LPX Black 32GBRyzen",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL18",
+        "capacity":32.0,
+        "speed":3600.0,
+        "memory_type":"DDR4",
+        "price":866
+    },
+    {
+        "name":"Kingston Fury Beast 16GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":16.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":444
+    },
+    {
+        "name":"Kingston Fury Impact 64GB\/",
+        "brand":"Kingston",
+        "type":"SODIMM DDR5",
+        "latency":"CL38",
+        "capacity":64.0,
+        "speed":4800.0,
+        "memory_type":"SODIMM DDR5",
+        "price":2249
+    },
+    {
+        "name":"Corsair Vengeance 32GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL32",
+        "capacity":32.0,
+        "speed":6400.0,
+        "memory_type":"DDR5",
+        "price":1649
+    },
+    {
+        "name":"G.SKill Trident Z Neo RGB 16GB",
+        "brand":"G.SKill",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":16.0,
+        "speed":3600.0,
+        "memory_type":"DDR4",
+        "price":869
+    },
+    {
+        "name":"Kingston Fury Beast 64GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":64.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":1395
+    },
+    {
+        "name":"Corsair Vengeance RGB PRO 32GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":32.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":1066
+    },
+    {
+        "name":"Kingston Fury Impact 32GB\/",
+        "brand":"Kingston",
+        "type":"SODIMM DDR5",
+        "latency":"CL40",
+        "capacity":32.0,
+        "speed":5600.0,
+        "memory_type":"SODIMM DDR5",
+        "price":1289
+    },
+    {
+        "name":"Kingston Fury Beast RGB 64GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":64.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":2789
+    },
+    {
+        "name":"Corsair Vengeance 16GB",
+        "brand":"Corsair",
+        "type":"SODIMM DDR4",
+        "latency":"CL16",
+        "capacity":16.0,
+        "speed":2400.0,
+        "memory_type":"SODIMM DDR4",
+        "price":415
+    },
+    {
+        "name":"Kingston Fury Beast Black 16GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":16.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":839
+    },
+    {
+        "name":"Kingston Fury Beast RGB 16GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":16.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":659
+    },
+    {
+        "name":"Kingston Fury Beast RGB 32GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":32.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":990
+    },
+    {
+        "name":"Corsair Vengeance 16GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL10",
+        "capacity":16.0,
+        "speed":1600.0,
+        "memory_type":"DDR3",
+        "price":1049
+    },
+    {
+        "name":"Corsair Mac Memory 8GB",
+        "brand":"Corsair",
+        "type":"SODIMM DDR3",
+        "latency":"CL9",
+        "capacity":8.0,
+        "speed":1333.0,
+        "memory_type":"SODIMM DDR3",
+        "price":539
+    },
+    {
+        "name":"Corsair Vengeance RGB PRO 32GBRyzen",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL18",
+        "capacity":32.0,
+        "speed":3600.0,
+        "memory_type":"DDR4",
+        "price":999
+    },
+    {
+        "name":"Corsair Vengeance LPX Black 16GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":16.0,
+        "speed":2666.0,
+        "memory_type":"DDR4",
+        "price":519
+    },
+    {
+        "name":"Corsair Vengeance LPX Black 32GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":32.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":819
+    },
+    {
+        "name":"Corsair Dominator Titanium Accessory Kit - Black",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":null,
+        "capacity":null,
+        "speed":null,
+        "memory_type":"DDR5",
+        "price":349
+    },
+    {
+        "name":"Kingston Fury Impact 16GB\/",
+        "brand":"Kingston",
+        "type":"SODIMM DDR5",
+        "latency":"CL38",
+        "capacity":16.0,
+        "speed":4800.0,
+        "memory_type":"SODIMM DDR5",
+        "price":639
+    },
+    {
+        "name":"Kingston Fury Impact 16GB",
+        "brand":"Kingston",
+        "type":"SODIMM DDR4",
+        "latency":"CL20",
+        "capacity":16.0,
+        "speed":3200.0,
+        "memory_type":"SODIMM DDR4",
+        "price":419
+    },
+    {
+        "name":"Kingston Fury Impact 8GB",
+        "brand":"Kingston",
+        "type":"SODIMM DDR4",
+        "latency":"CL20",
+        "capacity":8.0,
+        "speed":3200.0,
+        "memory_type":"SODIMM DDR4",
+        "price":255
+    },
+    {
+        "name":"Corsair Vengeance LPX Black 8GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":8.0,
+        "speed":2666.0,
+        "memory_type":"DDR4",
+        "price":259
+    },
+    {
+        "name":"Corsair Vengeance RGB PRO 16GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":16.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":689
+    },
+    {
+        "name":"Kingston Fury Beast 16GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":16.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":429
+    },
+    {
+        "name":"Corsair Vengeance 8GB",
+        "brand":"Corsair",
+        "type":"SODIMM DDR4",
+        "latency":"CL16",
+        "capacity":8.0,
+        "speed":2400.0,
+        "memory_type":"SODIMM DDR4",
+        "price":269
+    },
+    {
+        "name":"Corsair Vengeance Low Profile 8GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL9",
+        "capacity":8.0,
+        "speed":1600.0,
+        "memory_type":"DDR3",
+        "price":639
+    },
+    {
+        "name":"Kingston Fury Impact 32GB",
+        "brand":"Kingston",
+        "type":"SODIMM DDR4",
+        "latency":"CL20",
+        "capacity":32.0,
+        "speed":3200.0,
+        "memory_type":"SODIMM DDR4",
+        "price":899
+    },
+    {
+        "name":"G.SKill Trident Z Neo RGB 32GB",
+        "brand":"G.SKill",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":32.0,
+        "speed":3600.0,
+        "memory_type":"DDR4",
+        "price":1399
+    },
+    {
+        "name":"G.Skill Trident Z5 Neo 32GB",
+        "brand":"G.Skill",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":32.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":1569
+    },
+    {
+        "name":"Corsair Vengeance LPX Black 16GBRyzen",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL18",
+        "capacity":16.0,
+        "speed":3600.0,
+        "memory_type":"DDR4",
+        "price":518
+    },
+    {
+        "name":"Corsair Dominator Platinum RGB 64GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL40",
+        "capacity":64.0,
+        "speed":5600.0,
+        "memory_type":"DDR5",
+        "price":3149
+    },
+    {
+        "name":"Corsair Vengeance RGB 64GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL32",
+        "capacity":64.0,
+        "speed":6400.0,
+        "memory_type":"DDR5",
+        "price":3189
+    },
+    {
+        "name":"G.Skill Trident Z5 RGB 32GB",
+        "brand":"G.Skill",
+        "type":"DIMM",
+        "latency":"CL32",
+        "capacity":32.0,
+        "speed":6400.0,
+        "memory_type":"DDR5",
+        "price":1587
+    },
+    {
+        "name":"Corsair ValueSelect 8GB",
+        "brand":"Corsair",
+        "type":"SODIMM DDR3",
+        "latency":"CL11",
+        "capacity":8.0,
+        "speed":1600.0,
+        "memory_type":"SODIMM DDR3",
+        "price":479
+    },
+    {
+        "name":"Corsair Mac Memory 8GB",
+        "brand":"Corsair",
+        "type":"SODIMM DDR3",
+        "latency":"CL11",
+        "capacity":8.0,
+        "speed":1600.0,
+        "memory_type":"SODIMM DDR3",
+        "price":474
+    },
+    {
+        "name":"Kingston Fury Impact 32GB\/",
+        "brand":"Kingston",
+        "type":"SODIMM DDR5",
+        "latency":"CL38",
+        "capacity":32.0,
+        "speed":4800.0,
+        "memory_type":"SODIMM DDR5",
+        "price":1189
+    },
+    {
+        "name":"Kingston Fury Beast 128GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL40",
+        "capacity":128.0,
+        "speed":5200.0,
+        "memory_type":"DDR5",
+        "price":4799
+    },
+    {
+        "name":"Corsair Dominator Titanium Accessory Kit - Grey",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":null,
+        "capacity":null,
+        "speed":null,
+        "memory_type":"DDR5",
+        "price":349
+    },
+    {
+        "name":"Corsair Vengeance 192GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL38",
+        "capacity":192.0,
+        "speed":5200.0,
+        "memory_type":"DDR5",
+        "price":8189
+    },
+    {
+        "name":"G.SKill Trident Z5 Neo 32GB",
+        "brand":"G.SKill",
+        "type":"DIMM",
+        "latency":"CL32",
+        "capacity":32.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":1539
+    },
+    {
+        "name":"Corsair 4GB",
+        "brand":"Corsair",
+        "type":"SODIMM DDR4",
+        "latency":"CL15",
+        "capacity":4.0,
+        "speed":2133.0,
+        "memory_type":"SODIMM DDR4",
+        "price":189
+    },
+    {
+        "name":"Corsair Vengeance 128GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL40",
+        "capacity":128.0,
+        "speed":5600.0,
+        "memory_type":"DDR5",
+        "price":5690
+    },
+    {
+        "name":"Samsung PC4-25600U 32GB",
+        "brand":"Samsung",
+        "type":"DIMM",
+        "latency":"CL22",
+        "capacity":32.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":1419
+    },
+    {
+        "name":"Kingston Fury Renegade 16GB",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL38",
+        "capacity":16.0,
+        "speed":7200.0,
+        "memory_type":"DDR5",
+        "price":1199
+    },
+    {
+        "name":"Corsair Vengeance 48GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL38",
+        "capacity":48.0,
+        "speed":5200.0,
+        "memory_type":"DDR5",
+        "price":1849
+    },
+    {
+        "name":"Corsair ValueSelect 16GB",
+        "brand":"Corsair",
+        "type":"SODIMM DDR3",
+        "latency":"CL11",
+        "capacity":16.0,
+        "speed":1600.0,
+        "memory_type":"SODIMM DDR3",
+        "price":999
+    },
+    {
+        "name":"G.Skill Trident TZ5 32GB",
+        "brand":"G.Skill",
+        "type":"DIMM",
+        "latency":"CL32",
+        "capacity":32.0,
+        "speed":6400.0,
+        "memory_type":"DDR5",
+        "price":1679
+    },
+    {
+        "name":"Corsair Vengeance LPX Black 8GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":8.0,
+        "speed":2666.0,
+        "memory_type":"DDR4",
+        "price":399
+    },
+    {
+        "name":"Corsair Dominator Platinum RGB 32GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":32.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":1923
+    },
+    {
+        "name":"Corsair Dominator Titanium Accessory Kit - White",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":null,
+        "capacity":null,
+        "speed":null,
+        "memory_type":"DDR5",
+        "price":349
+    },
+    {
+        "name":"G.SKill Trident Z5 Neo RGB 64GB",
+        "brand":"G.SKill",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":64.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":2849
+    },
+    {
+        "name":"Corsair Vengeance RGB RS 16GB",
+        "brand":"Corsair",
+        "type":"DIMM",
+        "latency":"CL16",
+        "capacity":16.0,
+        "speed":3200.0,
+        "memory_type":"DDR4",
+        "price":549
+    },
+    {
+        "name":"Kingston FURY Beast RGB 32GB\/",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL36",
+        "capacity":32.0,
+        "speed":6000.0,
+        "memory_type":"DDR5",
+        "price":1890
+    },
+    {
+        "name":"G.Skill Ripjaws S5 32GB",
+        "brand":"G.Skill",
+        "type":"DIMM",
+        "latency":"CL34",
+        "capacity":32.0,
+        "speed":6800.0,
+        "memory_type":"DDR5",
+        "price":1619
+    },
+    {
+        "name":"Kingston Fury Impact 32GB\/",
+        "brand":"Kingston",
+        "type":"SODIMM DDR5",
+        "latency":"CL38",
+        "capacity":32.0,
+        "speed":4800.0,
+        "memory_type":"SODIMM DDR5",
+        "price":1159
+    },
+    {
+        "name":"Kingston Fury Beast RGB 64GB\/",
+        "brand":"Kingston",
+        "type":"DIMM",
+        "latency":"CL30",
+        "capacity":null,
+        "speed":null,
+        "memory_type":"DDR5",
+        "price":2705
+    },
+    {
+        "name":"G.SKill Trident Z5 Neo RGB 32GB",
+        "brand":"G.SKill",
+        "type":"DIMM",
+        "latency":"CL32",
+        "capacity":32.0,
+        "speed":3000.0,
+        "memory_type":"DDR5",
+        "price":1549
+    },
+    {
+        "name":"G.SKill Trident Z5 Neo RGB 32GB\/",
+        "brand":"G.SKill",
+        "type":"DIMM",
+        "latency":"CL32",
+        "capacity":null,
+        "speed":null,
+        "memory_type":"DDR5",
+        "price":1475
+    }
+]
