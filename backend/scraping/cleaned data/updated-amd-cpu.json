@@ -1,0 +1,372 @@
+[
+    {
+        "name": "AMD Ryzen 7 9800X3D",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 4.7,
+        "cache": 96,
+        "price": 6890
+    },
+    {
+        "name": "AMD Ryzen 7 7700X",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 4.5,
+        "cache": 32,
+        "price": 3990
+    },
+    {
+        "name": "AMD Ryzen 7 5700X3D",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 3.0,
+        "cache": 96,
+        "price": 3090
+    },
+    {
+        "name": "AMD Ryzen 5 7600X",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 4.7,
+        "cache": 32,
+        "price": 2789
+    },
+    {
+        "name": "AMD Ryzen 9 9950X",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 16,
+        "threads": 32,
+        "base_clock": 4.3,
+        "cache": 64,
+        "price": 7489
+    },
+    {
+        "name": "AMD Ryzen 7 5800X",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 3.8,
+        "cache": 32,
+        "price": 2229
+    },
+    {
+        "name": "AMD Ryzen 5 5600X",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 3.7,
+        "cache": 32,
+        "price": 1790
+    },
+    {
+        "name": "AMD Ryzen 5 5500",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 3.6,
+        "cache": 16,
+        "price": 1066
+    },
+    {
+        "name": "AMD Ryzen 5 7600",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 3.8,
+        "cache": 32,
+        "price": 2590
+    },
+    {
+        "name": "AMD Ryzen 9 7900",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 12,
+        "threads": null,
+        "base_clock": 3.7,
+        "cache": 64,
+        "price": 4490
+    },
+    {
+        "name": "AMD Ryzen 5 8600G",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 4.3,
+        "cache": 16,
+        "price": 2339
+    },
+    {
+        "name": "AMD Ryzen 7 7800X3D",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 4.2,
+        "cache": 96,
+        "price": 6190
+    },
+    {
+        "name": "AMD Ryzen 7 5700X",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 3.4,
+        "cache": 32,
+        "price": 2190
+    },
+    {
+        "name": "AMD Ryzen 5 5600G",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 3.9,
+        "cache": 16,
+        "price": 1749
+    },
+    {
+        "name": "AMD Ryzen 7 8700F",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 4.1,
+        "cache": 16,
+        "price": 2999
+    },
+    {
+        "name": "AMD Ryzen 7 7700",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 3.8,
+        "cache": 32,
+        "price": 3990
+    },
+    {
+        "name": "AMD Ryzen 9 7950X",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 16,
+        "threads": null,
+        "base_clock": 4.5,
+        "cache": 64,
+        "price": 6590
+    },
+    {
+        "name": "AMD Ryzen 5 9600X",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 6,
+        "threads": 12,
+        "base_clock": 3.9,
+        "cache": 32,
+        "price": 3189
+    },
+    {
+        "name": "AMD Ryzen 7 9700X",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 8,
+        "threads": 16,
+        "base_clock": 3.8,
+        "cache": 32,
+        "price": 4490
+    },
+    {
+        "name": "AMD Ryzen 7 8700G",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 4.2,
+        "cache": 16,
+        "price": 3390
+    },
+    {
+        "name": "AMD Ryzen 5 5600GT",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 3.6,
+        "cache": 16,
+        "price": 1690
+    },
+    {
+        "name": "AMD Ryzen 5 4500",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 3.6,
+        "cache": 8,
+        "price": 949
+    },
+    {
+        "name": "AMD Ryzen 5 8400F",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 4.2,
+        "cache": 16,
+        "price": 1690
+    },
+    {
+        "name": "AMD Ryzen 7 5800XT",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 3.8,
+        "cache": 32,
+        "price": 2590
+    },
+    {
+        "name": "AMD Ryzen 9 5900XT",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 16,
+        "threads": null,
+        "base_clock": 3.3,
+        "cache": 64,
+        "price": 4379
+    },
+    {
+        "name": "AMD Ryzen 9 7900X",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 12,
+        "threads": null,
+        "base_clock": 4.7,
+        "cache": 64,
+        "price": 4749
+    },
+    {
+        "name": "AMD Ryzen 9 7950X3D",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 16,
+        "threads": null,
+        "base_clock": 4.2,
+        "cache": 128,
+        "price": 8390
+    },
+    {
+        "name": "AMD Ryzen 9 5950X",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 16,
+        "threads": null,
+        "base_clock": 3.4,
+        "cache": 64,
+        "price": 4149
+    },
+    {
+        "name": "AMD Ryzen 5 5600",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 3.5,
+        "cache": 32,
+        "price": 1599
+    },
+    {
+        "name": "AMD Ryzen 5 8500G",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 3.5,
+        "cache": 16,
+        "price": 1789
+    },
+    {
+        "name": "AMD Ryzen 9 9900X",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 12,
+        "threads": 24,
+        "base_clock": 4.4,
+        "cache": 64,
+        "price": 5389
+    },
+    {
+        "name": "AMD Ryzen 7 5700G",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 8,
+        "threads": null,
+        "base_clock": 3.8,
+        "cache": 16,
+        "price": 2190
+    },
+    {
+        "name": "AMD Ryzen 5 5500GT",
+        "brand": "AMD",
+        "socket": "AM4",
+        "cores": 6,
+        "threads": null,
+        "base_clock": 3.6,
+        "cache": 16,
+        "price": 1449
+    },
+    {
+        "name": "AMD Ryzen 9 7900X3D",
+        "brand": "AMD",
+        "socket": "AM5",
+        "cores": 12,
+        "threads": null,
+        "base_clock": 4.4,
+        "cache": 128,
+        "price": 6289
+    },
+    {
+        "name": "AMD Ryzen Threadripper 7980X",
+        "brand": "AMD",
+        "socket": "sTR5",
+        "cores": 64,
+        "threads": null,
+        "base_clock": 3.2,
+        "cache": 256,
+        "price": 68490
+    },
+    {
+        "name": "AMD Ryzen Threadripper 7970X",
+        "brand": "AMD",
+        "socket": "sTR5",
+        "cores": 32,
+        "threads": null,
+        "base_clock": 4.0,
+        "cache": 128,
+        "price": 33489
+    },
+    {
+        "name": "AMD Ryzen Threadripper 7960X",
+        "brand": "AMD",
+        "socket": "sTR5",
+        "cores": 24,
+        "threads": 48,
+        "base_clock": 4.2,
+        "cache": 128,
+        "price": 20689
+    }
+]
