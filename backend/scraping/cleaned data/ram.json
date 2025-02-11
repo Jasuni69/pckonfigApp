@@ -290,16 +290,6 @@
         "price":819
     },
     {
-        "name":"Corsair Dominator Titanium Accessory Kit - Black",
-        "brand":"Corsair",
-        "type":"DIMM",
-        "latency":null,
-        "capacity":null,
-        "speed":null,
-        "memory_type":"DDR5",
-        "price":349
-    },
-    {
         "name":"Kingston Fury Impact 16GB\/",
         "brand":"Kingston",
         "type":"SODIMM DDR5",
@@ -490,16 +480,6 @@
         "price":4799
     },
     {
-        "name":"Corsair Dominator Titanium Accessory Kit - Grey",
-        "brand":"Corsair",
-        "type":"DIMM",
-        "latency":null,
-        "capacity":null,
-        "speed":null,
-        "memory_type":"DDR5",
-        "price":349
-    },
-    {
         "name":"Corsair Vengeance 192GB",
         "brand":"Corsair",
         "type":"DIMM",
@@ -610,16 +590,6 @@
         "price":1923
     },
     {
-        "name":"Corsair Dominator Titanium Accessory Kit - White",
-        "brand":"Corsair",
-        "type":"DIMM",
-        "latency":null,
-        "capacity":null,
-        "speed":null,
-        "memory_type":"DDR5",
-        "price":349
-    },
-    {
         "name":"G.SKill Trident Z5 Neo RGB 64GB",
         "brand":"G.SKill",
         "type":"DIMM",
@@ -674,7 +644,7 @@
         "brand":"Kingston",
         "type":"DIMM",
         "latency":"CL30",
-        "capacity":null,
+        "capacity":64.0,
         "speed":null,
         "memory_type":"DDR5",
         "price":2705
@@ -694,7 +664,7 @@
         "brand":"G.SKill",
         "type":"DIMM",
         "latency":"CL32",
-        "capacity":null,
+        "capacity":32.0,
         "speed":null,
         "memory_type":"DDR5",
         "price":1475

@@ -1,0 +1,186 @@
+[
+    {
+        "name": "Thermalright Frost Commander 140",
+        "brand": "Thermalright",
+        "type": "Air",
+        "color": "Black",
+        "size": null,
+        "price": 999
+    },
+    {
+        "name": "Noctua NH-D15 G2 LBC",
+        "brand": "Noctua",
+        "type": "Air",
+        "color": "Brown, Silver",
+        "size": null,
+        "price": 1939
+    },
+    {
+        "name": "Phanteks Glacier One D30",
+        "brand": "Phanteks",
+        "type": "AIO",
+        "color": "Black",
+        "size": 360,
+        "price": 1990
+    },
+    {
+        "name": "Corsair iCUE LINK TITAN 360 RX RGB",
+        "brand": "Corsair",
+        "type": "AIO",
+        "color": "Black",
+        "size": 360,
+        "price": 2289
+    },
+    {
+        "name": "Cryorig R5",
+        "brand": "Cryorig",
+        "type": "Air",
+        "color": "Black",
+        "size": null,
+        "price": 599
+    },
+    {
+        "name": "ASUS ROG Strix LC III 360 ARGB",
+        "brand": "ASUS",
+        "type": "AIO",
+        "color": "Black",
+        "size": 360,
+        "price": 2890
+    },
+    {
+        "name": "Corsair Nautilus 240 RS ARGB",
+        "brand": "Corsair",
+        "type": "AIO",
+        "color": "White",
+        "size": 240,
+        "price": 1349
+    },
+    {
+        "name": "Lian Li Galahad II Trinity Performance",
+        "brand": "Lian Li",
+        "type": "AIO",
+        "color": "Black",
+        "size": 360,
+        "price": 2019
+    },
+    {
+        "name": "Noctua NH-U12A",
+        "brand": "Noctua",
+        "type": "Air",
+        "color": "Brown, Silver",
+        "size": null,
+        "price": 1449
+    },
+    {
+        "name": "ASUS ROG Strix LC III 360 ARGB - White",
+        "brand": "ASUS",
+        "type": "AIO",
+        "color": "White",
+        "size": 360,
+        "price": 3290
+    },
+    {
+        "name": "Corsair iCUE H100i Elite Capellix XT",
+        "brand": "Corsair",
+        "type": "AIO",
+        "color": "Black",
+        "size": 240,
+        "price": 2190
+    },
+    {
+        "name": "Noctua NH-D15",
+        "brand": "Noctua",
+        "type": "Air",
+        "color": null,
+        "size": null,
+        "price": 1290
+    },
+    {
+        "name": "ASUS ProArt LC 360",
+        "brand": "ASUS",
+        "type": "AIO",
+        "color": "Black",
+        "size": 360,
+        "price": 2990
+    },
+    {
+        "name": "Noctua NH-D12L",
+        "brand": "Noctua",
+        "type": "Air",
+        "color": "Silver, Brown",
+        "size": null,
+        "price": 1249
+    },
+    {
+        "name": "ASUS Prime LC 240 ARGB",
+        "brand": "ASUS",
+        "type": "AIO",
+        "color": "Black",
+        "size": 240,
+        "price": 1290
+    },
+    {
+        "name": "Corsair iCUE LINK TITAN 280 RX RGB",
+        "brand": "Corsair",
+        "type": "AIO",
+        "color": "Black",
+        "size": 280,
+        "price": 2189
+    },
+    {
+        "name": "Corsair iCUE H100i Elite LCD",
+        "brand": "Corsair",
+        "type": "AIO",
+        "color": "Black",
+        "size": 240,
+        "price": 2199
+    },
+    {
+        "name": "Noctua NH-L9i chromax.black",
+        "brand": "Noctua",
+        "type": "Air",
+        "color": "Black",
+        "size": null,
+        "price": 739
+    },
+    {
+        "name": "ASUS ROG Ryuo III 360 ARGB",
+        "brand": "ASUS",
+        "type": "AIO",
+        "color": "Black",
+        "size": 360,
+        "price": 3290
+    },
+    {
+        "name": "ASUS Prime LC 360 ARGB",
+        "brand": "ASUS",
+        "type": "AIO",
+        "color": "Black",
+        "size": 360,
+        "price": 1490
+    },
+    {
+        "name": "Noctua NH-L9a-AM5 chromax.black",
+        "brand": "Noctua",
+        "type": "Air",
+        "color": "Black",
+        "size": null,
+        "price": 749
+    },
+    {
+        "name": "Corsair iCUE H100i Elite Capellix XT - White",
+        "brand": "Corsair",
+        "type": "AIO",
+        "color": "White",
+        "size": 240,
+        "price": 1999
+    },
+    {
+        "name": "Corsair iCUE H100i Elite LCD XT",
+        "brand": "Corsair",
+        "type": "AIO",
+        "color": "Black",
+        "size": 240,
+        "price": 3490
+    }
+]

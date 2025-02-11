@@ -1,242 +1,434 @@
 [
     {
-        "name":"MSI MAG B760 TOMAHAWK WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel B760 \/ DDR5 SDRAM",
-        "price":"1 990 kr"
+        "name": "MSI MAG B760 TOMAHAWK WIFI",
+        "brand": "MSI",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel B760",
+        "memory_type": "DDR5 SDRAM",
+        "price": 1990
     },
     {
-        "name":"ASUS TUF GAMING Z790-PLUS WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"3 489 kr"
+        "name": "ASUS TUF GAMING Z790-PLUS WIFI",
+        "brand": "ASUS",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3489
     },
     {
-        "name":"ASUS ROG STRIX Z690-F GAMING WIFI",
-        "specs":"Socket 1700 Alder Lake \/ LGA1700-uttag \/ ATX \/ Intel Z690 \/ DDR5 SDRAM",
-        "price":"2 690 kr"
+        "name": "ASUS ROG STRIX Z690-F GAMING WIFI",
+        "brand": "ASUS",
+        "socket": "1700 Alder Lake",
+        "form_factor": "ATX",
+        "chipset": "Intel Z690",
+        "memory_type": "DDR5 SDRAM",
+        "price": 2690
     },
     {
-        "name":"ASRock B760M-ITX WIFI D4",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ Mini ITX \/ Intel B760 \/ DDR4 SDRAM",
-        "price":"1 890 kr"
+        "name": "ASRock B760M-ITX WIFI D4",
+        "brand": "ASRock",
+        "socket": "1700",
+        "form_factor": "Mini ITX",
+        "chipset": "Intel B760",
+        "memory_type": "DDR4 SDRAM",
+        "price": 1890
     },
     {
-        "name":"ASRock Z890 PRO-A WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"2 879 kr"
+        "name": "ASRock Z890 PRO-A WIFI",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 2879
     },
     {
-        "name":"MSI MPG Z790I EDGE WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ Mini ITX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"4 390 kr"
+        "name": "MSI MPG Z790I EDGE WIFI",
+        "brand": "MSI",
+        "socket": "1700",
+        "form_factor": "Mini ITX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 4390
     },
     {
-        "name":"ASUS TUF GAMING B760-PLUS WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel B760",
-        "price":"2 399 kr"
+        "name": "ASUS TUF GAMING B760-PLUS WIFI",
+        "brand": "ASUS",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel B760",
+        "memory_type": "Unknown",
+        "price": 2399
     },
     {
-        "name":"MSI MPG B760I EDGE WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ Mini ITX \/ Intel B760 \/ DDR5 SDRAM",
-        "price":"2 990 kr"
+        "name": "MSI MPG B760I EDGE WIFI",
+        "brand": "MSI",
+        "socket": "1700",
+        "form_factor": "Mini ITX",
+        "chipset": "Intel B760",
+        "memory_type": "DDR5 SDRAM",
+        "price": 2990
     },
     {
-        "name":"ASRock B760M PRO RS D4",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ Micro ATX \/ Intel B760 \/ DDR4 SDRAM",
-        "price":"1 490 kr"
+        "name": "ASRock B760M PRO RS D4",
+        "brand": "ASRock",
+        "socket": "1700",
+        "form_factor": "Micro ATX",
+        "chipset": "Intel B760",
+        "memory_type": "DDR4 SDRAM",
+        "price": 1490
     },
     {
-        "name":"ASUS PRIME Z890-P WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"3 890 kr"
+        "name": "ASUS PRIME Z890-P WIFI",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3890
     },
     {
-        "name":"MSI MAG Z790 TOMAHAWK WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"3 189 kr"
+        "name": "MSI MAG Z790 TOMAHAWK WIFI",
+        "brand": "MSI",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3189
     },
     {
-        "name":"ASUS ROG MAXIMUS Z890 HERO",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"10 190 kr"
+        "name": "ASUS ROG MAXIMUS Z890 HERO",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 10190
     },
     {
-        "name":"ASUS TUF GAMING Z690-PLUS D4",
-        "specs":"Socket 1700 Alder Lake \/ LGA1700-uttag \/ ATX \/ Intel Z690 \/ DDR4 SDRAM",
-        "price":"3 439 kr"
+        "name": "ASUS TUF GAMING Z690-PLUS D4",
+        "brand": "ASUS",
+        "socket": "1700 Alder Lake",
+        "form_factor": "ATX",
+        "chipset": "Intel Z690",
+        "memory_type": "DDR4 SDRAM",
+        "price": 3439
     },
     {
-        "name":"ASRock H610M-HDV\/M.2 R2.0 D4",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ Micro ATX \/ Intel H610 \/ DDR4 SDRAM",
-        "price":"899 kr"
+        "name": "ASRock H610M-HDV/M.2 R2.0 D4",
+        "brand": "ASRock",
+        "socket": "1700",
+        "form_factor": "Micro ATX",
+        "chipset": "Intel H610",
+        "memory_type": "DDR4 SDRAM",
+        "price": 899
     },
     {
-        "name":"ASUS PRIME Z890M-PLUS WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ Micro ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"3 490 kr"
+        "name": "ASUS PRIME Z890M-PLUS WIFI",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "Micro ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3490
     },
     {
-        "name":"ASUS TUF GAMING Z790-PRO WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"4 489 kr"
+        "name": "ASUS TUF GAMING Z790-PRO WIFI",
+        "brand": "ASUS",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 4489
     },
     {
-        "name":"ASUS ProArt B760-CREATOR WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel B760 \/ DDR5 SDRAM",
-        "price":"3 495 kr"
+        "name": "ASUS ProArt B760-CREATOR WIFI",
+        "brand": "ASUS",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel B760",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3495
     },
     {
-        "name":"ASUS ROG STRIX Z790-F GAMING WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"4 990 kr"
+        "name": "ASUS ROG STRIX Z790-F GAMING WIFI",
+        "brand": "ASUS",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 4990
     },
     {
-        "name":"MSI PRO Z790-P WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"2 489 kr"
+        "name": "MSI PRO Z790-P WIFI",
+        "brand": "MSI",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 2489
     },
     {
-        "name":"ASRock B760M Steel Legend WIFI D5",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ Micro ATX \/ Intel B760 \/ DDR5 SDRAM",
-        "price":"2 090 kr"
+        "name": "ASRock B760M Steel Legend WIFI D5",
+        "brand": "ASRock",
+        "socket": "1700",
+        "form_factor": "Micro ATX",
+        "chipset": "Intel B760",
+        "memory_type": "DDR5 SDRAM",
+        "price": 2090
     },
     {
-        "name":"ASRock Z790 Steel Legend WIFI D5",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"3 290 kr"
+        "name": "ASRock Z790 Steel Legend WIFI D5",
+        "brand": "ASRock",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3290
     },
     {
-        "name":"ASRock Z790 PRO RS WIFI D5",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"2 549 kr"
+        "name": "ASRock Z790 PRO RS WIFI D5",
+        "brand": "ASRock",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 2549
     },
     {
-        "name":"Gigabyte B760 GAMING X AX WIFI D5",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel B760 \/ DDR5 SDRAM",
-        "price":"2 389 kr"
+        "name": "Gigabyte B760 GAMING X AX WIFI D5",
+        "brand": "Gigabyte",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel B760",
+        "memory_type": "DDR5 SDRAM",
+        "price": 2389
     },
     {
-        "name":"ASUS ROG STRIX Z790-I GAMING WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ Mini ITX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"5 990 kr"
+        "name": "ASUS ROG STRIX Z790-I GAMING WIFI",
+        "brand": "ASUS",
+        "socket": "1700",
+        "form_factor": "Mini ITX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 5990
     },
     {
-        "name":"ASUS PRIME Z790-P WIFI",
-        "specs":"Socket 1700 \/ LGA1700-uttag \/ ATX \/ Intel Z790 \/ DDR5 SDRAM",
-        "price":"2 979 kr"
+        "name": "ASUS PRIME Z790-P WIFI",
+        "brand": "ASUS",
+        "socket": "1700",
+        "form_factor": "ATX",
+        "chipset": "Intel Z790",
+        "memory_type": "DDR5 SDRAM",
+        "price": 2979
     },
     {
-        "name":"MSI PRO Z890-A WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"4 349 kr"
+        "name": "MSI PRO Z890-A WIFI",
+        "brand": "MSI",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 4349
     },
     {
-        "name":"ASUS TUF GAMING Z890-PRO WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"4 790 kr"
+        "name": "ASUS TUF GAMING Z890-PRO WIFI",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 4790
     },
     {
-        "name":"ASUS ROG MAXIMUS Z690 HERO",
-        "specs":"Socket 1700 Alder Lake \/ LGA1700-uttag \/ ATX \/ Intel Z690 \/ DDR5 SDRAM",
-        "price":"6 399 kr"
+        "name": "ASUS ROG MAXIMUS Z690 HERO",
+        "brand": "ASUS",
+        "socket": "1700 Alder Lake",
+        "form_factor": "ATX",
+        "chipset": "Intel Z690",
+        "memory_type": "DDR5 SDRAM",
+        "price": 6399
     },
     {
-        "name":"ASRock Z890 TAICHI OCF",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"6 489 kr"
+        "name": "ASRock Z890 TAICHI OCF",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 6489
     },
     {
-        "name":"MSI MPG Z890I EDGE TI WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ Mini ITX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"5 660 kr"
+        "name": "MSI MPG Z890I EDGE TI WIFI",
+        "brand": "MSI",
+        "socket": "1851",
+        "form_factor": "Mini ITX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 5660
     },
     {
-        "name":"ASUS ROG STRIX Z890-A GAMING WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"6 190 kr"
+        "name": "ASUS ROG STRIX Z890-A GAMING WIFI",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 6190
     },
     {
-        "name":"ASUS ROG MAXIMUS Z890 EXTREME",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"17 890 kr"
+        "name": "ASUS ROG MAXIMUS Z890 EXTREME",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 17890
     },
     {
-        "name":"ASUS ROG MAXIMUS Z890 APEX",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"10 190 kr"
+        "name": "ASUS ROG MAXIMUS Z890 APEX",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 10190
     },
     {
-        "name":"MSI MEG Z890 ACE",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"9 399 kr"
+        "name": "MSI MEG Z890 ACE",
+        "brand": "MSI",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 9399
     },
     {
-        "name":"ASUS ROG STRIX Z890-F GAMING WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"6 890 kr"
+        "name": "ASUS ROG STRIX Z890-F GAMING WIFI",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 6890
     },
     {
-        "name":"ASRock Z890 TAICHI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"6 289 kr"
+        "name": "ASRock Z890 TAICHI",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 6289
     },
     {
-        "name":"ASRock Z890 TAICHI LITE",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"5 789 kr"
+        "name": "ASRock Z890 TAICHI LITE",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 5789
     },
     {
-        "name":"MSI MPG Z890 EDGE TI WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"5 599 kr"
+        "name": "MSI MPG Z890 EDGE TI WIFI",
+        "brand": "MSI",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 5599
     },
     {
-        "name":"ASRock Z890 NOVA WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"5 289 kr"
+        "name": "ASRock Z890 NOVA WIFI",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 5289
     },
     {
-        "name":"ASUS TUF GAMING Z890-PLUS WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"4 690 kr"
+        "name": "ASUS TUF GAMING Z890-PLUS WIFI",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 4690
     },
     {
-        "name":"ASRock Z890 RIPTIDE WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"4 199 kr"
+        "name": "ASRock Z890 RIPTIDE WIFI",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 4199
     },
     {
-        "name":"ASRock Z890I NOVA WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ Mini ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"4 199 kr"
+        "name": "ASRock Z890I NOVA WIFI",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "Mini ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 4199
     },
     {
-        "name":"ASRock Z890 LIGHTNING WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"3 899 kr"
+        "name": "ASRock Z890 LIGHTNING WIFI",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3899
     },
     {
-        "name":"ASRock Z890M RIPTIDE WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ Micro ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"3 890 kr"
+        "name": "ASRock Z890M RIPTIDE WIFI",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "Micro ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3890
     },
     {
-        "name":"ASRock Z890 LIVEMIXER WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"3 790 kr"
+        "name": "ASRock Z890 LIVEMIXER WIFI",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3790
     },
     {
-        "name":"ASRock Z890 STEEL LEGEND WIFI",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"3 789 kr"
+        "name": "ASRock Z890 STEEL LEGEND WIFI",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3789
     },
     {
-        "name":"ASUS PRIME Z890-P",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ Micro ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"3 590 kr"
+        "name": "ASUS PRIME Z890-P",
+        "brand": "ASUS",
+        "socket": "1851",
+        "form_factor": "Micro ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3590
     },
     {
-        "name":"ASRock Z890 PRO RS",
-        "specs":"Socket 1851 \/ LGA1851-uttag \/ ATX \/ Intel Z890 \/ DDR5 SDRAM",
-        "price":"3 490 kr"
+        "name": "ASRock Z890 PRO RS",
+        "brand": "ASRock",
+        "socket": "1851",
+        "form_factor": "ATX",
+        "chipset": "Intel Z890",
+        "memory_type": "DDR5 SDRAM",
+        "price": 3490
     }
 ]
