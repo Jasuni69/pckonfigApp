@@ -2,106 +2,80 @@ import { useState } from 'react';
 import Card from '../components/Card';
 
 const PcBuilder = () => {
- const [selectedComponents, setSelectedComponents] = useState([]);
+  const [selectedComponents, setSelectedComponents] = useState({});
 
- const handleComponentSelect = (component, type) => {
-   setSelectedComponents([...selectedComponents, { ...component, type }]);
- };
+  const handleComponentSelect = (component, type) => {
+    setSelectedComponents((prev) => ({
+      ...prev,
+      [type]: component, // Ensures only one selection per category
+    }));
+  };
 
- const calculateTotal = () => {
-   return selectedComponents.reduce((sum, comp) => sum + Number(comp.price), 0);
- };
+  const calculateTotal = () => {
+    return Object.values(selectedComponents).reduce((sum, comp) => sum + Number(comp.price), 0);
+  };
 
- return (
-   <div className="wrapper bg-gradient-to-b from-slate-400 to-slate-200 pb-28 -mt-24">
-     <div className="sticky top-28 z-10">
-       <div className="flex justify-center items-center bg-slate-200 h-16 pt-16">
-         <h1 className="flex text-2xl font-bold mt-96">Konfigurera din PC!</h1>
-       </div>
-       <div className="flex flex-col justify-center items-center min-h-screen pt-28">
-         <div className="w-full max-w-7xl h-[50vh] grid grid-cols-5 grid-rows-6 gap-4 bg-slate-500 shadow-2xl border-2 border-slate-600 rounded-lg p-4">
-           <Card
-             title={<>Chassi <img src="/src/assets/icons/case.svg" alt="" className="h-8 w-8" /></>}
-             className="row-span-3"
-             onSelect={(component) => handleComponentSelect(component, 'case')}
-           />
-       
-           <Card
-             title={<>Moderkort <img src="/src/assets/icons/motherboard.svg" alt="" className="h-8 w-8" /></>}
-             className="row-span-3 col-start-2 row-start-1"
-             onSelect={(component) => handleComponentSelect(component, 'motherboard')}
-           />
-       
-           <Card
-             title={<>CPU <img src="/src/assets/icons/cpu.svg" alt="" className="h-8 w-8" /></>}
-             className="row-span-3 col-start-3 row-start-1"
-             onSelect={(component) => handleComponentSelect(component, 'cpu')}
-           />
-           <Card
-             title={<>Ram-Minne <img src="/src/assets/icons/ram.svg" alt="" className="h-8 w-8" /></>}
-             className="row-span-3 col-start-4 row-start-1"
-             onSelect={(component) => handleComponentSelect(component, 'ram')}
-           />
-       
-           <Card
-             title={<>Grafikkort <img src="/src/assets/icons/gpu.svg" alt="" className="h-8 w-8" /></>}
-             className="row-span-3 col-start-5 row-start-1"
-             onSelect={(component) => handleComponentSelect(component, 'gpu')}
-           />
-       
-           <Card
-             title={<>Hårddisk <img src="/src/assets/icons/hdd.svg" alt="" className="h-8 w-8" /></>}
-             className="row-span-3 col-start-1 row-start-4"
-             onSelect={(component) => handleComponentSelect(component, 'hdd')}
-           />
-           <Card
-             title={<>CPU-Kylare <img src="/src/assets/icons/cpu-cooler.svg" alt="" className="h-8 w-8" /></>}
-             className="row-span-3 col-start-2 row-start-4"
-             onSelect={(component) => handleComponentSelect(component, 'cpu-cooler')}
-           />
-           <Card
-             title={<>PSU <img src="/src/assets/icons/psu.svg" alt="" className="h-8 w-8" /></>}
-             className="row-span-3 col-start-3 row-start-4"
-             onSelect={(component) => handleComponentSelect(component, 'psu')}
-           />
-       
-           <Card
-             title={<>Extra <span className="font-light">t.ex RGB..</span></>}
-             className="row-span-3 col-start-5 row-start-4"
-             onSelect={(component) => handleComponentSelect(component, 'extra')}
-           />
-       
-           <Card
-            title={<>Ändamål <span className="font-light">t.ex 1440p gaming..</span></>}
-            className="row-span-3 col-start-4 row-start-4"
-            onSelect={(component) => handleComponentSelect(component, 'purpose')}
-            options="purpose"
-          />
-         </div>
-     </div>
+  // Map English keys to Swedish labels
+  const componentLabels = {
+    case: "Chassi",
+    motherboard: "Moderkort",
+    cpu: "Processor",
+    ram: "Ram-Minne",
+    gpu: "Grafikkort",
+    hdd: "Hårddisk",
+    "cpu-cooler": "CPU-Kylare",
+    psu: "Strömförsörjning",
+    extra: "Extra",
+    purpose: "Användningsområde",
+  };
 
-       <div className="flex justify-center -mt-40">
-         <div className="w-full max-w-7xl  bg-slate-300 rounded-lg shadow-lg border-2 border-slate-800 p-6">
-           <h2 className="text-xl font-bold mb-4">Valda komponenter</h2>
-           <div className="space-y-2">
-             {selectedComponents.map((comp, index) => (
-               <div key={index} className="flex justify-between items-center p-2 bg-slate-200 rounded">
-                 <span>{comp.type}: {comp.name}</span>
-                 <span>{comp.price} kr</span>
-               </div>
-             ))}
-           </div>
-           <div className="mt-4 pt-4 border-t-2 border-slate-400">
-             <div className="flex justify-between items-center font-bold text-lg">
-               <span>Totalt:</span>
-               <span>{calculateTotal()} kr</span>
-             </div>
-           </div>
-         </div>
-       </div>
-     </div>
-   </div>
- );
+  return (
+    <div className="wrapper bg-gradient-to-b from-slate-400 to-slate-200 pb-28 -mt-24">
+      <div className="sticky top-28 z-10">
+        <div className="flex justify-center items-center bg-slate-200 h-16 pt-16">
+          <h1 className="flex text-2xl font-bold mt-96">Konfigurera din PC!</h1>
+        </div>
+        <div className="flex flex-col justify-center items-center min-h-screen pt-28">
+          <div className="w-full max-w-7xl h-[50vh] grid grid-cols-5 grid-rows-6 gap-4 bg-slate-500 shadow-2xl border-2 border-slate-600 rounded-lg p-4">
+            <Card title="Chassi" className="row-span-3" onSelect={(component) => handleComponentSelect(component, 'case')} />
+            <Card title="Moderkort" className="row-span-3 col-start-2 row-start-1" onSelect={(component) => handleComponentSelect(component, 'motherboard')} />
+            <Card title="Processor" className="row-span-3 col-start-3 row-start-1" onSelect={(component) => handleComponentSelect(component, 'cpu')} />
+            <Card title="Ram-Minne" className="row-span-3 col-start-4 row-start-1" onSelect={(component) => handleComponentSelect(component, 'ram')} />
+            <Card title="Grafikkort" className="row-span-3 col-start-5 row-start-1" onSelect={(component) => handleComponentSelect(component, 'gpu')} />
+            <Card title="Hårddisk" className="row-span-3 col-start-1 row-start-4" onSelect={(component) => handleComponentSelect(component, 'hdd')} />
+            <Card title="CPU-Kylare" className="row-span-3 col-start-2 row-start-4" onSelect={(component) => handleComponentSelect(component, 'cpu-cooler')} />
+            <Card title="Strömförsörjning" className="row-span-3 col-start-3 row-start-4" onSelect={(component) => handleComponentSelect(component, 'psu')} />
+            <Card title="Extra" className="row-span-3 col-start-5 row-start-4" onSelect={(component) => handleComponentSelect(component, 'extra')} />
+            <Card title="Användningsområde" className="row-span-3 col-start-4 row-start-4" onSelect={(component) => handleComponentSelect(component, 'purpose')} options="purpose" />
+          </div>
+        </div>
+
+        <div className="flex justify-center -mt-40">
+          <div className="w-full max-w-7xl bg-slate-300 rounded-lg shadow-lg border-2 border-slate-800 p-6">
+            <h2 className="text-xl font-bold mb-4">Valda komponenter</h2>
+            <div className="space-y-2">
+              {Object.entries(selectedComponents).map(([type, comp]) => (
+                <div key={type} className="flex justify-between items-center p-2 bg-slate-200 rounded">
+                  <span>{componentLabels[type]}: {comp.name}</span>
+                  <span>{comp.price} kr</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-4 border-t-2 border-slate-400">
+              <div className="flex justify-between items-center font-bold text-lg">
+                <span>Totalt:</span>
+                <span>{calculateTotal()} kr</span>
+                <div className="flex justify-center items-center gap-4">
+                  <button className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg">Spara dator</button>
+                  <button className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg">Optimera dator</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default PcBuilder;

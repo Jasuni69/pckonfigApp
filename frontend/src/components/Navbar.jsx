@@ -14,7 +14,7 @@ const Navbar = () => {
               </Link>
           </div>
           <div className="flex pr-8 gap-4 items-center">
-              <Searchbar />
+             {/* <Searchbar /> */}
               <Link to="/about" className="text-gray-600 hover:text-gray-900">Placeholder2</Link>
               <Link to="/contact" className="text-gray-600 hover:text-gray-900">Placeholder3</Link>
           </div>
