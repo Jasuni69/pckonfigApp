@@ -5,6 +5,6 @@ from models import CPU
 
 app = FastAPI()
 
-@app.get("/cpus")
+@app.get("/api/cpus")
 def get_cpus(db: Session = Depends(get_db)):
     return db.query(CPU).all()
