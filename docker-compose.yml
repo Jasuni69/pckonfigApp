@@ -8,11 +8,15 @@ services:
     depends_on:
       - db
     env_file:
-      - ./backend/app/.env  # Load DB_URL from the .env file
+      - ./backend/app/.env
     restart: unless-stopped
 
   frontend:
     build: ./frontend
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
     depends_on:
       - backend
     restart: unless-stopped
@@ -25,17 +29,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    restart: unless-stopped
-
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80:80"
-    depends_on:
-      - frontend
-      - backend
     restart: unless-stopped
 
 volumes:
