@@ -8,9 +8,7 @@ RUN npm run build
 
 # Stage 2: Serve with Nginx
 FROM nginx:latest AS production
-# Copy custom nginx configuration
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
-# Copy built assets
+# We'll let docker-compose handle the nginx.conf mounting
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Create a script to fix permissions and MIME types
