@@ -24,7 +24,7 @@ services:
   db:
     image: postgres:latest
     env_file:
-      - ./.env
+      - ./backend/app/.env
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
