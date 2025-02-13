@@ -5,26 +5,14 @@ services:
     ports:
       - "8000:8000"
     build: ./backend/app
-    depends_on:
-      - db
     environment:
-      - DB_URL=postgresql://user:password@db:5432/pckonfig
+      - DB_URL=${DB_URL}  # ✅ Use AWS RDS database URL from .env file
     restart: unless-stopped
 
   frontend:
     build: ./frontend
     depends_on:
       - backend
-    restart: unless-stopped
-
-  db:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: pckonfig
-    volumes:
-      - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
 
   nginx:
@@ -37,6 +25,3 @@ services:
       - frontend
       - backend
     restart: unless-stopped
-
-volumes:
-  pgdata:
