@@ -14,7 +14,7 @@ services:
   frontend:
     build: ./frontend
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # Mount nginx.conf from host
     ports:
       - "80:80"
     depends_on:
