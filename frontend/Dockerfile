@@ -6,6 +6,9 @@ RUN npm install
 COPY . . 
 RUN npm run build
 
+# 🛠 ✅ Make sure the `dist/` folder exists
+RUN ls -la /app/dist
+
 # Stage 2: Serve with Nginx
 FROM nginx:latest AS production
 COPY --from=build /app/dist /usr/share/nginx/html
