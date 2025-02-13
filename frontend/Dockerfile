@@ -1,25 +1,13 @@
-# Use Node.js for building React
-FROM node:18 as build
-
-# Set working directory
+# Build Stage
+FROM node:18 AS build
 WORKDIR /app
-
-# Copy package.json and install dependencies
 COPY package.json package-lock.json ./
 RUN npm install
-
-# Copy all frontend files
-COPY . .
-
-# Build React
+COPY . . 
 RUN npm run build
 
-# Use Nginx to serve React
-FROM nginx:latest
+# Serve with Nginx
+FROM nginx:latest AS production
 COPY --from=build /app/build /usr/share/nginx/html
-
-# Expose the default Nginx port
 EXPOSE 80
-
-# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
