@@ -2,6 +2,8 @@ version: "3.8"
 
 services:
   backend:
+    ports:
+      -"8000/8000"
     build: ./backend/app
     depends_on:
       - db
