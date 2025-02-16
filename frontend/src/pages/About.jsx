@@ -1,3 +1,6 @@
+import React from "react";
+
+
 const About = () => {
   return (
     <div className="wrapper bg-gradient-to-b from-slate-300 to-slate-200">
@@ -11,6 +14,7 @@ const About = () => {
           <ul className="list-disc pl-6 space-y-2">
             <li>Skapa en anpassad dator för dina behov</li>
             <li>Kontrollera kompatibilitet mellan komponenter</li>
+            <li>Spara dina konfigurerade byggen</li>
           </ul>
         </div>
       </div>

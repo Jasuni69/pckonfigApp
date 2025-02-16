@@ -1,5 +1,13 @@
 import { useState } from 'react';
 import Card from '../components/Card';
+import caseIcon from '../assets/icons/case.svg';
+import motherboardIcon from '../assets/icons/motherboard.svg';
+import cpuIcon from '../assets/icons/cpu.svg';
+import ramIcon from '../assets/icons/ram.svg';
+import gpuIcon from '../assets/icons/gpu.svg';
+import hddIcon from '../assets/icons/hdd.svg';
+import cpuCoolerIcon from '../assets/icons/cpu-cooler.svg';
+import psuIcon from '../assets/icons/psu.svg';  
 
 const PcBuilder = () => {
   const [selectedComponents, setSelectedComponents] = useState({});
@@ -37,14 +45,14 @@ const PcBuilder = () => {
         </div>
         <div className="flex flex-col justify-center items-center min-h-screen pt-28">
           <div className="w-full max-w-7xl h-[50vh] grid grid-cols-5 grid-rows-6 gap-4 bg-slate-500 shadow-2xl border-2 border-slate-600 rounded-lg p-4">
-            <Card title="Chassi" className="row-span-3" onSelect={(component) => handleComponentSelect(component, 'case')} />
-            <Card title="Moderkort" className="row-span-3 col-start-2 row-start-1" onSelect={(component) => handleComponentSelect(component, 'motherboard')} />
-            <Card title="Processor" className="row-span-3 col-start-3 row-start-1" onSelect={(component) => handleComponentSelect(component, 'cpu')} />
-            <Card title="Ram-Minne" className="row-span-3 col-start-4 row-start-1" onSelect={(component) => handleComponentSelect(component, 'ram')} />
-            <Card title="Grafikkort" className="row-span-3 col-start-5 row-start-1" onSelect={(component) => handleComponentSelect(component, 'gpu')} />
-            <Card title="Hårddisk" className="row-span-3 col-start-1 row-start-4" onSelect={(component) => handleComponentSelect(component, 'hdd')} />
-            <Card title="CPU-Kylare" className="row-span-3 col-start-2 row-start-4" onSelect={(component) => handleComponentSelect(component, 'cpu-cooler')} />
-            <Card title="Strömförsörjning" className="row-span-3 col-start-3 row-start-4" onSelect={(component) => handleComponentSelect(component, 'psu')} />
+            <Card title="Chassi" img={caseIcon} className="row-span-3" onSelect={(component) => handleComponentSelect(component, 'case')} />
+            <Card title="Moderkort" img={motherboardIcon} className="row-span-3 col-start-2 row-start-1" onSelect={(component) => handleComponentSelect(component, 'motherboard')} />
+            <Card title="Processor" img={cpuIcon} className="row-span-3 col-start-3 row-start-1" onSelect={(component) => handleComponentSelect(component, 'cpu')} />
+            <Card title="Ram-Minne" img={ramIcon} className="row-span-3 col-start-4 row-start-1" onSelect={(component) => handleComponentSelect(component, 'ram')} />
+            <Card title="Grafikkort" img={gpuIcon} className="row-span-3 col-start-5 row-start-1" onSelect={(component) => handleComponentSelect(component, 'gpu')} />
+            <Card title="Hårddisk" img={hddIcon} className="row-span-3 col-start-1 row-start-4" onSelect={(component) => handleComponentSelect(component, 'hdd')} />
+            <Card title="CPU-Kylare" img={cpuCoolerIcon} className="row-span-3 col-start-2 row-start-4" onSelect={(component) => handleComponentSelect(component, 'cpu-cooler')} />
+            <Card title="Strömförsörjning" img={psuIcon} className="row-span-3 col-start-3 row-start-4" onSelect={(component) => handleComponentSelect(component, 'psu')} />
             <Card title="Extra" className="row-span-3 col-start-5 row-start-4" onSelect={(component) => handleComponentSelect(component, 'extra')} />
             <Card title="Användningsområde" className="row-span-3 col-start-4 row-start-4" onSelect={(component) => handleComponentSelect(component, 'purpose')} options="purpose" />
           </div>
