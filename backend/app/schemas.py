@@ -19,13 +19,15 @@ class CPUModel(BaseModel):
 class GPUModel(BaseModel):
     id: int
     name: str
-    brand: str
-    model: str
-    memory: str
-    interface: str
-    base_clock: float
-    price: int
-    recommended_wattage: float
+    manufacturer: str
+    base_clock: Optional[float] = None
+    boost_clock: Optional[float] = None
+    memory_size: int
+    memory_type: str
+    tdp: int
+    recommended_wattage: Optional[float] = None
+    price: float
+    image_url: Optional[str] = None
 
     class Config:
         from_attributes = True
