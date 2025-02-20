@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app.models import CPU, GPU, Motherboard, RAM, Storage, PSU, Cooler, Case
-from app.schemas import CPUModel, GPUModel, MotherboardModel, RAMModel, StorageModel, PSUModel, CoolerModel, CaseModel
+from database import get_db
+from models import CPU, GPU, Motherboard, RAM, Storage, PSU, Cooler, Case
+from schemas import CPUModel, GPUModel, MotherboardModel, RAMModel, StorageModel, PSUModel, CoolerModel, CaseModel
 
 router = APIRouter()
 
