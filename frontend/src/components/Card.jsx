@@ -22,7 +22,7 @@ const Card = ({ title, img, className = "", onSelect, options }) => {
     if (options === "purpose") {
       setChoices(purposeOptions);
     } else {
-      fetch(`http://13.53.243.200:8000/api/${options}`)
+      fetch(`/api/${options}`)
         .then((response) => response.json())
         .then((data) => setChoices(data))
         .catch((error) => console.error(`Error fetching ${options}:`, error));
