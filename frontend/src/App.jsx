@@ -6,7 +6,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import PcBuilder from "./pages/PcBuilder";
-import SavedBuilds from "./pages/SavedBuilds";
+
 
 const App = () => {
   return (
