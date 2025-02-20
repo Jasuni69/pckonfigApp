@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from database import get_db
-from models import CPU
-from pydantic import BaseModel
+from app.core.security import verify_password, get_password_hash
+from app.models import User
+from app.database import get_db
 
 app = FastAPI()
 
