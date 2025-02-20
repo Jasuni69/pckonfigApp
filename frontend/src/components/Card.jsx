@@ -50,7 +50,7 @@ const Card = ({ title, img, className = "", onSelect, options }) => {
       </div>
       
       <div
-        className="bg-slate-200 rounded-lg shadow-md p-6 cursor-pointer hover:bg-slate-300 transition-colors"
+        className="bg-slate-300 shadow-md p-6 cursor-pointer hover:bg-slate-400 transition-colors"
         onClick={() => setIsOpen(true)}
       >
         {selected ? (
@@ -76,7 +76,7 @@ const Card = ({ title, img, className = "", onSelect, options }) => {
                 className="bg-slate-300 rounded-lg p-2 border-2 border-slate-800 shadow-lg hover:bg-slate-400 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
-                <X className="h-5 w-5 text-black" />
+                <X className="h-5 w-5 text-black hover:scale-105" />
               </button>
             </div>
 
