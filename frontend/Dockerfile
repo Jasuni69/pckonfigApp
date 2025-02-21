@@ -12,9 +12,6 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Copy assets directory
 COPY --from=build /app/src/assets /usr/share/nginx/html/src/assets
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
-
 # Set permissions
 RUN chmod -R 755 /usr/share/nginx/html && \
     chown -R nginx:nginx /usr/share/nginx/html
