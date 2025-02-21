@@ -52,7 +52,7 @@ class GPU(Base):
     memory = Column(String)
     interface = Column(String)
     base_clock = Column(Float, nullable=True)
-    recommended_wattage = Column(Float)
+    recommended_wattage = Column(Float, nullable=True)
     price = Column(Float)
 
 class Case(Base):
