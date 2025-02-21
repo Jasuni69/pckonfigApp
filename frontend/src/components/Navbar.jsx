@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Searchbar from "./Searchbar";
+import pcLogo from "../assets/logos/pc.svg";  
 
 const Navbar = () => {
   return (
@@ -9,7 +10,7 @@ const Navbar = () => {
         <div className="flex h-16 items-center">
           <div className="pl-2 flex flex-1">
               <Link to="/" className="flex gap-4 items-center">
-                <img src="/src/assets/logos/pc.svg" alt="" className="h-8 w-8"/>
+                <img src={pcLogo} alt="" className="h-8 w-8"/>
                 <span className="text-lg text-black font-bold">PCkonfig.se</span>
               </Link>
           </div>
