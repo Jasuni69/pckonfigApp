@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 from datetime import datetime
 
 Base = declarative_base()
@@ -109,6 +110,32 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, nullable=False, index=True)
-    username = Column(String, unique=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    saved_builds = relationship("SavedBuild", back_populates="user")
+
+class SavedBuild(Base):
+    __tablename__ = "saved_builds"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    cpu_id = Column(Integer, ForeignKey("cpus.id"))
+    gpu_id = Column(Integer, ForeignKey("gpus.id"))
+    motherboard_id = Column(Integer, ForeignKey("motherboards.id"))
+    ram_id = Column(Integer, ForeignKey("ram.id"))
+    psu_id = Column(Integer, ForeignKey("psus.id"))
+    case_id = Column(Integer, ForeignKey("chassis.id"))
+    storage_id = Column(Integer, ForeignKey("storage_devices.id"))
+    cooler_id = Column(Integer, ForeignKey("cpu_coolers.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    user = relationship("User", back_populates="saved_builds")
+    cpu = relationship("CPU")
+    gpu = relationship("GPU")
+    motherboard = relationship("Motherboard")
+    ram = relationship("RAM")
+    psu = relationship("PSU")
+    case = relationship("Case")
+    storage = relationship("Storage")
+    cooler = relationship("Cooler")

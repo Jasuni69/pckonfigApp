@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional
+from pydantic import BaseModel, EmailStr, ConfigDict
+from typing import Optional, datetime
 
 # Component schemas
 class CPUModel(BaseModel):
@@ -123,4 +123,49 @@ class User(UserBase):
     is_active: bool
 
     class Config:
-        from_attributes = True 
+        from_attributes = True
+
+class TokenSchema(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class UserRegisterSchema(BaseModel):
+    email: str
+    password: str
+    model_config = ConfigDict(from_attributes=True)
+
+
+class UserOutSchema(BaseModel):
+    id: int
+    email: str
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+class SavedBuildCreate(BaseModel):
+    name: str
+    cpu_id: Optional[int] = None
+    gpu_id: Optional[int] = None
+    motherboard_id: Optional[int] = None
+    ram_id: Optional[int] = None
+    psu_id: Optional[int] = None
+    case_id: Optional[int] = None
+    storage_id: Optional[int] = None
+    cooler_id: Optional[int] = None
+
+class SavedBuildOut(BaseModel):
+    id: int
+    name: str
+    user_id: int
+    cpu: Optional[CPUModel] = None
+    gpu: Optional[GPUModel] = None
+    motherboard: Optional[MotherboardModel] = None
+    ram: Optional[RAMModel] = None
+    psu: Optional[PSUModel] = None
+    case: Optional[CaseModel] = None
+    storage: Optional[StorageModel] = None
+    cooler: Optional[CoolerModel] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True) 
