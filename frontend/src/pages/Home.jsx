@@ -19,7 +19,10 @@ const Home = () => {
               Börja Bygga
             </Link>
             <Link to="/savedbuilds" className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg">
-              Se Byggen
+              Se Dina Byggen
+            </Link>
+            <Link to="/createaccount" className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg">
+               Skapa Konto
             </Link>
           </div>
 
