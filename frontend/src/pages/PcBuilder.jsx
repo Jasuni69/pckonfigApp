@@ -35,21 +35,32 @@ const PcBuilder = () => {
   };
 
   const getFilterRequirements = (type) => {
+    console.log('Getting filter requirements for:', type);
+    console.log('Current selected components:', selectedComponents);
+    
     const requirements = (() => {
       switch(type) {
-        case 'psu':
-          if (selectedComponents.gpu?.recommended_wattage) {
-            console.log('Filtering PSUs for GPU power requirement:', 
-              selectedComponents.gpu.recommended_wattage);
-            return { minWattage: selectedComponents.gpu.recommended_wattage };
+        case 'cpus':  // Note: Make sure this matches the options prop in Card
+          if (selectedComponents.motherboard?.socket) {
+            const socket = selectedComponents.motherboard.socket;
+            console.log('Creating CPU filter with socket:', socket);
+            return { socket };
           }
           return null;
           
-        case 'gpu':
-          if (selectedComponents.psu?.wattage) {
-            console.log('Filtering GPUs for PSU capacity:', 
-              selectedComponents.psu.wattage);
-            return { maxWattage: selectedComponents.psu.wattage };
+        case 'motherboards':
+          if (selectedComponents.cpu?.socket) {
+            const socket = selectedComponents.cpu.socket;
+            console.log('Creating motherboard filter with socket:', socket);
+            return { socket };
+          }
+          return null;
+          
+        case 'cases':
+          if (selectedComponents.motherboard?.form_factor) {
+            const formFactor = selectedComponents.motherboard.form_factor;
+            console.log('Creating case filter with form factor:', formFactor);
+            return { formFactor };
           }
           return null;
           
@@ -58,7 +69,7 @@ const PcBuilder = () => {
       }
     })();
 
-    console.log(`Filter requirements for ${type}:`, requirements);
+    console.log(`Final filter requirements for ${type}:`, requirements);
     return requirements;
   };
 

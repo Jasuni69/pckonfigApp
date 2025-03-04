@@ -34,6 +34,19 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             console.log(`Filtering ${options} with requirements:`, filterRequirements);
             
             filteredData = data.filter(component => {
+              // CPU/Motherboard socket compatibility
+              if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
+                const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
+                const compSocket = component.socket.toLowerCase().replace('socket ', '');
+                const matches = compSocket.includes(reqSocket);
+                console.log(`${options} ${component.name} socket check:`, {
+                  required: reqSocket,
+                  actual: compSocket,
+                  matches
+                });
+                return matches;
+              }
+
               // PSU wattage requirement (minimum)
               if (filterRequirements.minWattage && component.wattage) {
                 const matches = component.wattage >= filterRequirements.minWattage;
