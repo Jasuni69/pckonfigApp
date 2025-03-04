@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-const Card = ({ title, img, className = "", onSelect, options }) => {
+const Card = ({ title, img, className = "", onSelect, options, filterRequirements }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [choices, setChoices] = useState([]);
   const [search, setSearch] = useState("");
+  const [components, setComponents] = useState([]);
 
   const purposeOptions = [
     { name: "1080p Gaming", price: "0" },
@@ -22,18 +23,43 @@ const Card = ({ title, img, className = "", onSelect, options }) => {
     if (options === "purpose") {
       setChoices(purposeOptions);
     } else {
-      fetch(`/api/${options}`)
-        .then((response) => response.json())
-        .then((data) => setChoices(data))
-        .catch((error) => console.error(`Error fetching ${options}:`, error));
+      const fetchComponents = async () => {
+        const response = await fetch(`/api/${options}`);
+        const data = await response.json();
+        
+        // Filter components based on requirements
+        let filteredData = data;
+        if (filterRequirements) {
+          filteredData = data.filter(component => {
+            // Socket compatibility
+            if (filterRequirements.socket) {
+              return component.socket === filterRequirements.socket;
+            }
+            // PSU wattage requirement
+            if (filterRequirements.minWattage) {
+              return component.wattage >= filterRequirements.minWattage;
+            }
+            // Form factor compatibility for cases
+            if (filterRequirements.formFactor && component.form_factor) {
+              // Check if the case's form_factor string includes the required form factor
+              return component.form_factor.toLowerCase().includes(filterRequirements.formFactor.toLowerCase());
+            }
+            return true;
+          });
+        }
+        
+        setComponents(filteredData);
+      };
+
+      fetchComponents();
     }
-  }, [options]);
+  }, [options, filterRequirements]);
 
   const filteredChoices = search
-    ? choices.filter((opt) =>
+    ? (options === "purpose" ? choices : components).filter((opt) =>
         opt.name.toLowerCase().includes(search.toLowerCase())
       )
-    : choices;
+    : (options === "purpose" ? choices : components);
 
   const handleSelect = (option) => {
     setSelected(option);
@@ -56,7 +82,7 @@ const Card = ({ title, img, className = "", onSelect, options }) => {
         {selected ? (
           <div className="flex justify-between items-center">
             <span>{selected.name}</span>
-            <span>{selected.price !== "0" ? `${selected.price}kr` : ""}</span>
+            {selected.price !== "0" ? `${selected.price}kr` : ""}
           </div>
         ) : (
           `Välj ${title}`

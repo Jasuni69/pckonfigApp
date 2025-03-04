@@ -11,12 +11,54 @@ import psuIcon from '../assets/icons/psu.svg';
 
 const PcBuilder = () => {
   const [selectedComponents, setSelectedComponents] = useState({});
+  const [compatibility, setCompatibility] = useState({
+    socket: null,
+    requiredWattage: 0,
+    formFactor: null,
+  });
 
   const handleComponentSelect = (component, type) => {
-    setSelectedComponents((prev) => ({
+    setSelectedComponents(prev => ({
       ...prev,
-      [type]: component, // Ensures only one selection per category
+      [type]: component,
     }));
+
+    // Update compatibility requirements
+    if (type === 'cpu') {
+      setCompatibility(prev => ({ ...prev, socket: component.socket }));
+    }
+    if (type === 'gpu') {
+      setCompatibility(prev => ({ ...prev, requiredWattage: component.recommended_wattage }));
+    }
+    if (type === 'motherboard') {
+      setCompatibility(prev => ({ 
+        ...prev, 
+        socket: component.socket,
+        formFactor: component.form_factor 
+      }));
+    }
+  };
+
+  const getFilterRequirements = (type) => {
+    switch(type) {
+      case 'motherboard':
+        return { 
+          socket: compatibility.socket,
+          // If case is selected, check form factor compatibility
+          formFactor: selectedComponents.case ? selectedComponents.case.form_factor : null
+        };
+      case 'cpu':
+        return { socket: selectedComponents.motherboard?.socket };
+      case 'psu':
+        return { minWattage: compatibility.requiredWattage };
+      case 'case':
+        return { 
+          // If motherboard is selected, ensure case supports its form factor
+          formFactor: compatibility.formFactor 
+        };
+      default:
+        return null;
+    }
   };
 
   const calculateTotal = () => {
@@ -50,7 +92,8 @@ const PcBuilder = () => {
               img={caseIcon} 
               className="row-span-3" 
               options="cases"
-              onSelect={(component) => handleComponentSelect(component, 'case')} 
+              onSelect={(component) => handleComponentSelect(component, 'case')}
+              filterRequirements={getFilterRequirements('case')}
             />
             <Card 
               title="Moderkort" 
