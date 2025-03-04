@@ -40,31 +40,35 @@ const PcBuilder = () => {
     
     const requirements = (() => {
       switch(type) {
-        case 'cpus':  // Note: Make sure this matches the options prop in Card
+        case 'cpu':  // Changed from 'cpus' to match your component options
           if (selectedComponents.motherboard?.socket) {
             const socket = selectedComponents.motherboard.socket;
             console.log('Creating CPU filter with socket:', socket);
             return { socket };
           }
+          console.log('No motherboard selected yet for CPU filtering');
           return null;
           
-        case 'motherboards':
+        case 'motherboard':  // Changed from 'motherboards' to match your component options
           if (selectedComponents.cpu?.socket) {
             const socket = selectedComponents.cpu.socket;
             console.log('Creating motherboard filter with socket:', socket);
             return { socket };
           }
+          console.log('No CPU selected yet for motherboard filtering');
           return null;
           
-        case 'cases':
+        case 'case':  // Changed from 'cases' to match your component options
           if (selectedComponents.motherboard?.form_factor) {
             const formFactor = selectedComponents.motherboard.form_factor;
             console.log('Creating case filter with form factor:', formFactor);
             return { formFactor };
           }
+          console.log('No motherboard selected yet for case filtering');
           return null;
           
         default:
+          console.log('No filter requirements for type:', type);
           return null;
       }
     })();

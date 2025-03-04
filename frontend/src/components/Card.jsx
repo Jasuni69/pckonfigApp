@@ -25,6 +25,9 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
     } else {
       const fetchComponents = async () => {
         try {
+          console.log('Fetching components for:', options);
+          console.log('Filter requirements:', filterRequirements);
+          
           const response = await fetch(`/api/${options}`);
           const data = await response.json();
           
@@ -35,7 +38,7 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             
             filteredData = data.filter(component => {
               // CPU/Motherboard socket compatibility
-              if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
+              if (filterRequirements.socket && (options === 'cpu' || options === 'motherboard')) {
                 const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
                 const compSocket = component.socket.toLowerCase().replace('socket ', '');
                 const matches = compSocket.includes(reqSocket);
@@ -47,23 +50,14 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 return matches;
               }
 
-              // PSU wattage requirement (minimum)
-              if (filterRequirements.minWattage && component.wattage) {
-                const matches = component.wattage >= filterRequirements.minWattage;
-                console.log(`PSU wattage check for ${component.name}:`, {
-                  required: filterRequirements.minWattage,
-                  actual: component.wattage,
-                  matches
-                });
-                return matches;
-              }
-
-              // GPU power requirement (maximum)
-              if (filterRequirements.maxWattage && component.recommended_wattage) {
-                const matches = component.recommended_wattage <= filterRequirements.maxWattage;
-                console.log(`GPU power check for ${component.name}:`, {
-                  psuWattage: filterRequirements.maxWattage,
-                  required: component.recommended_wattage,
+              // Case form factor compatibility
+              if (filterRequirements.formFactor && options === 'case') {
+                const reqFormFactor = filterRequirements.formFactor.toLowerCase();
+                const compFormFactor = component.form_factor.toLowerCase();
+                const matches = compFormFactor.includes(reqFormFactor);
+                console.log(`Case ${component.name} form factor check:`, {
+                  required: reqFormFactor,
+                  actual: compFormFactor,
                   matches
                 });
                 return matches;
@@ -73,8 +67,6 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             });
             
             console.log(`Filtered ${options} results:`, filteredData);
-          } else {
-            console.log(`No filter requirements for ${options}, showing all:`, data);
           }
           
           setComponents(filteredData);
