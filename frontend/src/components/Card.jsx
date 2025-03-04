@@ -38,7 +38,7 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             
             filteredData = data.filter(component => {
               // CPU/Motherboard socket compatibility
-              if (filterRequirements.socket && (options === 'cpu' || options === 'motherboard')) {
+              if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
                 const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
                 const compSocket = component.socket.toLowerCase().replace('socket ', '');
                 const matches = compSocket.includes(reqSocket);
