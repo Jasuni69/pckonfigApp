@@ -19,61 +19,47 @@ const PcBuilder = () => {
 
   const handleComponentSelect = (component, type) => {
     console.log(`Selected ${type}:`, component);
+    
+    if (type === 'gpu') {
+      console.log('GPU selected with power requirement:', component.recommended_wattage);
+      setCompatibility(prev => ({ 
+        ...prev, 
+        requiredWattage: component.recommended_wattage || 0
+      }));
+    }
+    
     setSelectedComponents(prev => ({
       ...prev,
-      [type]: component,
+      [type]: component
     }));
-
-    // Update compatibility requirements
-    switch(type) {
-      case 'cpu':
-        setCompatibility(prev => ({ 
-          ...prev, 
-          socket: component.socket 
-        }));
-        break;
-      case 'motherboard':
-        setCompatibility(prev => ({ 
-          ...prev, 
-          socket: component.socket,
-          formFactor: component.form_factor
-        }));
-        break;
-      case 'gpu':
-        setCompatibility(prev => ({ 
-          ...prev, 
-          requiredWattage: component.recommended_wattage 
-        }));
-        break;
-    }
   };
 
   const getFilterRequirements = (type) => {
-    // Only return filter requirements for components that need them
-    switch(type) {
-      case 'motherboard':
-        // Filter motherboards by CPU socket
-        return selectedComponents.cpu ? 
-          { socket: selectedComponents.cpu.socket } : null;
-        
-      case 'cpu':
-        // Filter CPUs by motherboard socket
-        return selectedComponents.motherboard ? 
-          { socket: selectedComponents.motherboard.socket } : null;
-        
-      case 'psu':
-        // Filter PSUs by GPU power requirement
-        return compatibility.requiredWattage > 0 ? 
-          { minWattage: compatibility.requiredWattage } : null;
-        
-      case 'case':
-        // Filter cases by motherboard form factor
-        return selectedComponents.motherboard ? 
-          { formFactor: selectedComponents.motherboard.form_factor } : null;
-        
-      default:
-        return null;
-    }
+    const requirements = (() => {
+      switch(type) {
+        case 'psu':
+          if (selectedComponents.gpu?.recommended_wattage) {
+            console.log('Filtering PSUs for GPU power requirement:', 
+              selectedComponents.gpu.recommended_wattage);
+            return { minWattage: selectedComponents.gpu.recommended_wattage };
+          }
+          return null;
+          
+        case 'gpu':
+          if (selectedComponents.psu?.wattage) {
+            console.log('Filtering GPUs for PSU capacity:', 
+              selectedComponents.psu.wattage);
+            return { maxWattage: selectedComponents.psu.wattage };
+          }
+          return null;
+          
+        default:
+          return null;
+      }
+    })();
+
+    console.log(`Filter requirements for ${type}:`, requirements);
+    return requirements;
   };
 
   const calculateTotal = () => {

@@ -27,7 +27,6 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
         try {
           const response = await fetch(`/api/${options}`);
           const data = await response.json();
-          console.log(`Fetched ${options} data:`, data);
           
           let filteredData = data;
           
@@ -35,41 +34,34 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             console.log(`Filtering ${options} with requirements:`, filterRequirements);
             
             filteredData = data.filter(component => {
-              // Socket compatibility
-              if (filterRequirements.socket && component.socket) {
-                // Clean up socket strings for comparison
-                const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
-                const compSocket = component.socket.toLowerCase().replace('socket ', '');
-                const matches = compSocket.includes(reqSocket);
-                console.log(`Socket check for ${component.name}: ${matches} (${compSocket} vs ${reqSocket})`);
-                return matches;
-              }
-              
-              // PSU wattage requirement
+              // PSU wattage requirement (minimum)
               if (filterRequirements.minWattage && component.wattage) {
                 const matches = component.wattage >= filterRequirements.minWattage;
-                console.log(`Wattage check for ${component.name}: ${matches} (${component.wattage} vs ${filterRequirements.minWattage})`);
+                console.log(`PSU wattage check for ${component.name}:`, {
+                  required: filterRequirements.minWattage,
+                  actual: component.wattage,
+                  matches
+                });
                 return matches;
               }
-              
-              // Form factor compatibility
-              if (filterRequirements.formFactor && component.form_factor) {
-                // Handle multiple form factors and variations
-                const reqFormFactor = filterRequirements.formFactor.toLowerCase();
-                const compFormFactors = component.form_factor.toLowerCase().split(',').map(f => f.trim());
-                const matches = compFormFactors.some(f => 
-                  f.includes(reqFormFactor) || 
-                  (f.includes('utökad') && reqFormFactor === 'atx') ||
-                  (reqFormFactor.includes('utökad') && f === 'atx')
-                );
-                console.log(`Form factor check for ${component.name}: ${matches} (${compFormFactors} vs ${reqFormFactor})`);
+
+              // GPU power requirement (maximum)
+              if (filterRequirements.maxWattage && component.recommended_wattage) {
+                const matches = component.recommended_wattage <= filterRequirements.maxWattage;
+                console.log(`GPU power check for ${component.name}:`, {
+                  psuWattage: filterRequirements.maxWattage,
+                  required: component.recommended_wattage,
+                  matches
+                });
                 return matches;
               }
-              
+
               return true;
             });
             
             console.log(`Filtered ${options} results:`, filteredData);
+          } else {
+            console.log(`No filter requirements for ${options}, showing all:`, data);
           }
           
           setComponents(filteredData);
