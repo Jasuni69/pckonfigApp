@@ -29,26 +29,43 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
           const data = await response.json();
           console.log(`Fetched ${options} data:`, data);
           
-          // Start with setting all components
           let filteredData = data;
           
-          // Only apply filtering if we have specific requirements
           if (filterRequirements && Object.keys(filterRequirements).length > 0) {
             console.log(`Filtering ${options} with requirements:`, filterRequirements);
             
             filteredData = data.filter(component => {
               // Socket compatibility
               if (filterRequirements.socket && component.socket) {
-                const matches = component.socket === filterRequirements.socket;
-                console.log(`Socket check for ${component.name}: ${matches}`);
+                // Clean up socket strings for comparison
+                const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
+                const compSocket = component.socket.toLowerCase().replace('socket ', '');
+                const matches = compSocket.includes(reqSocket);
+                console.log(`Socket check for ${component.name}: ${matches} (${compSocket} vs ${reqSocket})`);
                 return matches;
               }
+              
               // PSU wattage requirement
               if (filterRequirements.minWattage && component.wattage) {
                 const matches = component.wattage >= filterRequirements.minWattage;
-                console.log(`Wattage check for ${component.name}: ${matches}`);
+                console.log(`Wattage check for ${component.name}: ${matches} (${component.wattage} vs ${filterRequirements.minWattage})`);
                 return matches;
               }
+              
+              // Form factor compatibility
+              if (filterRequirements.formFactor && component.form_factor) {
+                // Handle multiple form factors and variations
+                const reqFormFactor = filterRequirements.formFactor.toLowerCase();
+                const compFormFactors = component.form_factor.toLowerCase().split(',').map(f => f.trim());
+                const matches = compFormFactors.some(f => 
+                  f.includes(reqFormFactor) || 
+                  (f.includes('utökad') && reqFormFactor === 'atx') ||
+                  (reqFormFactor.includes('utökad') && f === 'atx')
+                );
+                console.log(`Form factor check for ${component.name}: ${matches} (${compFormFactors} vs ${reqFormFactor})`);
+                return matches;
+              }
+              
               return true;
             });
             
