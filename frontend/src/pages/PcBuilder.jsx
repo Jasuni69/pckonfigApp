@@ -40,7 +40,7 @@ const PcBuilder = () => {
     
     const requirements = (() => {
       switch(type) {
-        case 'cpu':  // Changed from 'cpus' to match your component options
+        case 'cpus':  // Changed to match the options prop
           if (selectedComponents.motherboard?.socket) {
             const socket = selectedComponents.motherboard.socket;
             console.log('Creating CPU filter with socket:', socket);
@@ -49,7 +49,7 @@ const PcBuilder = () => {
           console.log('No motherboard selected yet for CPU filtering');
           return null;
           
-        case 'motherboard':  // Changed from 'motherboards' to match your component options
+        case 'motherboards':  // Changed from 'motherboards' to match your component options
           if (selectedComponents.cpu?.socket) {
             const socket = selectedComponents.cpu.socket;
             console.log('Creating motherboard filter with socket:', socket);
@@ -58,7 +58,7 @@ const PcBuilder = () => {
           console.log('No CPU selected yet for motherboard filtering');
           return null;
           
-        case 'case':  // Changed from 'cases' to match your component options
+        case 'cases':  // Changed from 'cases' to match your component options
           if (selectedComponents.motherboard?.form_factor) {
             const formFactor = selectedComponents.motherboard.form_factor;
             console.log('Creating case filter with form factor:', formFactor);
@@ -124,6 +124,7 @@ const PcBuilder = () => {
               className="row-span-3 col-start-3 row-start-1" 
               options="cpus"
               onSelect={(component) => handleComponentSelect(component, 'cpu')} 
+              filterRequirements={getFilterRequirements('cpu')}
             />
             <Card 
               title="Ram-Minne" 
