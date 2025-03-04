@@ -18,6 +18,7 @@ const PcBuilder = () => {
   });
 
   const handleComponentSelect = (component, type) => {
+    console.log(`Selected ${type}:`, component);
     setSelectedComponents(prev => ({
       ...prev,
       [type]: component,
@@ -25,9 +26,11 @@ const PcBuilder = () => {
 
     // Update compatibility requirements
     if (type === 'cpu') {
+      console.log('Setting CPU socket:', component.socket);
       setCompatibility(prev => ({ ...prev, socket: component.socket }));
     }
     if (type === 'gpu') {
+      console.log('Setting GPU wattage:', component.recommended_wattage);
       setCompatibility(prev => ({ ...prev, requiredWattage: component.recommended_wattage }));
     }
     if (type === 'motherboard') {
@@ -40,25 +43,18 @@ const PcBuilder = () => {
   };
 
   const getFilterRequirements = (type) => {
-    switch(type) {
-      case 'motherboard':
-        return { 
-          socket: compatibility.socket,
-          // If case is selected, check form factor compatibility
-          formFactor: selectedComponents.case ? selectedComponents.case.form_factor : null
-        };
-      case 'cpu':
-        return { socket: selectedComponents.motherboard?.socket };
-      case 'psu':
-        return { minWattage: compatibility.requiredWattage };
-      case 'case':
-        return { 
-          // If motherboard is selected, ensure case supports its form factor
-          formFactor: compatibility.formFactor 
-        };
-      default:
-        return null;
-    }
+    const requirements = {
+      motherboard: { 
+        socket: compatibility.socket,
+        formFactor: selectedComponents.case ? selectedComponents.case.form_factor : null
+      },
+      cpu: { socket: selectedComponents.motherboard?.socket },
+      psu: { minWattage: compatibility.requiredWattage },
+      case: { formFactor: compatibility.formFactor },
+    }[type] || null;
+    
+    console.log(`Filter requirements for ${type}:`, requirements);
+    return requirements;
   };
 
   const calculateTotal = () => {

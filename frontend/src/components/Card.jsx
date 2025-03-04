@@ -27,32 +27,36 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
         try {
           const response = await fetch(`/api/${options}`);
           const data = await response.json();
+          console.log(`Fetched ${options} data:`, data);
           
           // Start with setting all components
-          setComponents(data);
-          setChoices(data);  // Make sure choices is also set for non-purpose components
+          let filteredData = data;
           
           // Only apply filtering if we have specific requirements
           if (filterRequirements && Object.keys(filterRequirements).length > 0) {
-            console.log('Applying filters:', filterRequirements);
-            const filteredData = data.filter(component => {
+            console.log(`Filtering ${options} with requirements:`, filterRequirements);
+            
+            filteredData = data.filter(component => {
               // Socket compatibility
               if (filterRequirements.socket && component.socket) {
-                return component.socket === filterRequirements.socket;
+                const matches = component.socket === filterRequirements.socket;
+                console.log(`Socket check for ${component.name}: ${matches}`);
+                return matches;
               }
               // PSU wattage requirement
               if (filterRequirements.minWattage && component.wattage) {
-                return component.wattage >= filterRequirements.minWattage;
-              }
-              // Form factor compatibility
-              if (filterRequirements.formFactor && component.form_factor) {
-                return component.form_factor.toLowerCase().includes(filterRequirements.formFactor.toLowerCase());
+                const matches = component.wattage >= filterRequirements.minWattage;
+                console.log(`Wattage check for ${component.name}: ${matches}`);
+                return matches;
               }
               return true;
             });
-            setComponents(filteredData);
-            setChoices(filteredData);
+            
+            console.log(`Filtered ${options} results:`, filteredData);
           }
+          
+          setComponents(filteredData);
+          setChoices(filteredData);
         } catch (error) {
           console.error(`Error fetching ${options}:`, error);
           setComponents([]);
