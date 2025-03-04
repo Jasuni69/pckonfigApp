@@ -14,7 +14,7 @@ const PcBuilder = () => {
   const [compatibility, setCompatibility] = useState({
     socket: null,
     requiredWattage: 0,
-    formFactor: null,
+    formFactor: null
   });
 
   const handleComponentSelect = (component, type) => {
@@ -25,36 +25,55 @@ const PcBuilder = () => {
     }));
 
     // Update compatibility requirements
-    if (type === 'cpu') {
-      console.log('Setting CPU socket:', component.socket);
-      setCompatibility(prev => ({ ...prev, socket: component.socket }));
-    }
-    if (type === 'gpu') {
-      console.log('Setting GPU wattage:', component.recommended_wattage);
-      setCompatibility(prev => ({ ...prev, requiredWattage: component.recommended_wattage }));
-    }
-    if (type === 'motherboard') {
-      setCompatibility(prev => ({ 
-        ...prev, 
-        socket: component.socket,
-        formFactor: component.form_factor 
-      }));
+    switch(type) {
+      case 'cpu':
+        setCompatibility(prev => ({ 
+          ...prev, 
+          socket: component.socket 
+        }));
+        break;
+      case 'motherboard':
+        setCompatibility(prev => ({ 
+          ...prev, 
+          socket: component.socket,
+          formFactor: component.form_factor
+        }));
+        break;
+      case 'gpu':
+        setCompatibility(prev => ({ 
+          ...prev, 
+          requiredWattage: component.recommended_wattage 
+        }));
+        break;
     }
   };
 
   const getFilterRequirements = (type) => {
-    const requirements = {
-      motherboard: { 
-        socket: compatibility.socket,
-        formFactor: selectedComponents.case ? selectedComponents.case.form_factor : null
-      },
-      cpu: { socket: selectedComponents.motherboard?.socket },
-      psu: { minWattage: compatibility.requiredWattage },
-      case: { formFactor: compatibility.formFactor },
-    }[type] || null;
-    
-    console.log(`Filter requirements for ${type}:`, requirements);
-    return requirements;
+    // Only return filter requirements for components that need them
+    switch(type) {
+      case 'motherboard':
+        // Filter motherboards by CPU socket
+        return selectedComponents.cpu ? 
+          { socket: selectedComponents.cpu.socket } : null;
+        
+      case 'cpu':
+        // Filter CPUs by motherboard socket
+        return selectedComponents.motherboard ? 
+          { socket: selectedComponents.motherboard.socket } : null;
+        
+      case 'psu':
+        // Filter PSUs by GPU power requirement
+        return compatibility.requiredWattage > 0 ? 
+          { minWattage: compatibility.requiredWattage } : null;
+        
+      case 'case':
+        // Filter cases by motherboard form factor
+        return selectedComponents.motherboard ? 
+          { formFactor: selectedComponents.motherboard.form_factor } : null;
+        
+      default:
+        return null;
+    }
   };
 
   const calculateTotal = () => {
