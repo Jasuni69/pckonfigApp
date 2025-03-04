@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
-from typing import Optional, datetime
+from typing import Optional
+from datetime import datetime
 
 # Component schemas
 class CPUModel(BaseModel):
