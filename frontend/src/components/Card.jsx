@@ -24,31 +24,40 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
       setChoices(purposeOptions);
     } else {
       const fetchComponents = async () => {
-        const response = await fetch(`/api/${options}`);
-        const data = await response.json();
-        
-        // Filter components based on requirements
-        let filteredData = data;
-        if (filterRequirements) {
-          filteredData = data.filter(component => {
-            // Socket compatibility
-            if (filterRequirements.socket) {
-              return component.socket === filterRequirements.socket;
-            }
-            // PSU wattage requirement
-            if (filterRequirements.minWattage) {
-              return component.wattage >= filterRequirements.minWattage;
-            }
-            // Form factor compatibility for cases
-            if (filterRequirements.formFactor && component.form_factor) {
-              // Check if the case's form_factor string includes the required form factor
-              return component.form_factor.toLowerCase().includes(filterRequirements.formFactor.toLowerCase());
-            }
-            return true;
-          });
+        try {
+          const response = await fetch(`/api/${options}`);
+          const data = await response.json();
+          
+          // Start with setting all components
+          setComponents(data);
+          setChoices(data);  // Make sure choices is also set for non-purpose components
+          
+          // Only apply filtering if we have specific requirements
+          if (filterRequirements && Object.keys(filterRequirements).length > 0) {
+            console.log('Applying filters:', filterRequirements);
+            const filteredData = data.filter(component => {
+              // Socket compatibility
+              if (filterRequirements.socket && component.socket) {
+                return component.socket === filterRequirements.socket;
+              }
+              // PSU wattage requirement
+              if (filterRequirements.minWattage && component.wattage) {
+                return component.wattage >= filterRequirements.minWattage;
+              }
+              // Form factor compatibility
+              if (filterRequirements.formFactor && component.form_factor) {
+                return component.form_factor.toLowerCase().includes(filterRequirements.formFactor.toLowerCase());
+              }
+              return true;
+            });
+            setComponents(filteredData);
+            setChoices(filteredData);
+          }
+        } catch (error) {
+          console.error(`Error fetching ${options}:`, error);
+          setComponents([]);
+          setChoices([]);
         }
-        
-        setComponents(filteredData);
       };
 
       fetchComponents();
@@ -56,10 +65,10 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
   }, [options, filterRequirements]);
 
   const filteredChoices = search
-    ? (options === "purpose" ? choices : components).filter((opt) =>
+    ? (options === "purpose" ? choices : choices).filter((opt) =>
         opt.name.toLowerCase().includes(search.toLowerCase())
       )
-    : (options === "purpose" ? choices : components);
+    : choices;
 
   const handleSelect = (option) => {
     setSelected(option);
