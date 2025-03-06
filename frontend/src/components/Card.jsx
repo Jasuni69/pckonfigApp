@@ -29,6 +29,13 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
           console.log('Filter requirements:', filterRequirements);
           
           const response = await fetch(`/api/${options}`);
+          if (!response.ok) {
+            console.error(`Error fetching ${options}: ${response.status}`);
+            setComponents([]);
+            setChoices([]);
+            return;
+          }
+          
           const data = await response.json();
           
           let filteredData = data;
@@ -37,10 +44,12 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             console.log(`Filtering ${options} with requirements:`, filterRequirements);
             
             filteredData = data.filter(component => {
+              if (!component) return false;
+              
               // CPU/Motherboard socket compatibility
               if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
                 const reqSocket = filterRequirements.socket.toLowerCase().replace(/socket\s*/i, '');
-                const compSocket = component.socket.toLowerCase().replace(/socket\s*/i, '');
+                const compSocket = (component.socket || '').toLowerCase().replace(/socket\s*/i, '');
                 
                 // Special handling for Intel sockets
                 if (reqSocket.includes('1700')) {

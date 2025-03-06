@@ -19,26 +19,12 @@ const PcBuilder = () => {
 
   const handleComponentSelect = (component, type) => {
     console.log(`Selected ${type}:`, component);
+    if (!component) return;
     
-    // Clear dependent components when changing critical parts
-    if (type === 'cpu') {
-      setSelectedComponents(prev => ({
-        ...prev,
-        [type]: component,
-        motherboard: null // Clear motherboard when CPU changes
-      }));
-    } else if (type === 'gpu') {
-      setSelectedComponents(prev => ({
-        ...prev,
-        [type]: component,
-        psu: null // Clear PSU when GPU changes
-      }));
-    } else {
-      setSelectedComponents(prev => ({
-        ...prev,
-        [type]: component
-      }));
-    }
+    setSelectedComponents(prev => ({
+      ...prev,
+      [type]: component
+    }));
 
     // Update compatibility requirements
     switch(type) {
@@ -122,12 +108,12 @@ const PcBuilder = () => {
 
   const calculateTotal = () => {
     return Object.values(selectedComponents)
-      .filter(component => component && component.price) // Add null check
+      .filter(component => component && typeof component === 'object' && component.price)
       .reduce((total, component) => {
         const price = typeof component.price === 'string' 
           ? parseInt(component.price.replace(/[^0-9]/g, ''), 10) 
           : component.price;
-        return total + (price || 0);
+        return total + (Number.isFinite(price) ? price : 0);
       }, 0);
   };
 
@@ -234,10 +220,10 @@ const PcBuilder = () => {
             <h2 className="text-xl font-bold mb-4">Valda komponenter</h2>
             <div className="space-y-2">
               {Object.entries(selectedComponents)
-                .filter(([_, comp]) => comp !== null && comp !== undefined)  // Filter out null/undefined
+                .filter(([_, comp]) => comp && typeof comp === 'object' && comp.name)
                 .map(([type, comp]) => (
                   <div key={type} className="flex justify-between items-center p-2 bg-slate-200 rounded">
-                    <span>{componentLabels[type]}: {comp.name}</span>
+                    <span>{componentLabels[type] || type}: {comp.name}</span>
                     <span>{comp.price ? `${comp.price} kr` : ''}</span>
                   </div>
                 ))}
