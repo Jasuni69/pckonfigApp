@@ -75,8 +75,15 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               if (filterRequirements.minWattage && options === 'psus') {
                 const psuWattage = parseInt(component.wattage, 10);
                 const minRequired = parseInt(filterRequirements.minWattage, 10);
-                const matches = psuWattage >= minRequired;
                 
+                console.log(`PSU ${component.name} raw values:`, {
+                  rawWattage: component.wattage,
+                  parsedWattage: psuWattage,
+                  rawRequired: filterRequirements.minWattage,
+                  parsedRequired: minRequired
+                });
+                
+                const matches = psuWattage >= minRequired;
                 console.log(`PSU ${component.name} wattage check:`, {
                   name: component.name,
                   required: minRequired,
@@ -91,8 +98,15 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               if (filterRequirements.maxWattage && options === 'gpus') {
                 const gpuWattage = parseInt(component.recommended_wattage, 10) || 0;
                 const maxAllowed = parseInt(filterRequirements.maxWattage, 10);
-                const matches = gpuWattage <= maxAllowed;
                 
+                console.log(`GPU ${component.name} raw values:`, {
+                  rawWattage: component.recommended_wattage,
+                  parsedWattage: gpuWattage,
+                  rawMaxAllowed: filterRequirements.maxWattage,
+                  parsedMaxAllowed: maxAllowed
+                });
+                
+                const matches = gpuWattage <= maxAllowed;
                 console.log(`GPU ${component.name} wattage check:`, {
                   name: component.name,
                   maxAllowed,
@@ -119,15 +133,16 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               return true;
             });
             
-            // Add summary logging
+            // Add detailed summary logging
             if (options === 'psus' || options === 'gpus') {
               console.log(`${options} filtering summary:`, {
                 totalBefore: data.length,
                 totalAfter: filteredData.length,
                 requirements: filterRequirements,
-                filtered: filteredData.map(comp => ({
+                firstFewItems: filteredData.slice(0, 5).map(comp => ({
                   name: comp.name,
-                  wattage: options === 'psus' ? comp.wattage : comp.recommended_wattage
+                  wattage: options === 'psus' ? comp.wattage : comp.recommended_wattage,
+                  raw: comp
                 }))
               });
             }
