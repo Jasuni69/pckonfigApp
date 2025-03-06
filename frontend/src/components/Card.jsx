@@ -78,6 +78,7 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 const matches = psuWattage >= minRequired;
                 
                 console.log(`PSU ${component.name} wattage check:`, {
+                  name: component.name,
                   required: minRequired,
                   actual: psuWattage,
                   matches
@@ -88,11 +89,12 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
 
               // GPU maximum wattage requirement for PSU
               if (filterRequirements.maxWattage && options === 'gpus') {
-                const gpuWattage = parseInt(component.recommended_wattage, 10);
+                const gpuWattage = parseInt(component.recommended_wattage, 10) || 0;
                 const maxAllowed = parseInt(filterRequirements.maxWattage, 10);
                 const matches = gpuWattage <= maxAllowed;
                 
                 console.log(`GPU ${component.name} wattage check:`, {
+                  name: component.name,
                   maxAllowed,
                   required: gpuWattage,
                   matches
@@ -117,10 +119,18 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               return true;
             });
             
-            console.log(`Filtered ${options} results:`, filteredData.map(comp => ({
-              name: comp.name,
-              wattage: options === 'psus' ? comp.wattage : comp.recommended_wattage
-            })));
+            // Add summary logging
+            if (options === 'psus' || options === 'gpus') {
+              console.log(`${options} filtering summary:`, {
+                totalBefore: data.length,
+                totalAfter: filteredData.length,
+                requirements: filterRequirements,
+                filtered: filteredData.map(comp => ({
+                  name: comp.name,
+                  wattage: options === 'psus' ? comp.wattage : comp.recommended_wattage
+                }))
+              });
+            }
           }
           
           setComponents(filteredData);
