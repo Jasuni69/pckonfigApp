@@ -73,24 +73,31 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
 
               // PSU minimum wattage requirement for GPU
               if (filterRequirements.minWattage && options === 'psus') {
-                const matches = component.wattage >= filterRequirements.minWattage;
+                const psuWattage = parseInt(component.wattage, 10);
+                const minRequired = parseInt(filterRequirements.minWattage, 10);
+                const matches = psuWattage >= minRequired;
+                
                 console.log(`PSU ${component.name} wattage check:`, {
-                  required: filterRequirements.minWattage,
-                  actual: component.wattage,
+                  required: minRequired,
+                  actual: psuWattage,
                   matches
                 });
+                
                 return matches;
               }
 
               // GPU maximum wattage requirement for PSU
               if (filterRequirements.maxWattage && options === 'gpus') {
-                const gpuWattage = component.recommended_wattage || 0;
-                const matches = gpuWattage <= filterRequirements.maxWattage;
+                const gpuWattage = parseInt(component.recommended_wattage, 10);
+                const maxAllowed = parseInt(filterRequirements.maxWattage, 10);
+                const matches = gpuWattage <= maxAllowed;
+                
                 console.log(`GPU ${component.name} wattage check:`, {
-                  maxAllowed: filterRequirements.maxWattage,
+                  maxAllowed,
                   required: gpuWattage,
                   matches
                 });
+                
                 return matches;
               }
 
@@ -110,7 +117,10 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               return true;
             });
             
-            console.log(`Filtered ${options} results:`, filteredData);
+            console.log(`Filtered ${options} results:`, filteredData.map(comp => ({
+              name: comp.name,
+              wattage: options === 'psus' ? comp.wattage : comp.recommended_wattage
+            })));
           }
           
           setComponents(filteredData);
