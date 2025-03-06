@@ -71,11 +71,15 @@ const PcBuilder = () => {
     console.log('Getting filter requirements for:', type);
     
     switch(type) {
-      case 'motherboards':  // Changed to match Card options prop
-        return selectedComponents.cpu ? 
-          { socket: selectedComponents.cpu.socket } : null;
+      case 'motherboards':
+        if (selectedComponents.cpu) {
+          console.log('Found CPU, creating motherboard filter with socket:', selectedComponents.cpu.socket);
+          return { socket: selectedComponents.cpu.socket };
+        }
+        console.log('No CPU selected for motherboard filtering');
+        return null;
         
-      case 'cpus':  // Changed to match Card options prop
+      case 'cpus':
         if (selectedComponents.motherboard) {
           console.log('Found motherboard, creating CPU filter with socket:', selectedComponents.motherboard.socket);
           return { socket: selectedComponents.motherboard.socket };
@@ -141,6 +145,7 @@ const PcBuilder = () => {
               className="row-span-3 col-start-2 row-start-1" 
               options="motherboards"
               onSelect={(component) => handleComponentSelect(component, 'motherboard')} 
+              filterRequirements={getFilterRequirements('motherboards')}
             />
             <Card 
               title="Processor" 
@@ -205,10 +210,12 @@ const PcBuilder = () => {
             <h2 className="text-xl font-bold mb-4">Valda komponenter</h2>
             <div className="space-y-2">
               {Object.entries(selectedComponents).map(([type, comp]) => (
-                <div key={type} className="flex justify-between items-center p-2 bg-slate-200 rounded">
-                  <span>{componentLabels[type]}: {comp.name}</span>
-                  <span>{comp.price} kr</span>
-                </div>
+                comp && (
+                  <div key={type} className="flex justify-between items-center p-2 bg-slate-200 rounded">
+                    <span>{componentLabels[type]}: {comp.name}</span>
+                    <span>{comp.price} kr</span>
+                  </div>
+                )
               ))}
             </div>
             <div className="mt-4 pt-4 border-t-2 border-slate-400">
