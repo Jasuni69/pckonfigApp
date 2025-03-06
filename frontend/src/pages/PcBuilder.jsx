@@ -76,25 +76,23 @@ const PcBuilder = () => {
       case 'psus':
         if (selectedComponents.gpu) {
           const minWattage = selectedComponents.gpu.recommended_wattage;
-          console.log('Creating PSU filter with min wattage:', {
+          console.log('PSU filter requirements:', {
             gpu: selectedComponents.gpu.name,
-            minWattage
+            recommendedWattage: minWattage
           });
           return { minWattage };
         }
-        console.log('No GPU selected for PSU filtering');
         return null;
         
       case 'gpus':
         if (selectedComponents.psu) {
           const maxWattage = selectedComponents.psu.wattage;
-          console.log('Creating GPU filter with max wattage:', {
+          console.log('GPU filter requirements:', {
             psu: selectedComponents.psu.name,
-            maxWattage
+            availableWattage: maxWattage
           });
           return { maxWattage };
         }
-        console.log('No PSU selected for GPU filtering');
         return null;
         
       case 'cases':

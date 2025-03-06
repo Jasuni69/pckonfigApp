@@ -73,48 +73,36 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
 
               // PSU minimum wattage requirement for GPU
               if (filterRequirements.minWattage && options === 'psus') {
-                const psuWattage = parseInt(component.wattage, 10);
-                const minRequired = parseInt(filterRequirements.minWattage, 10);
+                // Remove any non-numeric characters and parse as integer
+                const psuWattage = parseInt(String(component.wattage).replace(/\D/g, ''), 10);
+                const minRequired = parseInt(String(filterRequirements.minWattage).replace(/\D/g, ''), 10);
                 
-                console.log(`PSU ${component.name} raw values:`, {
-                  rawWattage: component.wattage,
-                  parsedWattage: psuWattage,
-                  rawRequired: filterRequirements.minWattage,
-                  parsedRequired: minRequired
-                });
-                
-                const matches = psuWattage >= minRequired;
                 console.log(`PSU ${component.name} wattage check:`, {
                   name: component.name,
-                  required: minRequired,
-                  actual: psuWattage,
-                  matches
+                  rawWattage: component.wattage,
+                  parsedWattage: psuWattage,
+                  minRequired,
+                  matches: psuWattage >= minRequired
                 });
                 
-                return matches;
+                return psuWattage >= minRequired;
               }
 
               // GPU maximum wattage requirement for PSU
               if (filterRequirements.maxWattage && options === 'gpus') {
-                const gpuWattage = parseInt(component.recommended_wattage, 10) || 0;
-                const maxAllowed = parseInt(filterRequirements.maxWattage, 10);
+                // Remove any non-numeric characters and parse as integer
+                const gpuWattage = parseInt(String(component.recommended_wattage).replace(/\D/g, ''), 10) || 0;
+                const maxAllowed = parseInt(String(filterRequirements.maxWattage).replace(/\D/g, ''), 10);
                 
-                console.log(`GPU ${component.name} raw values:`, {
-                  rawWattage: component.recommended_wattage,
-                  parsedWattage: gpuWattage,
-                  rawMaxAllowed: filterRequirements.maxWattage,
-                  parsedMaxAllowed: maxAllowed
-                });
-                
-                const matches = gpuWattage <= maxAllowed;
                 console.log(`GPU ${component.name} wattage check:`, {
                   name: component.name,
+                  rawWattage: component.recommended_wattage,
+                  parsedWattage: gpuWattage,
                   maxAllowed,
-                  required: gpuWattage,
-                  matches
+                  matches: gpuWattage <= maxAllowed
                 });
                 
-                return matches;
+                return gpuWattage <= maxAllowed;
               }
 
               // Case form factor compatibility
@@ -135,14 +123,18 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             
             // Add detailed summary logging
             if (options === 'psus' || options === 'gpus') {
-              console.log(`${options} filtering summary:`, {
-                totalBefore: data.length,
-                totalAfter: filteredData.length,
+              const beforeCount = data.length;
+              const afterCount = filteredData.length;
+              
+              console.log(`${options} filtering complete:`, {
+                type: options,
                 requirements: filterRequirements,
-                firstFewItems: filteredData.slice(0, 5).map(comp => ({
+                beforeCount,
+                afterCount,
+                filtered: beforeCount - afterCount,
+                sample: filteredData.slice(0, 3).map(comp => ({
                   name: comp.name,
-                  wattage: options === 'psus' ? comp.wattage : comp.recommended_wattage,
-                  raw: comp
+                  wattage: options === 'psus' ? comp.wattage : comp.recommended_wattage
                 }))
               });
             }
