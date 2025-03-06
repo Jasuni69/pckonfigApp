@@ -87,17 +87,32 @@ const PcBuilder = () => {
         console.log('No motherboard selected for CPU filtering');
         return null;
         
-      case 'psus':  // Changed to match Card options prop
-        return selectedComponents.gpu ? 
-          { minWattage: selectedComponents.gpu.recommended_wattage } : null;
+      case 'psus':
+        if (selectedComponents.gpu) {
+          const minWattage = selectedComponents.gpu.recommended_wattage;
+          console.log('Found GPU, creating PSU filter with min wattage:', minWattage);
+          return { minWattage };
+        }
+        console.log('No GPU selected for PSU filtering');
+        return null;
         
-      case 'gpus':  // Changed to match Card options prop
-        return selectedComponents.psu ? 
-          { maxWattage: selectedComponents.psu.wattage } : null;
+      case 'gpus':
+        if (selectedComponents.psu) {
+          const maxWattage = selectedComponents.psu.wattage;
+          console.log('Found PSU, creating GPU filter with max wattage:', maxWattage);
+          return { maxWattage };
+        }
+        console.log('No PSU selected for GPU filtering');
+        return null;
         
-      case 'cases':  // Changed to match Card options prop
-        return selectedComponents.motherboard ? 
-          { formFactor: selectedComponents.motherboard.form_factor } : null;
+      case 'cases':
+        if (selectedComponents.motherboard) {
+          const formFactor = selectedComponents.motherboard.form_factor;
+          console.log('Creating case filter with form factor:', formFactor);
+          return { formFactor };
+        }
+        console.log('No motherboard selected for case filtering');
+        return null;
         
       default:
         console.log('No filter requirements for type:', type);
@@ -175,6 +190,7 @@ const PcBuilder = () => {
               className="row-span-3 col-start-5 row-start-1" 
               options="gpus"
               onSelect={(component) => handleComponentSelect(component, 'gpu')} 
+              filterRequirements={getFilterRequirements('gpus')}
             />
             <Card 
               title="Hårddisk" 
@@ -196,6 +212,7 @@ const PcBuilder = () => {
               className="row-span-3 col-start-3 row-start-4" 
               options="psus"
               onSelect={(component) => handleComponentSelect(component, 'psu')} 
+              filterRequirements={getFilterRequirements('psus')}
             />
             <Card 
               title="Extra" 

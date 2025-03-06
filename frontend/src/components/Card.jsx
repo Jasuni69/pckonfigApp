@@ -39,8 +39,20 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             filteredData = data.filter(component => {
               // CPU/Motherboard socket compatibility
               if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
-                const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
-                const compSocket = component.socket.toLowerCase().replace('socket ', '');
+                const reqSocket = filterRequirements.socket.toLowerCase().replace(/socket\s*/i, '');
+                const compSocket = component.socket.toLowerCase().replace(/socket\s*/i, '');
+                
+                // Special handling for Intel sockets
+                if (reqSocket.includes('1700')) {
+                  const matches = compSocket.includes('1700');
+                  console.log(`${options} ${component.name} socket check:`, {
+                    required: reqSocket,
+                    actual: compSocket,
+                    matches
+                  });
+                  return matches;
+                }
+                
                 const matches = compSocket.includes(reqSocket);
                 console.log(`${options} ${component.name} socket check:`, {
                   required: reqSocket,
