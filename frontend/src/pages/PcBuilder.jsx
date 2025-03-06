@@ -106,7 +106,14 @@ const PcBuilder = () => {
   };
 
   const calculateTotal = () => {
-    return Object.values(selectedComponents).reduce((sum, comp) => sum + Number(comp.price), 0);
+    return Object.values(selectedComponents)
+      .filter(component => component && component.price) // Add null check
+      .reduce((total, component) => {
+        const price = typeof component.price === 'string' 
+          ? parseInt(component.price.replace(/[^0-9]/g, ''), 10) 
+          : component.price;
+        return total + (price || 0);
+      }, 0);
   };
 
   // Map English keys to Swedish labels
@@ -209,14 +216,14 @@ const PcBuilder = () => {
           <div className="w-full max-w-7xl bg-slate-300 rounded-lg shadow-lg border-2 border-slate-800 p-6">
             <h2 className="text-xl font-bold mb-4">Valda komponenter</h2>
             <div className="space-y-2">
-              {Object.entries(selectedComponents).map(([type, comp]) => (
-                comp && (
+              {Object.entries(selectedComponents)
+                .filter(([_, comp]) => comp !== null && comp !== undefined)  // Filter out null/undefined
+                .map(([type, comp]) => (
                   <div key={type} className="flex justify-between items-center p-2 bg-slate-200 rounded">
                     <span>{componentLabels[type]}: {comp.name}</span>
-                    <span>{comp.price} kr</span>
+                    <span>{comp.price ? `${comp.price} kr` : ''}</span>
                   </div>
-                )
-              ))}
+                ))}
             </div>
             <div className="mt-4 pt-4 border-t-2 border-slate-400">
               <div className="flex justify-between items-center font-bold text-lg">
