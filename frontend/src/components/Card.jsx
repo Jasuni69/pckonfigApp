@@ -71,6 +71,29 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 return matches;
               }
 
+              // PSU minimum wattage requirement for GPU
+              if (filterRequirements.minWattage && options === 'psus') {
+                const matches = component.wattage >= filterRequirements.minWattage;
+                console.log(`PSU ${component.name} wattage check:`, {
+                  required: filterRequirements.minWattage,
+                  actual: component.wattage,
+                  matches
+                });
+                return matches;
+              }
+
+              // GPU maximum wattage requirement for PSU
+              if (filterRequirements.maxWattage && options === 'gpus') {
+                const gpuWattage = component.recommended_wattage || 0;
+                const matches = gpuWattage <= filterRequirements.maxWattage;
+                console.log(`GPU ${component.name} wattage check:`, {
+                  maxAllowed: filterRequirements.maxWattage,
+                  required: gpuWattage,
+                  matches
+                });
+                return matches;
+              }
+
               // Case form factor compatibility
               if (filterRequirements.formFactor && options === 'case') {
                 const reqFormFactor = filterRequirements.formFactor.toLowerCase();
