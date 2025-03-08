@@ -229,11 +229,6 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
                 const compSocket = (component.socket || '').toLowerCase().replace('socket ', '');
                 const matches = compSocket.includes(reqSocket);
-                console.log(`${options} ${component.name} socket check:`, {
-                  required: reqSocket,
-                  actual: compSocket,
-                  matches
-                });
                 return matches;
               }
 
@@ -242,13 +237,31 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 const reqFormFactor = filterRequirements.formFactor.toLowerCase();
                 const compFormFactor = (component.form_factor || '').toLowerCase();
                 const matches = compFormFactor.includes(reqFormFactor);
-                console.log(`Motherboard ${component.name} form factor check:`, {
-                  name: component.name,
-                  formFactor: compFormFactor,
-                  required: reqFormFactor,
-                  matches
-                });
                 return matches;
+              }
+
+              // GPU power requirements
+              if (options === 'gpus' && filterRequirements.maxWattage) {
+                const gpuWattage = parseInt(component.power_consumption) || 0;
+                const maxWattage = parseInt(filterRequirements.maxWattage) || 0;
+                console.log(`GPU ${component.name} power check:`, {
+                  gpuWattage,
+                  maxWattage,
+                  matches: gpuWattage <= maxWattage
+                });
+                return gpuWattage <= maxWattage;
+              }
+
+              // PSU wattage requirements
+              if (options === 'psus' && filterRequirements.minWattage) {
+                const psuWattage = parseInt(component.wattage) || 0;
+                const minWattage = parseInt(filterRequirements.minWattage) || 0;
+                console.log(`PSU ${component.name} wattage check:`, {
+                  psuWattage,
+                  minWattage,
+                  matches: psuWattage >= minWattage
+                });
+                return psuWattage >= minWattage;
               }
 
               return true;
