@@ -1,6 +1,23 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
+const normalizeFormFactor = (formFactor) => {
+  if (!formFactor) return '';
+  
+  const ff = formFactor.toLowerCase();
+  
+  // Handle common variations and Swedish translations
+  if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'e-atx';
+  if (ff.includes('micro')) return 'micro-atx';
+  if (ff.includes('mini-mini')) return 'mini-itx'; // Handle double "mini" case
+  if (ff.includes('mini')) return 'mini-itx';
+  if (ff === 'atx') return 'atx';
+  
+  // Log unexpected form factors
+  console.log('Unexpected form factor:', formFactor);
+  return ff;
+};
+
 const Card = ({ title, img, className = "", onSelect, options, filterRequirements }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -46,22 +63,50 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             filteredData = data.filter(component => {
               if (!component) return false;
               
-              // CPU/Motherboard socket compatibility
-              if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
-                const reqSocket = filterRequirements.socket.toLowerCase().replace(/socket\s*/i, '');
-                const compSocket = (component.socket || '').toLowerCase().replace(/socket\s*/i, '');
+              // Case/Motherboard form factor compatibility
+              if (filterRequirements.formFactor && (options === 'cases' || options === 'motherboards')) {
+                const reqFormFactor = filterRequirements.formFactor.toLowerCase();
+                const compFormFactor = component.form_factor.toLowerCase();
                 
-                // Special handling for Intel sockets
-                if (reqSocket.includes('1700')) {
-                  const matches = compSocket.includes('1700');
-                  console.log(`${options} ${component.name} socket check:`, {
-                    required: reqSocket,
-                    actual: compSocket,
+                // Check if case supports the motherboard form factor
+                if (options === 'cases') {
+                  // Handle cases where form_factor might be a single string or include multiple formats
+                  const supportedFormFactors = component.form_factor.includes(',')
+                    ? component.form_factor.split(',').map(ff => normalizeFormFactor(ff.trim()))
+                    : [normalizeFormFactor(component.form_factor)];
+                  
+                  const matches = supportedFormFactors.includes(reqFormFactor);
+                  console.log(`Case ${component.name} form factor check:`, {
+                    name: component.name,
+                    required: reqFormFactor,
+                    rawSupported: component.form_factor,
+                    normalizedSupported: supportedFormFactors,
                     matches
                   });
                   return matches;
                 }
                 
+                // Check if motherboard fits in the case
+                if (options === 'motherboards') {
+                  const caseSupported = Array.isArray(filterRequirements.formFactor) 
+                    ? filterRequirements.formFactor.map(ff => ff.toLowerCase())
+                    : [reqFormFactor];
+                  
+                  const matches = caseSupported.includes(compFormFactor);
+                  console.log(`Motherboard ${component.name} form factor check:`, {
+                    name: component.name,
+                    motherboardFormFactor: compFormFactor,
+                    supportedByCase: caseSupported,
+                    matches
+                  });
+                  return matches;
+                }
+              }
+
+              // CPU/Motherboard socket compatibility
+              if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
+                const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
+                const compSocket = component.socket.toLowerCase().replace('socket ', '');
                 const matches = compSocket.includes(reqSocket);
                 console.log(`${options} ${component.name} socket check:`, {
                   required: reqSocket,
@@ -105,24 +150,13 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 return gpuWattage <= maxAllowed;
               }
 
-              // Case form factor compatibility
-              if (filterRequirements.formFactor && options === 'case') {
-                const reqFormFactor = filterRequirements.formFactor.toLowerCase();
-                const compFormFactor = component.form_factor.toLowerCase();
-                const matches = compFormFactor.includes(reqFormFactor);
-                console.log(`Case ${component.name} form factor check:`, {
-                  required: reqFormFactor,
-                  actual: compFormFactor,
-                  matches
-                });
-                return matches;
-              }
-
               return true;
             });
             
-            // Add detailed summary logging
-            if (options === 'psus' || options === 'gpus') {
+            console.log(`Filtered ${options} results:`, filteredData);
+            
+            // Update the summary logging
+            if (['cases', 'motherboards', 'psus', 'gpus'].includes(options)) {
               const beforeCount = data.length;
               const afterCount = filteredData.length;
               
@@ -134,6 +168,8 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 filtered: beforeCount - afterCount,
                 sample: filteredData.slice(0, 3).map(comp => ({
                   name: comp.name,
+                  formFactor: comp.form_factor,
+                  supported: comp.supported_form_factors,
                   wattage: options === 'psus' ? comp.wattage : comp.recommended_wattage
                 }))
               });

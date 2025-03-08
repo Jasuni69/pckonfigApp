@@ -58,11 +58,24 @@ const PcBuilder = () => {
     
     switch(type) {
       case 'motherboards':
+        const requirements = {};
+        
         if (selectedComponents.cpu) {
-          console.log('Found CPU, creating motherboard filter with socket:', selectedComponents.cpu.socket);
-          return { socket: selectedComponents.cpu.socket };
+          requirements.socket = selectedComponents.cpu.socket;
+          console.log('Found CPU, adding socket requirement:', selectedComponents.cpu.socket);
         }
-        console.log('No CPU selected for motherboard filtering');
+        
+        if (selectedComponents.case) {
+          requirements.formFactor = selectedComponents.case.form_factor;
+          console.log('Found case, adding form factor requirement:', selectedComponents.case.form_factor);
+        }
+        
+        if (Object.keys(requirements).length > 0) {
+          console.log('Motherboard filter requirements:', requirements);
+          return requirements;
+        }
+        
+        console.log('No requirements for motherboard filtering');
         return null;
         
       case 'cpus':
@@ -98,7 +111,10 @@ const PcBuilder = () => {
       case 'cases':
         if (selectedComponents.motherboard) {
           const formFactor = selectedComponents.motherboard.form_factor;
-          console.log('Creating case filter with form factor:', formFactor);
+          console.log('Case filter requirements:', {
+            motherboard: selectedComponents.motherboard.name,
+            formFactor: formFactor
+          });
           return { formFactor };
         }
         console.log('No motherboard selected for case filtering');
