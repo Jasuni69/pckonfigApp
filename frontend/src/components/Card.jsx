@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { FiInfo } from 'react-icons/fi';
 
 const normalizeFormFactor = (formFactor) => {
   if (!formFactor) return '';
@@ -18,195 +19,192 @@ const normalizeFormFactor = (formFactor) => {
   return ff;
 };
 
-const Card = ({ title, img, className = "", onSelect, options, filterRequirements }) => {
+const GuideContent = ({ type }) => {
+  switch(type) {
+    case 'cases':
+      return (
+        <div className="p-4">
+          <h4 className="font-bold mb-2">Datorlådor - Guide</h4>
+          <ul className="space-y-2">
+            <li><span className="font-semibold">E-ATX:</span> Största storleken (305 × 330mm+)</li>
+            <li><span className="font-semibold">ATX:</span> Standard storlek (305 × 244mm)</li>
+            <li><span className="font-semibold">Micro-ATX:</span> Mellanstor (244 × 244mm)</li>
+            <li><span className="font-semibold">Mini-ITX:</span> Kompakt (170 × 170mm)</li>
+            <li className="mt-2"><span className="font-semibold">Tips:</span> Kontrollera även:</li>
+            <ul className="ml-4">
+              <li>- Plats för grafikkort</li>
+              <li>- Kylningslösningar</li>
+              <li>- Kabeldragning</li>
+            </ul>
+          </ul>
+        </div>
+      );
+    
+    case 'motherboards':
+      return (
+        <div className="p-4">
+          <h4 className="font-bold mb-2">Moderkort - Guide</h4>
+          <ul className="space-y-2">
+            <li><span className="font-semibold">Form Faktorer:</span></li>
+            <ul className="ml-4 mb-2">
+              <li>- E-ATX: 305 × 330mm</li>
+              <li>- ATX: 305 × 244mm</li>
+              <li>- Micro-ATX: 244 × 244mm</li>
+              <li>- Mini-ITX: 170 × 170mm</li>
+            </ul>
+            <li><span className="font-semibold">Viktiga Funktioner:</span></li>
+            <ul className="ml-4">
+              <li>- CPU Socket (AM4/AM5/LGA1700)</li>
+              <li>- RAM-typ (DDR4/DDR5)</li>
+              <li>- M.2 platser</li>
+            </ul>
+          </ul>
+        </div>
+      );
+    
+    case 'cpus':
+      return (
+        <div className="p-4">
+          <h4 className="font-bold mb-2">Processorer - Guide</h4>
+          <ul className="space-y-2">
+            <li><span className="font-semibold">AMD Socklar:</span></li>
+            <ul className="ml-4 mb-2">
+              <li>- AM5: Nyaste, DDR5</li>
+              <li>- AM4: Tidigare gen, DDR4</li>
+            </ul>
+            <li><span className="font-semibold">Intel Socklar:</span></li>
+            <ul className="ml-4">
+              <li>- LGA 1700: 12:e/13:e gen</li>
+              <li>- LGA 1200: 10:e/11:e gen</li>
+            </ul>
+          </ul>
+        </div>
+      );
+
+    case 'ram':
+      return (
+        <div className="p-4">
+          <h4 className="font-bold mb-2">RAM-Minne - Guide</h4>
+          <ul className="space-y-2">
+            <li><span className="font-semibold">Typer:</span></li>
+            <ul className="ml-4 mb-2">
+              <li>- DDR5: Nyaste standarden</li>
+              <li>- DDR4: Fortfarande vanlig</li>
+            </ul>
+            <li><span className="font-semibold">Viktigt att Tänka På:</span></li>
+            <ul className="ml-4">
+              <li>- Hastighet (MHz)</li>
+              <li>- Kapacitet (GB)</li>
+              <li>- Latency (CL)</li>
+            </ul>
+          </ul>
+        </div>
+      );
+
+    case 'gpus':
+      return (
+        <div className="p-4">
+          <h4 className="font-bold mb-2">Grafikkort - Guide</h4>
+          <ul className="space-y-2">
+            <li><span className="font-semibold">Tillverkare:</span></li>
+            <ul className="ml-4 mb-2">
+              <li>- NVIDIA: GeForce RTX/GTX</li>
+              <li>- AMD: Radeon RX</li>
+            </ul>
+            <li><span className="font-semibold">Viktiga Specifikationer:</span></li>
+            <ul className="ml-4">
+              <li>- VRAM (GB)</li>
+              <li>- Strömförbrukning (W)</li>
+              <li>- Fysisk storlek</li>
+            </ul>
+          </ul>
+        </div>
+      );
+
+    case 'storage':
+      return (
+        <div className="p-4">
+          <h4 className="font-bold mb-2">Lagring - Guide</h4>
+          <ul className="space-y-2">
+            <li><span className="font-semibold">SSD Typer:</span></li>
+            <ul className="ml-4 mb-2">
+              <li>- NVMe M.2: Snabbast</li>
+              <li>- SATA M.2: Mellannivå</li>
+              <li>- SATA 2.5": Standard</li>
+            </ul>
+            <li><span className="font-semibold">HDD:</span></li>
+            <ul className="ml-4">
+              <li>- 3.5": Standard storlek</li>
+              <li>- 7200/5400 RPM</li>
+            </ul>
+          </ul>
+        </div>
+      );
+
+    case 'coolers':
+      return (
+        <div className="p-4">
+          <h4 className="font-bold mb-2">CPU-Kylare - Guide</h4>
+          <ul className="space-y-2">
+            <li><span className="font-semibold">Typer:</span></li>
+            <ul className="ml-4 mb-2">
+              <li>- Luftkylning: Traditionell</li>
+              <li>- AIO Vattenkylning: Modern</li>
+            </ul>
+            <li><span className="font-semibold">Att Tänka På:</span></li>
+            <ul className="ml-4">
+              <li>- TDP-kapacitet</li>
+              <li>- Socket-kompatibilitet</li>
+              <li>- Fysisk storlek</li>
+            </ul>
+          </ul>
+        </div>
+      );
+
+    case 'psus':
+      return (
+        <div className="p-4">
+          <h4 className="font-bold mb-2">Nätaggregat - Guide</h4>
+          <ul className="space-y-2">
+            <li><span className="font-semibold">Effektivitet:</span></li>
+            <ul className="ml-4 mb-2">
+              <li>- 80+ Titanium: Bäst</li>
+              <li>- 80+ Platinum/Gold: Mycket bra</li>
+              <li>- 80+ Bronze: Standard</li>
+            </ul>
+            <li><span className="font-semibold">Viktigt:</span></li>
+            <ul className="ml-4">
+              <li>- Watt-tal</li>
+              <li>- Modularitet</li>
+              <li>- Kabeltyper</li>
+            </ul>
+          </ul>
+        </div>
+      );
+
+    default:
+      return null;
+  }
+};
+
+const Card = ({ title, img, selected, setSelected, options, className }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
-  const [choices, setChoices] = useState([]);
-  const [search, setSearch] = useState("");
-  const [components, setComponents] = useState([]);
-
-  const purposeOptions = [
-    { name: "1080p Gaming", price: "0" },
-    { name: "1440p Gaming", price: "0" },
-    { name: "4K Gaming", price: "0" },
-    { name: "Programmera/Utveckla", price: "0" },
-    { name: "AI/Machine Learning", price: "0" },
-    { name: "3D Rendering", price: "0" },
-    { name: "Video Redigering", price: "0" },
-    { name: "Basic Användning", price: "0" },
-  ];
-
-  useEffect(() => {
-    if (options === "purpose") {
-      setChoices(purposeOptions);
-    } else {
-      const fetchComponents = async () => {
-        try {
-          console.log('Fetching components for:', options);
-          console.log('Filter requirements:', filterRequirements);
-          
-          const response = await fetch(`/api/${options}`);
-          if (!response.ok) {
-            console.error(`Error fetching ${options}: ${response.status}`);
-            setComponents([]);
-            setChoices([]);
-            return;
-          }
-          
-          const data = await response.json();
-          
-          let filteredData = data;
-          
-          if (filterRequirements && Object.keys(filterRequirements).length > 0) {
-            console.log(`Filtering ${options} with requirements:`, filterRequirements);
-            
-            filteredData = data.filter(component => {
-              if (!component) return false;
-              
-              // Case/Motherboard form factor compatibility
-              if (filterRequirements.formFactor && (options === 'cases' || options === 'motherboards')) {
-                const reqFormFactor = filterRequirements.formFactor.toLowerCase();
-                const compFormFactor = component.form_factor.toLowerCase();
-                
-                // Check if case supports the motherboard form factor
-                if (options === 'cases') {
-                  // Handle cases where form_factor might be a single string or include multiple formats
-                  const supportedFormFactors = component.form_factor.includes(',')
-                    ? component.form_factor.split(',').map(ff => normalizeFormFactor(ff.trim()))
-                    : [normalizeFormFactor(component.form_factor)];
-                  
-                  const matches = supportedFormFactors.includes(reqFormFactor);
-                  console.log(`Case ${component.name} form factor check:`, {
-                    name: component.name,
-                    required: reqFormFactor,
-                    rawSupported: component.form_factor,
-                    normalizedSupported: supportedFormFactors,
-                    matches
-                  });
-                  return matches;
-                }
-                
-                // Check if motherboard fits in the case
-                if (options === 'motherboards') {
-                  const caseSupported = Array.isArray(filterRequirements.formFactor) 
-                    ? filterRequirements.formFactor.map(ff => ff.toLowerCase())
-                    : [reqFormFactor];
-                  
-                  const matches = caseSupported.includes(compFormFactor);
-                  console.log(`Motherboard ${component.name} form factor check:`, {
-                    name: component.name,
-                    motherboardFormFactor: compFormFactor,
-                    supportedByCase: caseSupported,
-                    matches
-                  });
-                  return matches;
-                }
-              }
-
-              // CPU/Motherboard socket compatibility
-              if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
-                const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
-                const compSocket = component.socket.toLowerCase().replace('socket ', '');
-                const matches = compSocket.includes(reqSocket);
-                console.log(`${options} ${component.name} socket check:`, {
-                  required: reqSocket,
-                  actual: compSocket,
-                  matches
-                });
-                return matches;
-              }
-
-              // PSU minimum wattage requirement for GPU
-              if (filterRequirements.minWattage && options === 'psus') {
-                // Remove any non-numeric characters and parse as integer
-                const psuWattage = parseInt(String(component.wattage).replace(/\D/g, ''), 10);
-                const minRequired = parseInt(String(filterRequirements.minWattage).replace(/\D/g, ''), 10);
-                
-                console.log(`PSU ${component.name} wattage check:`, {
-                  name: component.name,
-                  rawWattage: component.wattage,
-                  parsedWattage: psuWattage,
-                  minRequired,
-                  matches: psuWattage >= minRequired
-                });
-                
-                return psuWattage >= minRequired;
-              }
-
-              // GPU maximum wattage requirement for PSU
-              if (filterRequirements.maxWattage && options === 'gpus') {
-                // Remove any non-numeric characters and parse as integer
-                const gpuWattage = parseInt(String(component.recommended_wattage).replace(/\D/g, ''), 10) || 0;
-                const maxAllowed = parseInt(String(filterRequirements.maxWattage).replace(/\D/g, ''), 10);
-                
-                console.log(`GPU ${component.name} wattage check:`, {
-                  name: component.name,
-                  rawWattage: component.recommended_wattage,
-                  parsedWattage: gpuWattage,
-                  maxAllowed,
-                  matches: gpuWattage <= maxAllowed
-                });
-                
-                return gpuWattage <= maxAllowed;
-              }
-
-              return true;
-            });
-            
-            console.log(`Filtered ${options} results:`, filteredData);
-            
-            // Update the summary logging
-            if (['cases', 'motherboards', 'psus', 'gpus'].includes(options)) {
-              const beforeCount = data.length;
-              const afterCount = filteredData.length;
-              
-              console.log(`${options} filtering complete:`, {
-                type: options,
-                requirements: filterRequirements,
-                beforeCount,
-                afterCount,
-                filtered: beforeCount - afterCount,
-                sample: filteredData.slice(0, 3).map(comp => ({
-                  name: comp.name,
-                  formFactor: comp.form_factor,
-                  supported: comp.supported_form_factors,
-                  wattage: options === 'psus' ? comp.wattage : comp.recommended_wattage
-                }))
-              });
-            }
-          }
-          
-          setComponents(filteredData);
-          setChoices(filteredData);
-        } catch (error) {
-          console.error(`Error fetching ${options}:`, error);
-          setComponents([]);
-          setChoices([]);
-        }
-      };
-
-      fetchComponents();
-    }
-  }, [options, filterRequirements]);
-
-  const filteredChoices = search
-    ? (options === "purpose" ? choices : choices).filter((opt) =>
-        opt.name.toLowerCase().includes(search.toLowerCase())
-      )
-    : choices;
-
-  const handleSelect = (option) => {
-    setSelected(option);
-    onSelect(option);
-    setIsOpen(false);
-    setSearch("");
-  };
+  const [showGuide, setShowGuide] = useState(false);
 
   return (
     <div className={`relative bg-slate-200 rounded-lg p-4 ${className}`}>
-      <div className="flex items-center gap-2 mb-2">
-        {img && <img src={img} alt={title} className="w-8 h-8" />}
-        <h3 className="text-lg font-semibold">{title}</h3>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          {img && <img src={img} alt={title} className="w-8 h-8" />}
+          <h3 className="text-lg font-semibold">{title}</h3>
+        </div>
+        
+        <button
+          className="p-2 hover:bg-slate-300 rounded-full transition-colors"
+          onClick={() => setShowGuide(true)}
+        >
+          <FiInfo className="w-5 h-5 text-gray-600" />
+        </button>
       </div>
       
       <div
@@ -223,51 +221,20 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
         )}
       </div>
 
-      {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div
-            className="bg-slate-400 p-8 rounded-lg border-2 border-slate-800 shadow-lg w-96 max-w-[90vw]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-black">{title}</h2>
+      {/* Guide Modal */}
+      {showGuide && (
+        <div className="absolute top-0 right-0 mt-12 z-50">
+          <div className="bg-white rounded-lg w-80 shadow-xl border border-gray-200">
+            <div className="flex justify-between items-center border-b p-4">
+              <h3 className="text-lg font-semibold">Guide: {title}</h3>
               <button
-                className="bg-slate-300 rounded-lg p-2 border-2 border-slate-800 shadow-lg hover:bg-slate-400 transition-colors"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setShowGuide(false)}
+                className="text-gray-500 hover:text-gray-700"
               >
-                <X className="h-5 w-5 text-black hover:scale-105" />
+                <X className="h-5 w-5" />
               </button>
             </div>
-
-            {/* Search Bar */}
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full p-2 rounded border border-gray-500 mb-4"
-              placeholder="Sök..."
-            />
-
-            {/* Filtered Dropdown List */}
-            <div className="bg-white border border-gray-300 rounded shadow-lg max-h-[60vh] overflow-y-auto">
-              {filteredChoices.length > 0 ? (
-                <ul>
-                  {filteredChoices.map((option, index) => (
-                    <li
-                      key={index}
-                      onClick={() => handleSelect(option)}
-                      className="p-4 cursor-pointer hover:bg-gray-200 border-b border-gray-100 flex justify-between items-center"
-                    >
-                      <span>{option.name}</span>
-                      {option.price !== "0" && <span>{option.price}kr</span>}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="p-4 text-gray-600">Inga resultat hittades.</p>
-              )}
-            </div>
+            <GuideContent type={options} />
           </div>
         </div>
       )}

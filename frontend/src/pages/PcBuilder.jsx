@@ -213,7 +213,7 @@ const PcBuilder = () => {
               onSelect={(component) => handleComponentSelect(component, 'cpu-cooler')} 
             />
             <Card 
-              title="Strömförsörjning" 
+              title="Nätaggregat" 
               img={psuIcon} 
               className="row-span-3 col-start-3 row-start-4" 
               options="psus"
@@ -227,7 +227,7 @@ const PcBuilder = () => {
               onSelect={(component) => handleComponentSelect(component, 'extra')} 
             />
             <Card 
-              title="Användningsområde" 
+              title="Användning" 
               className="row-span-3 col-start-4 row-start-4" 
               options="purpose" 
               onSelect={(component) => handleComponentSelect(component, 'purpose')} 
