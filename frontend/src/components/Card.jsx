@@ -187,9 +187,19 @@ const GuideContent = ({ type }) => {
   }
 };
 
-const Card = ({ title, img, selected, setSelected, options, className }) => {
+const Card = ({ title, img, className = "", onSelect, options, filterRequirements }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [choices, setChoices] = useState([]);
+  const [search, setSearch] = useState("");
+  const [components, setComponents] = useState([]);
+
+  const filteredChoices = search
+    ? choices.filter((opt) =>
+        opt.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : choices;
 
   return (
     <div className={`relative bg-slate-200 rounded-lg p-4 ${className}`}>
@@ -235,6 +245,56 @@ const Card = ({ title, img, selected, setSelected, options, className }) => {
               </button>
             </div>
             <GuideContent type={options} />
+          </div>
+        </div>
+      )}
+
+      {/* Component Selection Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div
+            className="bg-slate-400 p-8 rounded-lg border-2 border-slate-800 shadow-lg w-96 max-w-[90vw]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-black">{title}</h2>
+              <button
+                className="bg-slate-300 rounded-lg p-2 border-2 border-slate-800 shadow-lg hover:bg-slate-400 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <X className="h-5 w-5 text-black hover:scale-105" />
+              </button>
+            </div>
+
+            {/* Search Bar */}
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full p-2 rounded border border-gray-500 mb-4"
+              placeholder="Sök..."
+            />
+
+            {/* Filtered Dropdown List */}
+            <div className="bg-white border border-gray-300 rounded shadow-lg max-h-[60vh] overflow-y-auto">
+              {filteredChoices.length > 0 ? (
+                <ul>
+                  {filteredChoices.map((option, index) => (
+                    <li
+                      key={index}
+                      onClick={() => handleSelect(option)}
+                      className="p-4 cursor-pointer hover:bg-gray-200 border-b border-gray-100 flex justify-between items-center"
+                    >
+                      <span>{option.name}</span>
+                      {option.price !== "0" && <span>{option.price}kr</span>}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="p-4 text-gray-600">Inga resultat hittades.</p>
+              )}
+            </div>
           </div>
         </div>
       )}
