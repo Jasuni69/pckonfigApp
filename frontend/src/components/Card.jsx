@@ -284,6 +284,13 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
       )
     : choices;
 
+  const handleSelect = (option) => {
+    setSelected(option);
+    onSelect(option);
+    setIsOpen(false);
+    setSearch("");
+  };
+
   return (
     <div className={`relative bg-slate-200 rounded-lg p-4 ${className}`}>
       <div className="flex items-center justify-between mb-2">
