@@ -195,6 +195,89 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
   const [search, setSearch] = useState("");
   const [components, setComponents] = useState([]);
 
+  const purposeOptions = [
+    { name: "1080p Gaming", price: "0" },
+    { name: "1440p Gaming", price: "0" },
+    { name: "4K Gaming", price: "0" },
+    { name: "Programmera/Utveckla", price: "0" },
+    { name: "AI/Machine Learning", price: "0" },
+    { name: "3D Rendering", price: "0" },
+    { name: "Video Redigering", price: "0" },
+    { name: "Basic Användning", price: "0" },
+  ];
+
+  useEffect(() => {
+    if (options === "purpose") {
+      setChoices(purposeOptions);
+    } else if (options === "usage") {
+      setChoices(purposeOptions);
+    } else {
+      const fetchComponents = async () => {
+        try {
+          console.log('Fetching components for:', options);
+          console.log('Filter requirements:', filterRequirements);
+          
+          const response = await fetch(`/api/${options}`);
+          const data = await response.json();
+          
+          let filteredData = data;
+          
+          if (filterRequirements && Object.keys(filterRequirements).length > 0) {
+            console.log(`Filtering ${options} with requirements:`, filterRequirements);
+            
+            filteredData = data.filter(component => {
+              // CPU/Motherboard socket compatibility
+              if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
+                const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
+                const compSocket = component.socket.toLowerCase().replace('socket ', '');
+                const matches = compSocket.includes(reqSocket);
+                console.log(`${options} ${component.name} socket check:`, {
+                  required: reqSocket,
+                  actual: compSocket,
+                  matches
+                });
+                return matches;
+              }
+
+              // Case form factor compatibility
+              if (filterRequirements.formFactor && options === 'motherboards') {
+                const reqFormFactor = filterRequirements.formFactor.toLowerCase();
+                const compFormFactor = component.motherboardFormFactor.toLowerCase();
+                const matches = compFormFactor.includes(reqFormFactor);
+                console.log(`Motherboard ${component.name} form factor check:`, {
+                  name: component.name,
+                  motherboardFormFactor: compFormFactor,
+                  supportedByCase: component.supportedByCase,
+                  matches
+                });
+                return matches;
+              }
+
+              return true;
+            });
+            
+            console.log(`${options} filtering complete:`, {
+              type: options,
+              requirements: filterRequirements,
+              beforeCount: data.length,
+              afterCount: filteredData.length,
+              filtered: data.length - filteredData.length,
+            });
+          }
+          
+          setComponents(filteredData);
+          setChoices(filteredData);
+        } catch (error) {
+          console.error(`Error fetching ${options}:`, error);
+          setComponents([]);
+          setChoices([]);
+        }
+      };
+
+      fetchComponents();
+    }
+  }, [options, filterRequirements]);
+
   const filteredChoices = search
     ? choices.filter((opt) =>
         opt.name.toLowerCase().includes(search.toLowerCase())
