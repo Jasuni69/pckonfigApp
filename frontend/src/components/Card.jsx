@@ -207,9 +207,7 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
   ];
 
   useEffect(() => {
-    if (options === "purpose") {
-      setChoices(purposeOptions);
-    } else if (options === "usage") {
+    if (options === "purpose" || options === "usage") {
       setChoices(purposeOptions);
     } else {
       const fetchComponents = async () => {
@@ -229,7 +227,7 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               // CPU/Motherboard socket compatibility
               if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
                 const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
-                const compSocket = component.socket.toLowerCase().replace('socket ', '');
+                const compSocket = (component.socket || '').toLowerCase().replace('socket ', '');
                 const matches = compSocket.includes(reqSocket);
                 console.log(`${options} ${component.name} socket check:`, {
                   required: reqSocket,
@@ -242,12 +240,12 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               // Case form factor compatibility
               if (filterRequirements.formFactor && options === 'motherboards') {
                 const reqFormFactor = filterRequirements.formFactor.toLowerCase();
-                const compFormFactor = component.motherboardFormFactor.toLowerCase();
+                const compFormFactor = (component.form_factor || '').toLowerCase();
                 const matches = compFormFactor.includes(reqFormFactor);
                 console.log(`Motherboard ${component.name} form factor check:`, {
                   name: component.name,
-                  motherboardFormFactor: compFormFactor,
-                  supportedByCase: component.supportedByCase,
+                  formFactor: compFormFactor,
+                  required: reqFormFactor,
                   matches
                 });
                 return matches;
