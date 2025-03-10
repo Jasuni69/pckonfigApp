@@ -16,11 +16,10 @@ const Navbar = () => {
           </div>
           <div className="flex pr-8 gap-4 items-center">
              {/* <Searchbar /> */}
-              <Link to="/about" className="text-gray-600 hover:text-gray-900">Placeholder2</Link>
-              <Link to="/contact" className="text-gray-600 hover:text-gray-900">Placeholder3</Link>
+              <Link to="/login" className="text-gray-600 hover:text-gray-900">Logga in</Link>
+              <Link to="/createaccount" className="text-gray-600 hover:text-gray-900">Skapa konto</Link>
           </div>
         </div>
-
         <div className="flex bg-slate-500 h-12 px-4 items-center gap-4 pl-14">
             <Link to="/pcbuilder" className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg">Bygg din PC</Link>
             <Link to="/pcparts" className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg">PC-delar</Link>

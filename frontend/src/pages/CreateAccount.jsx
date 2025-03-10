@@ -1,25 +1,77 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateAccount = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Account created successfully:', data);
+        navigate('/login'); 
+      } else {
+        setError(data.detail || 'Ett fel uppstod vid registrering');
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      setError('Ett fel uppstod vid anslutning till servern');
+    }
+  };
+
   return (
     <div className="wrapper bg-gradient-to-b from-slate-400 to-slate-200">
       <div className="min-h-screen flex flex-col items-center justify-center">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">Skapa Konto</h1>
         <div className="bg-slate-300 border-2 border-slate-600 rounded-lg p-8 shadow-lg max-w-md w-full mx-4">
-          <form>
-            <div className="mb-4">
-              <div className="bg-slate-200 p-2 rounded-lg mb-2">
-                <label className="block text-black">Email</label>
+          <form onSubmit={handleSubmit}>
+            {error && (
+              <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+                {error}
               </div>
-              <input type="email" className="w-full p-2 rounded border border-slate-400" />
+            )}
+            <div className="mb-4">
+              <input 
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                className="w-full p-2 rounded border border-slate-400"
+                required
+              />
             </div>
             <div className="mb-4">
-              <div className="bg-slate-200 p-2 rounded-lg mb-2">
-                <label className="block text-black">Lösenord</label>
-              </div>
-              <input type="password" className="w-full p-2 rounded border border-slate-400" />
+              <input 
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Lösenord"
+                className="w-full p-2 rounded border border-slate-400"
+                required
+              />
             </div>
-            <button type="submit" className="w-full bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg">
+            <button 
+              type="submit" 
+              className="w-full bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg"
+            >
               Skapa Konto
             </button>
           </form>
