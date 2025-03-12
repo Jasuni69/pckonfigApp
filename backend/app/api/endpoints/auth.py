@@ -2,7 +2,7 @@ from datetime import UTC, datetime, timedelta
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from app.core.security import get_password_hash, verify_password
+from core.security import get_password_hash, verify_password
 from app.schemas import UserRegisterSchema, UserOutSchema
 from app.database import get_db
 from app.models import User, Token
