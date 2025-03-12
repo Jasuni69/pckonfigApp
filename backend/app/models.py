@@ -31,6 +31,7 @@ class User(Base):
     
     # Relationships
     tokens: Mapped[list["Token"]] = relationship(back_populates="user")
+    saved_builds: Mapped[list["SavedBuild"]] = relationship(back_populates="user")
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"
