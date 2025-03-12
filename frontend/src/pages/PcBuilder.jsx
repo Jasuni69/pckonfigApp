@@ -155,10 +155,10 @@ const PcBuilder = () => {
     <div className="wrapper bg-gradient-to-b from-slate-400 to-slate-200 pb-28 -mt-24">
       <div className="sticky top-28 z-10">
         <div className="flex justify-center items-center bg-slate-200 h-16 pt-16">
-          <h1 className="flex text-2xl font-bold mt-96">Konfigurera din PC!</h1>
+          <h1 className="flex text-2xl font-bold mt-96 text-slate-800">Konfigurera din PC!</h1>
         </div>
         <div className="flex flex-col justify-center items-center min-h-screen pt-28">
-          <div className="w-full max-w-7xl h-[50vh] grid grid-cols-5 grid-rows-6 gap-4 bg-slate-500 shadow-2xl border-2 border-slate-600 rounded-lg p-4">
+          <div className="w-full max-w-7xl h-[50vh] grid grid-cols-5 grid-rows-6 gap-4 bg-slate-500 shadow-2xl border-2 border-slate-400 rounded-lg p-4">
             <Card 
               title="Chassi" 
               img={caseIcon} 
@@ -236,7 +236,7 @@ const PcBuilder = () => {
         </div>
 
         <div className="flex justify-center -mt-40">
-          <div className="w-full max-w-7xl bg-slate-300 rounded-lg shadow-lg border-2 border-slate-800 p-6">
+          <div className="w-full max-w-7xl bg-slate-300 rounded-lg shadow-lg border-2 border-slate-400 p-6">
             <h2 className="text-xl font-bold mb-4">Valda komponenter</h2>
             <div className="space-y-2">
               {Object.entries(selectedComponents)

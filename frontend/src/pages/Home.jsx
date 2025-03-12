@@ -6,10 +6,10 @@ const Home = () => {
     <div className="wrapper bg-gradient-to-b from-slate-300 to-slate-200">
       <div className="flex justify-center items-center min-h-screen pt-16">
         <div className="container px-4 flex flex-col items-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 text-center">
             Bygg Din Drömdator
           </h1>
-          <p className="text-xl text-gray-700 mt-6 text-center max-w-2xl">
+          <p className="text-xl text-slate-700 mt-6 text-center max-w-2xl">
             Skapa din perfekta dator med vår användarvänliga byggverktyg. 
             Jämför komponenter och kontrollera kompatibilitet.
           </p>

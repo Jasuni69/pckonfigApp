@@ -1,9 +1,39 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import List
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.sql import func
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+
+class Token(Base):
+    __tablename__ = "tokens"
+
+    created: Mapped[datetime] = mapped_column(
+        default=lambda: datetime.now(timezone.utc)
+    )
+    token: Mapped[str] = mapped_column(String, unique=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user: Mapped["User"] = relationship(back_populates="tokens")
+
+class User(Base):
+    __tablename__ = "users"
+
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    hashed_password: Mapped[str] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(
+        server_default=func.now()
+    )
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    
+    # Relationships
+    tokens: Mapped[list["Token"]] = relationship(back_populates="user")
+
+    def __repr__(self) -> str:
+        return f"<User {self.email}>"
 
 class CPU(Base):
     __tablename__ = "cpus"
@@ -104,15 +134,6 @@ class Cooler(Base):
     color = Column(String)
     size = Column(Float, nullable=True)
     price = Column(Float)
-
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, nullable=False, index=True)
-    hashed_password = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    saved_builds = relationship("SavedBuild", back_populates="user")
 
 class SavedBuild(Base):
     __tablename__ = "saved_builds"

@@ -1,16 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.endpoints import components
+from api.endpoints import components, auth
 
 app = FastAPI()
 
-# Add CORS middleware - this is important for frontend-backend communication
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with your frontend domain
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(components.router, prefix="/api")
+app.include_router(auth.router, prefix="/api/auth")
