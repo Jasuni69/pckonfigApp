@@ -3,10 +3,10 @@ from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from core.security import get_password_hash, verify_password
-from app.schemas import UserRegisterSchema, UserOutSchema
-from app.database import get_db
-from app.models import User, Token
-from app.core import settings
+from schemas import UserRegisterSchema, UserOutSchema
+from database import get_db
+from models import User, Token
+from core import settings
 import base64
 from random import SystemRandom
 
