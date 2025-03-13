@@ -9,6 +9,7 @@ from models import User, Token
 from core import settings
 import base64
 from random import SystemRandom
+from pydantic import BaseModel
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -24,6 +25,10 @@ def create_database_token(user_id: int, db: Session):
     db.add(new_token)
     db.commit()
     return new_token
+
+class LoginData(BaseModel):
+    email: str
+    password: str
 
 @router.post("/register", response_model=UserOutSchema)
 async def register_user(user: UserRegisterSchema, db: Session = Depends(get_db)):
@@ -57,10 +62,10 @@ async def register_user(user: UserRegisterSchema, db: Session = Depends(get_db))
         )
 
 @router.post("/login")
-async def login(email: str, password: str, db: Session = Depends(get_db)):
+async def login(login_data: LoginData, db: Session = Depends(get_db)):
     try:
         # Find user
-        user = db.query(User).filter(User.email == email).first()
+        user = db.query(User).filter(User.email == login_data.email).first()
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -68,7 +73,7 @@ async def login(email: str, password: str, db: Session = Depends(get_db)):
             )
         
         # Verify password
-        if not verify_password(password, user.hashed_password):
+        if not verify_password(login_data.password, user.hashed_password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Felaktig email eller lösenord"

@@ -24,9 +24,9 @@ const Login = () => {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
-        body: new URLSearchParams({
+        body: JSON.stringify({
           email: formData.email,
           password: formData.password,
         }),
@@ -38,7 +38,6 @@ const Login = () => {
         throw new Error(data.detail || 'Inloggningen misslyckades');
       }
 
-      
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
