@@ -21,6 +21,7 @@ const Login = () => {
     setError('');
 
     try {
+      console.log('Sending data:', formData);
       const response = await fetch('http://13.53.243.200/api/auth/login', {
         method: 'POST',
         headers: {
@@ -32,11 +33,14 @@ const Login = () => {
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.detail || 'Inloggningen misslyckades');
+        const errorData = await response.json();
+        console.log('Error response:', errorData);
+        throw new Error(errorData.detail || 'Inloggningen misslyckades');
       }
+
+      const data = await response.json();
+      console.log('Success response:', data);
 
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user));
@@ -44,6 +48,7 @@ const Login = () => {
       navigate('/');
       
     } catch (err) {
+      console.error('Error:', err);
       setError(err.message);
     }
   };
