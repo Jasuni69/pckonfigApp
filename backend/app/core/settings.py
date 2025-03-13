@@ -1,8 +1,12 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel
+from dotenv import load_dotenv
+import os
 
-class Settings(BaseSettings):
-    DB_URL: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int
-    model_config = SettingsConfigDict(env_file=".env")
+# Load environment variables from .env file
+load_dotenv()
+
+class Settings(BaseModel):
+    DB_URL: str = os.getenv("DB_URL", "")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 settings = Settings()
