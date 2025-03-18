@@ -8,6 +8,8 @@ import gpuIcon from '../assets/icons/gpu.svg';
 import hddIcon from '../assets/icons/hdd.svg';
 import cpuCoolerIcon from '../assets/icons/cpu-cooler.svg';
 import psuIcon from '../assets/icons/psu.svg';  
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const PcBuilder = () => {
   const [selectedComponents, setSelectedComponents] = useState({});
@@ -16,6 +18,8 @@ const PcBuilder = () => {
     requiredWattage: 0,
     formFactor: null
   });
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const handleComponentSelect = (component, type) => {
     console.log(`Selected ${type}:`, component);
@@ -151,6 +155,17 @@ const PcBuilder = () => {
     purpose: "Användningsområde",
   };
 
+  const handleAuthenticatedAction = (action) => {
+    if (!isAuthenticated) {
+      if (window.confirm('Du måste logga in för att använda denna funktion. Vill du logga in nu?')) {
+        navigate('/login');
+      }
+      return;
+    }
+    // If authenticated, the actual functionality will be implemented later
+    console.log(`Authenticated action: ${action}`);
+  };
+
   return (
     <div className="wrapper bg-gradient-to-b from-slate-400 to-slate-200 pb-28 -mt-24">
       <div className="sticky top-28 z-10">
@@ -253,8 +268,18 @@ const PcBuilder = () => {
                 <span>Totalt:</span>
                 <span>{calculateTotal()} kr</span>
                 <div className="flex justify-center items-center gap-4">
-                  <button className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg">Spara dator</button>
-                  <button className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg">Optimera dator</button>
+                  <button 
+                    onClick={() => handleAuthenticatedAction('save')}
+                    className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg"
+                  >
+                    Spara dator
+                  </button>
+                  <button 
+                    onClick={() => handleAuthenticatedAction('optimize')}
+                    className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg"
+                  >
+                    Optimera dator
+                  </button>
                 </div>
               </div>
             </div>
