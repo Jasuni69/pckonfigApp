@@ -46,20 +46,17 @@ async def save_build(
     db: Session = Depends(get_db)
 ):
     try:
-        # Get the user from the token
         db_token = db.query(Token).filter(Token.token == token).first()
         if not db_token:
             raise HTTPException(status_code=401, detail="Invalid token")
-        
-        # Get the user
+
         user = db.query(User).filter(User.id == db_token.user_id).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
-        # Create new build associated with the user
         new_build = SavedBuild(
             name=build.name,
-            user_id=user.id,  # Associate with user ID
+            user_id=user.id, 
             cpu_id=build.cpu_id,
             gpu_id=build.gpu_id,
             motherboard_id=build.motherboard_id,
@@ -89,17 +86,15 @@ async def get_user_builds(
     db: Session = Depends(get_db)
 ):
     try:
-        # Get the user from the token
+
         db_token = db.query(Token).filter(Token.token == token).first()
         if not db_token:
             raise HTTPException(status_code=401, detail="Invalid token")
 
-        # Get the user
         user = db.query(User).filter(User.id == db_token.user_id).first()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
-        # Get all builds for the user by user ID
         builds = db.query(SavedBuild).filter(SavedBuild.user_id == user.id).all()
         return builds
         

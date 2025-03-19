@@ -9,7 +9,7 @@ import PcBuilder from "./pages/PcBuilder";
 import CreateAccount from "./pages/CreateAccount";
 import Login from "./pages/Login";
 import { AuthProvider } from "./context/AuthContext";
-
+import SavedBuilds from "./pages/SavedBuilds";
 const App = () => {
   return (
     <AuthProvider>
@@ -22,6 +22,7 @@ const App = () => {
           <Route path="/pcbuilder" element={<PcBuilder />} />
           <Route path="/createaccount" element={<CreateAccount />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/savedbuilds" element={<SavedBuilds />} />
         </Routes>
         <Footer />
       </Router>

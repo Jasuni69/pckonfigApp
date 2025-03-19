@@ -10,6 +10,7 @@ import cpuCoolerIcon from '../assets/icons/cpu-cooler.svg';
 import psuIcon from '../assets/icons/psu.svg';  
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import SaveBuildModal from '../components/SaveBuildModal';
 
 const PcBuilder = () => {
   const [selectedComponents, setSelectedComponents] = useState({});
@@ -20,6 +21,8 @@ const PcBuilder = () => {
   });
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
 
   const handleComponentSelect = (component, type) => {
     console.log(`Selected ${type}:`, component);
@@ -155,15 +158,95 @@ const PcBuilder = () => {
     purpose: "Användningsområde",
   };
 
-  const handleAuthenticatedAction = (action) => {
+  const handleAuthenticatedAction = async (action) => {
     if (!isAuthenticated) {
       if (window.confirm('Du måste logga in för att använda denna funktion. Vill du logga in nu?')) {
         navigate('/login');
       }
       return;
     }
-    // If authenticated, the actual functionality will be implemented later
-    console.log(`Authenticated action: ${action}`);
+
+    if (action === 'save') {
+      try {
+        setIsSaving(true);
+        
+        // Check if there are any components selected
+        if (Object.keys(selectedComponents).length === 0) {
+          alert('Välj minst en komponent innan du sparar');
+          return;
+        }
+
+        const buildData = {
+          name: "Min PC Build", // You could add a modal to let users name their build
+          cpu_id: selectedComponents.cpu?.id || null,
+          gpu_id: selectedComponents.gpu?.id || null,
+          motherboard_id: selectedComponents.motherboard?.id || null,
+          ram_id: selectedComponents.ram?.id || null,
+          psu_id: selectedComponents.psu?.id || null,
+          case_id: selectedComponents.case?.id || null,
+          storage_id: selectedComponents.hdd?.id || null,
+          cooler_id: selectedComponents['cpu-cooler']?.id || null
+        };
+
+        const response = await fetch('http://13.53.243.200/api/builds', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(buildData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save build');
+        }
+
+        alert('Din dator har sparats!');
+      } catch (error) {
+        console.error('Error saving build:', error);
+        alert('Kunde inte spara datorn. Försök igen senare.');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
+
+  const handleSave = async (buildName) => {
+    try {
+      setIsSaving(true);
+      const buildData = {
+        name: buildName,
+        cpu_id: selectedComponents.cpu?.id || null,
+        gpu_id: selectedComponents.gpu?.id || null,
+        motherboard_id: selectedComponents.motherboard?.id || null,
+        ram_id: selectedComponents.ram?.id || null,
+        psu_id: selectedComponents.psu?.id || null,
+        case_id: selectedComponents.case?.id || null,
+        storage_id: selectedComponents.hdd?.id || null,
+        cooler_id: selectedComponents['cpu-cooler']?.id || null
+      };
+
+      const response = await fetch('http://13.53.243.200/api/builds', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(buildData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save build');
+      }
+
+      alert('Din dator har sparats!');
+      setShowSaveModal(false);
+    } catch (error) {
+      console.error('Error saving build:', error);
+      alert('Kunde inte spara datorn. Försök igen senare.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -269,10 +352,19 @@ const PcBuilder = () => {
                 <span>{calculateTotal()} kr</span>
                 <div className="flex justify-center items-center gap-4">
                   <button 
-                    onClick={() => handleAuthenticatedAction('save')}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        if (window.confirm('Du måste logga in för att spara din dator. Vill du logga in nu?')) {
+                          navigate('/login');
+                        }
+                        return;
+                      }
+                      setShowSaveModal(true);
+                    }}
+                    disabled={isSaving}
                     className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg"
                   >
-                    Spara dator
+                    {isSaving ? 'Sparar...' : 'Spara dator'}
                   </button>
                   <button 
                     onClick={() => handleAuthenticatedAction('optimize')}
@@ -286,6 +378,12 @@ const PcBuilder = () => {
           </div>
         </div>
       </div>
+
+      <SaveBuildModal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        onSave={handleSave}
+      />
     </div>
   );
 };
