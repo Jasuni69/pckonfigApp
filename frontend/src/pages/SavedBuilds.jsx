@@ -149,7 +149,7 @@ const SavedBuilds = () => {
 
   const fetchBuilds = async () => {
     try {
-      const response = await fetch('http://13.53.243.200/api/builds', {
+      const response = await fetch('http://16.16.99.193/api/builds', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -170,7 +170,7 @@ const SavedBuilds = () => {
     if (!window.confirm('Är du säker på att du vill ta bort denna build?')) return;
 
     try {
-      const response = await fetch(`http://13.53.243.200/api/builds/${buildId}`, {
+      const response = await fetch(`http://16.16.99.193/api/builds/${buildId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
