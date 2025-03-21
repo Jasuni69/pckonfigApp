@@ -140,7 +140,11 @@ const SavedBuilds = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    const token = localStorage.getItem('token');
+    console.log('Is authenticated:', isAuthenticated); // Debug log
+    console.log('Token exists:', !!token); // Debug log
+
+    if (!isAuthenticated || !token) {
       navigate('/login');
       return;
     }
@@ -149,18 +153,29 @@ const SavedBuilds = () => {
 
   const fetchBuilds = async () => {
     try {
+      console.log('Fetching builds...'); // Debug log
+      console.log('Token:', localStorage.getItem('token')); // Check if token exists
+
       const response = await fetch('http://16.16.99.193/api/builds', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
 
-      if (!response.ok) throw new Error('Failed to fetch builds');
+      console.log('Response status:', response.status); // Debug log
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        throw new Error('Failed to fetch builds');
+      }
       
       const data = await response.json();
+      console.log('Fetched builds:', data); // Debug log
       setBuilds(data);
     } catch (error) {
       console.error('Error fetching builds:', error);
+      alert('Kunde inte hämta sparade byggen. Försök igen senare.');
     } finally {
       setLoading(false);
     }
