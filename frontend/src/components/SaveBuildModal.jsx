@@ -6,7 +6,7 @@ const SaveBuildModal = ({ isOpen, onClose, onSave }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="bg-slate-200 p-6 rounded-lg shadow-xl border-2 border-slate-400 max-w-md w-full mx-4">
         <h2 className="text-xl font-bold mb-4">Namnge din dator</h2>
         <form onSubmit={(e) => {
