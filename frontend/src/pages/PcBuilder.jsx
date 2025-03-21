@@ -226,7 +226,7 @@ const PcBuilder = () => {
         cooler_id: selectedComponents['cpu-cooler']?.id || null
       };
 
-      const response = await fetch('http://13.53.243.200/api/builds', {
+      const response = await fetch('http://16.16.99.193/api/builds', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

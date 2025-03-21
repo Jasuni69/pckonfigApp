@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,7 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -22,7 +24,7 @@ const Login = () => {
 
     try {
       console.log('Sending data:', formData);
-      const response = await fetch('http://13.53.243.200/api/auth/login', {
+      const response = await fetch('http://16.16.99.193/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,8 +44,7 @@ const Login = () => {
       const data = await response.json();
       console.log('Success response:', data);
 
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      await login(data.access_token, data.user);
 
       navigate('/');
       
