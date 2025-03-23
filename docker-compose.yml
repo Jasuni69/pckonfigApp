@@ -2,7 +2,9 @@ version: "3.8"
 
 services:
   backend:
-    build: ./backend/app
+    build:
+      context: ./backend
+      dockerfile: app/Dockerfile
     depends_on:
       - db
     env_file:
@@ -10,6 +12,8 @@ services:
     restart: unless-stopped
     expose:
       - "8000"
+    volumes:
+      - ./backend/alembic/versions:/app/alembic/versions
 
   frontend:
     build: ./frontend

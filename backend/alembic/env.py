@@ -8,9 +8,11 @@ from sqlalchemy import pool
 from alembic import context
 
 # Add these imports
-from app.models import Base
-from app.database import DATABASE_URL
-
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from models import Base
+from database import DATABASE_URL
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
