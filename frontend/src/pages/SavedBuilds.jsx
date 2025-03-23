@@ -48,6 +48,12 @@ const BuildCard = ({ build, onDelete }) => {
             {/* Build Details */}
             <div className="bg-white border border-gray-300 rounded shadow-lg max-h-[60vh] overflow-y-auto">
               <ul>
+                {build.purpose && (
+                  <li className="p-4 border-b border-gray-100 flex justify-between items-center bg-slate-100">
+                    <span className="font-semibold">Användningsområde</span>
+                    <span>{build.purpose}</span>
+                  </li>
+                )}
                 {build.cpu && (
                   <li className="p-4 border-b border-gray-100 flex justify-between items-center">
                     <span>Processor</span>
@@ -119,12 +125,6 @@ const BuildCard = ({ build, onDelete }) => {
               >
                 Ta bort
               </button>
-              <button
-                onClick={() => navigate(`/pcbuilder?build=${build.id}`)}
-                className="bg-slate-300 text-black px-4 py-2 rounded hover:bg-slate-400"
-              >
-                Redigera
-              </button>
             </div>
           </div>
         </div>
@@ -182,7 +182,7 @@ const SavedBuilds = () => {
   };
 
   const handleDelete = async (buildId) => {
-    if (!window.confirm('Är du säker på att du vill ta bort denna build?')) return;
+    if (!window.confirm('Är du säker på att du vill ta bort detta build?')) return;
 
     try {
       const response = await fetch(`http://16.16.99.193/api/builds/${buildId}`, {

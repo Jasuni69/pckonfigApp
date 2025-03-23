@@ -26,7 +26,7 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="font-semibold text-xl mb-2">Kompatibilitetskontroll</h3>
               <p className="text-gray-600">Säkerställ att alla komponenter fungerar perfekt tillsammans.</p>
@@ -34,6 +34,10 @@ const Home = () => {
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="font-semibold text-xl mb-2">Prestandaöversikt</h3>
               <p className="text-gray-600">Få rekommendationer baserade på dina behov.</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="font-semibold text-xl mb-2">Skapa konto</h3>
+              <p className="text-gray-600">Skapa konto för att kunna spara dina byggen och få rekommendationer på komponenter.</p>
             </div>
           </div>
         </div>
