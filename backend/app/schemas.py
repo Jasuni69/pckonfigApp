@@ -145,6 +145,7 @@ class UserOutSchema(BaseModel):
 
 class SavedBuildCreate(BaseModel):
     name: str
+    purpose: Optional[str] = None
     cpu_id: Optional[int] = None
     gpu_id: Optional[int] = None
     motherboard_id: Optional[int] = None
@@ -157,6 +158,7 @@ class SavedBuildCreate(BaseModel):
 class SavedBuildOut(BaseModel):
     id: int
     name: str
+    purpose: Optional[str] = None
     user_id: int
     cpu: Optional[CPUModel] = None
     gpu: Optional[GPUModel] = None

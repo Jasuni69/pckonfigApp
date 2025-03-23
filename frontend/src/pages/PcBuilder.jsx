@@ -216,6 +216,7 @@ const PcBuilder = () => {
       setIsSaving(true);
       const buildData = {
         name: buildName,
+        purpose: selectedComponents.purpose?.name || null,
         cpu_id: selectedComponents.cpu?.id || null,
         gpu_id: selectedComponents.gpu?.id || null,
         motherboard_id: selectedComponents.motherboard?.id || null,
@@ -225,6 +226,8 @@ const PcBuilder = () => {
         storage_id: selectedComponents.hdd?.id || null,
         cooler_id: selectedComponents['cpu-cooler']?.id || null
       };
+
+      console.log('Saving build data:', buildData);
 
       const response = await fetch('http://16.16.99.193/api/builds', {
         method: 'POST',

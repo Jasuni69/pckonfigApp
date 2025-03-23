@@ -141,6 +141,7 @@ class SavedBuild(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
+    purpose = Column(String, nullable=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     cpu_id = Column(Integer, ForeignKey("cpus.id"))
     gpu_id = Column(Integer, ForeignKey("gpus.id"))
@@ -152,6 +153,8 @@ class SavedBuild(Base):
     cooler_id = Column(Integer, ForeignKey("cpu_coolers.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
     user = relationship("User", back_populates="saved_builds")
     cpu = relationship("CPU")
     gpu = relationship("GPU")

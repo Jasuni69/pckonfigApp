@@ -56,6 +56,7 @@ async def save_build(
 
         new_build = SavedBuild(
             name=build.name,
+            purpose=build.purpose,
             user_id=user.id, 
             cpu_id=build.cpu_id,
             gpu_id=build.gpu_id,
