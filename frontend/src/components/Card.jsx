@@ -232,14 +232,6 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 return matches;
               }
 
-              // Case form factor compatibility
-              if (filterRequirements.formFactor && options === 'motherboards') {
-                const reqFormFactor = filterRequirements.formFactor.toLowerCase();
-                const compFormFactor = (component.form_factor || '').toLowerCase();
-                const matches = compFormFactor.includes(reqFormFactor);
-                return matches;
-              }
-
               // GPU power requirements
               if (options === 'gpus' && filterRequirements.maxWattage) {
                 const gpuWattage = parseInt(component.power_consumption) || 0;
@@ -262,6 +254,16 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                   matches: psuWattage >= minWattage
                 });
                 return psuWattage >= minWattage;
+              }
+
+              // Motherboard form factor compatibility
+              if (filterRequirements.compatibleFormFactors && options === 'motherboards') {
+                const compatibleFormFactors = filterRequirements.compatibleFormFactors;
+                console.log('Checking motherboard compatibility:', {
+                  motherboard: component.form_factor,
+                  compatibleFormFactors
+                });
+                return compatibleFormFactors.includes(component.form_factor);
               }
 
               return true;

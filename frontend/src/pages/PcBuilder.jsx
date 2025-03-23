@@ -12,6 +12,13 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import SaveBuildModal from '../components/SaveBuildModal';
 
+const formFactorCompatibility = {
+  "Utökad ATX": ["Utökad ATX", "ATX", "Micro ATX", "Mini ITX"],
+  "ATX": ["ATX", "Micro ATX", "Mini ITX"],
+  "Micro ATX": ["Micro ATX", "Mini ITX"],
+  "Mini ITX": ["Mini ITX"]
+};
+
 const PcBuilder = () => {
   const [selectedComponents, setSelectedComponents] = useState({});
   const [compatibility, setCompatibility] = useState({
@@ -73,8 +80,9 @@ const PcBuilder = () => {
         }
         
         if (selectedComponents.case) {
-          requirements.formFactor = selectedComponents.case.form_factor;
-          console.log('Found case, adding form factor requirement:', selectedComponents.case.form_factor);
+          const caseFormFactor = selectedComponents.case.form_factor;
+          requirements.compatibleFormFactors = formFactorCompatibility[caseFormFactor] || [caseFormFactor];
+          console.log('Found case, adding compatible form factors:', requirements.compatibleFormFactors);
         }
         
         if (Object.keys(requirements).length > 0) {
