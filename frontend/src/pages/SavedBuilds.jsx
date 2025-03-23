@@ -7,6 +7,8 @@ const BuildCard = ({ build, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
+  console.log('Build data:', build);
+
   return (
     <div className="bg-slate-200 rounded-lg p-4">
       <div className="flex items-center justify-between mb-2">
@@ -48,12 +50,10 @@ const BuildCard = ({ build, onDelete }) => {
             {/* Build Details */}
             <div className="bg-white border border-gray-300 rounded shadow-lg max-h-[60vh] overflow-y-auto">
               <ul>
-                {build.purpose && (
-                  <li className="p-4 border-b border-gray-100 flex justify-between items-center bg-slate-100">
-                    <span className="font-semibold">Användningsområde</span>
-                    <span>{build.purpose}</span>
-                  </li>
-                )}
+                <li className="p-4 border-b border-gray-100 flex justify-between items-center bg-slate-50">
+                  <span className="font-semibold">Användningsområde</span>
+                  <span>{build.purpose?.name || build.purpose || 'Inte specificerat'}</span>
+                </li>
                 {build.cpu && (
                   <li className="p-4 border-b border-gray-100 flex justify-between items-center">
                     <span>Processor</span>
