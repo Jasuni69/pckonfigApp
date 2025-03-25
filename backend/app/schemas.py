@@ -171,4 +171,23 @@ class SavedBuildOut(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+    model_config = ConfigDict(from_attributes=True)
+
+class OptimizationRequest(BaseModel):
+    purpose: str
+    cpu_id: Optional[int] = None
+    gpu_id: Optional[int] = None
+    motherboard_id: Optional[int] = None
+    ram_id: Optional[int] = None
+    psu_id: Optional[int] = None
+    case_id: Optional[int] = None
+    storage_id: Optional[int] = None
+    cooler_id: Optional[int] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class OptimizedBuildOut(SavedBuildOut):
+    explanation: str  # AI's explanation for the recommendations
+    similarity_score: float  # ChromaDB similarity score
+
     model_config = ConfigDict(from_attributes=True) 

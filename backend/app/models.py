@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Foreig
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Optional
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -32,6 +32,7 @@ class User(Base):
     # Relationships
     tokens: Mapped[list["Token"]] = relationship(back_populates="user")
     saved_builds: Mapped[list["SavedBuild"]] = relationship(back_populates="user")
+    optimization_history: Mapped[list["OptimizationHistory"]] = relationship(back_populates="user")
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"
@@ -164,3 +165,18 @@ class SavedBuild(Base):
     case = relationship("Case")
     storage = relationship("Storage")
     cooler = relationship("Cooler")
+
+class OptimizationHistory(Base):
+    __tablename__ = "optimization_history"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    original_build_id: Mapped[Optional[int]] = mapped_column(ForeignKey("saved_builds.id"), nullable=True)
+    optimized_build_id: Mapped[int] = mapped_column(ForeignKey("saved_builds.id"))
+    explanation: Mapped[str] = mapped_column(String)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    
+    # Relationships
+    user: Mapped["User"] = relationship(back_populates="optimization_history")
+    original_build: Mapped[Optional["SavedBuild"]] = relationship(foreign_keys=[original_build_id])
+    optimized_build: Mapped["SavedBuild"] = relationship(foreign_keys=[optimized_build_id])

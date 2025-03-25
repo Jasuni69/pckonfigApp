@@ -185,7 +185,7 @@ const PcBuilder = () => {
         }
 
         const buildData = {
-          name: "Min PC Build", // You could add a modal to let users name their build
+          name: "Min PC Build",
           cpu_id: selectedComponents.cpu?.id || null,
           gpu_id: selectedComponents.gpu?.id || null,
           motherboard_id: selectedComponents.motherboard?.id || null,

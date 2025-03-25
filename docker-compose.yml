@@ -7,6 +7,7 @@ services:
       dockerfile: app/Dockerfile
     depends_on:
       - db
+      - chromadb
     env_file:
       - ./backend/app/.env
     restart: unless-stopped
@@ -33,8 +34,18 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
 
+  chromadb:
+    image: chromadb/chroma
+    volumes:
+      - chroma_data:/chroma/chroma_data
+    environment:
+      - CHROMA_DB_IMPL=duckdb+parquet
+      - PERSIST_DIRECTORY=/chroma/chroma_data
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  chroma_data:
 
 networks:
   default:
