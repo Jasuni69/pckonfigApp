@@ -29,6 +29,7 @@ const PcBuilder = () => {
   const { isAuthenticated, token } = useAuth();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
 
   const handleComponentSelect = (component, type) => {
@@ -270,7 +271,7 @@ const PcBuilder = () => {
 
     try {
       setIsLoading(true);
-      const response = await fetch('/api/optimize-pc', {
+      const response = await fetch('http://16.16.99.193/api/optimize', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -287,7 +288,14 @@ const PcBuilder = () => {
       }
 
       const data = await response.json();
-      // Handle optimization results
+      // Handle the optimization results by updating selectedComponents
+      if (data.optimized_components) {
+        setSelectedComponents(prev => ({
+          ...prev,
+          ...data.optimized_components
+        }));
+        alert('Din dator har optimerats!');
+      }
     } catch (error) {
       console.error('Failed to optimize PC:', error);
       alert('Kunde inte optimera datorn. Försök igen senare.');
@@ -414,10 +422,11 @@ const PcBuilder = () => {
                     {isSaving ? 'Sparar...' : 'Spara dator'}
                   </button>
                   <button 
-                    onClick={() => handleAuthenticatedAction('optimize')}
+                    onClick={handleOptimizePC}
+                    disabled={isLoading}
                     className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg"
                   >
-                    Optimera dator
+                    {isLoading ? 'Optimerar...' : 'Optimera dator'}
                   </button>
                 </div>
               </div>
