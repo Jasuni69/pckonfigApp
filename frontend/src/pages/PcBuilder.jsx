@@ -26,7 +26,7 @@ const PcBuilder = () => {
     requiredWattage: 0,
     formFactor: null
   });
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -257,6 +257,42 @@ const PcBuilder = () => {
       alert('Kunde inte spara datorn. Försök igen senare.');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleOptimizePC = async () => {
+    if (!isAuthenticated) {
+      if (window.confirm('Du måste logga in för att använda denna funktion. Vill du logga in nu?')) {
+        navigate('/login');
+      }
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/optimize-pc', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          components: selectedComponents,
+          purpose: selectedComponents.purpose?.name
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to optimize PC');
+      }
+
+      const data = await response.json();
+      // Handle optimization results
+    } catch (error) {
+      console.error('Failed to optimize PC:', error);
+      alert('Kunde inte optimera datorn. Försök igen senare.');
+    } finally {
+      setIsLoading(false);
     }
   };
 

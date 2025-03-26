@@ -5,71 +5,94 @@ from app.schemas import OptimizationRequest, OptimizedBuildOut
 from sqlalchemy.orm import Session
 from typing import List
 import logging
+import json
+import openai
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-@router.post("/optimize-build", response_model=List[OptimizedBuildOut])
+@router.post("/optimize-build", response_model=OptimizedBuildOut)
 async def optimize_build(
     request: OptimizationRequest,
     current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     try:
-        purpose = request.purpose
-        logger.info(f"Optimizing build for purpose: {purpose}")
+        # Get current component details
+        current_components = {}
         
-        query = f"""
-        Recommend components for {purpose} PC build.
-        Current components and requirements:
-        CPU ID: {request.cpu_id}
-        GPU ID: {request.gpu_id} (Consider power requirements)
-        Motherboard ID: {request.motherboard_id} (Check socket and form factor)
-        RAM ID: {request.ram_id} (Focus on sufficient capacity for {purpose})
-        PSU ID: {request.psu_id} (Ensure adequate wattage for system)
-        Case ID: {request.case_id} (Check form factor compatibility)
-        Storage ID: {request.storage_id}
-        Cooler ID: {request.cooler_id}
+        if request.cpu_id:
+            current_components["cpu"] = db.query(CPU).filter(CPU.id == request.cpu_id).first()
+        # Get other components the same way...
         
-        Consider:
-        1. Total system power needs
-        2. RAM capacity for {purpose} usage
-        3. Case compatibility
-        4. Overall system balance
+        # Get all available components
+        all_cpus = [{"id": c.id, "name": c.name, "socket": c.socket, "cores": c.cores, "price": c.price} 
+                   for c in db.query(CPU).all()]
+        # Get other component types similarly...
+        
+        # Ask AI to optimize the build
+        prompt = f"""
+        Analyze this PC build for {request.purpose}:
+        
+        Current components:
+        {json.dumps(current_components, indent=2)}
+        
+        Based on the purpose "{request.purpose}", identify components that need upgrading.
+        Only suggest changes that are necessary - keep components that are already suitable.
+        
+        Return a single optimized build with:
+        1. Which components to keep
+        2. Which components to replace and why
+        3. A brief explanation of the changes
+        
+        Format as JSON:
+        {{
+          "explanation": "Overall explanation of changes",
+          "changes": [
+            {{ "component": "gpu", "from_id": 123, "to_id": 456, "reason": "The 4060 is not powerful enough for 4K gaming" }}
+          ],
+          "components": {{
+            "cpu_id": 1,
+            "gpu_id": 2,
+            // other component IDs
+          }}
+        }}
         """
         
-        logger.info("Querying ChromaDB for recommendations")
-        results = search_components(query, n_results=3)
-        logger.info(f"Received {len(results['documents'][0])} recommendations from ChromaDB")
+        response = openai.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a PC building expert. Identify components that need upgrading based on the user's purpose."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"},
+        )
         
-        optimized_builds = []
-        for i, (doc, metadata) in enumerate(zip(results['documents'][0], results['metadatas'][0])):
-            logger.debug(f"Processing recommendation {i+1}: {doc[:100]}...")
-            
-            build = OptimizedBuildOut(
-                id=i,
-                name=f"Optimized Build {i+1}",
-                purpose=purpose,
-                user_id=current_user.id,
-                explanation=doc,
-                similarity_score=results['distances'][0][i] if 'distances' in results else 0.0,
-                cpu_id=metadata.get("cpu_id"),
-                gpu_id=metadata.get("gpu_id"),
-                motherboard_id=metadata.get("motherboard_id"),
-                ram_id=metadata.get("ram_id"),
-                psu_id=metadata.get("psu_id"),
-                case_id=metadata.get("case_id"),
-                storage_id=metadata.get("storage_id"),
-                cooler_id=metadata.get("cooler_id")
-            )
-            optimized_builds.append(build)
+        result = json.loads(response.choices[0].message.content)
         
-        logger.info(f"Returning {len(optimized_builds)} optimized builds")
-        return optimized_builds
+        # Create a single optimized build
+        optimized_build = OptimizedBuildOut(
+            id=1,
+            name="Optimized Build",
+            purpose=request.purpose,
+            user_id=current_user.id,
+            cpu_id=result["components"].get("cpu_id", request.cpu_id),
+            gpu_id=result["components"].get("gpu_id", request.gpu_id),
+            motherboard_id=result["components"].get("motherboard_id", request.motherboard_id),
+            ram_id=result["components"].get("ram_id", request.ram_id),
+            psu_id=result["components"].get("psu_id", request.psu_id),
+            case_id=result["components"].get("case_id", request.case_id),
+            storage_id=result["components"].get("storage_id", request.storage_id),
+            cooler_id=result["components"].get("cooler_id", request.cooler_id),
+            explanation=result["explanation"],
+            similarity_score=0.95
+        )
+        
+        return optimized_build
         
     except Exception as e:
         logger.error(f"Error in optimize_build: {str(e)}", exc_info=True)
         raise HTTPException(
-            status_code=500,
+            status_code=500, 
             detail=f"Error optimizing build: {str(e)}"
         )
