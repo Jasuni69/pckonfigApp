@@ -10,6 +10,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY alembic.ini .
 COPY alembic/ ./alembic/
 
+# Copy ChromaDB directory
+COPY ChromaDB/ ./ChromaDB/
+
 # Copy the application code
 COPY app/ .
 
