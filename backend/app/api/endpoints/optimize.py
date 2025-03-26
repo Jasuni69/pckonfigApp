@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
-from api.deps import get_current_user, get_db
-from ChromaDB.manager import search_components
-from schemas import OptimizationRequest, OptimizedBuildOut
 from sqlalchemy.orm import Session
+from database import get_db
+from core.deps import get_current_user
+from schemas import OptimizationRequest, OptimizedBuildOut
+from models import CPU, GPU, RAM, PSU, Case, Storage, Cooler, Motherboard
+from ChromaDB.manager import search_components
 from typing import List
 import logging
 import json
 import openai
-from models import CPU, GPU, RAM, PSU, Case, Storage, Cooler, Motherboard
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
