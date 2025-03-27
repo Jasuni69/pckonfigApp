@@ -668,18 +668,38 @@ async def optimize_build(
         print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
         print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
 
-        # After getting the OpenAI response, validate only critical requirements
+        # After getting the OpenAI response, validate requirements
         try:
             response_data = response.choices[0].message.content
             result = json.loads(response_data)
             
-            # Only validate GPU for 4K gaming requirement
+            # For 4K gaming, ensure GPU meets requirements
             if purpose.lower() == "4k gaming":
+                # Check if explanation and actual selection match
                 gpu_id = result["components"].get("gpu_id")
-                if gpu_id:  # Only validate if GPU is being upgraded
-                    selected_gpu = next((g for g in gpu_components if g.id == gpu_id), None)
+                
+                # If keeping current GPU, check if it meets requirements
+                if gpu_id is None:
+                    current_gpu = current_components.get("gpu", {})
+                    if not validate_gpu_for_4k(current_gpu):
+                        # Force selection of a new GPU
+                        suitable_gpus = [g for g in gpu_components if validate_gpu_for_4k(g)]
+                        if suitable_gpus:
+                            result["components"]["gpu_id"] = suitable_gpus[0]["id"]
+                            result["explanation"] = "Upgraded GPU to meet 4K gaming requirements. " + result["explanation"]
+                        else:
+                            raise ValueError("No suitable GPU found for 4K gaming")
+                else:
+                    # If selecting new GPU, validate it
+                    selected_gpu = next((g for g in gpu_components if g["id"] == gpu_id), None)
                     if not selected_gpu or not validate_gpu_for_4k(selected_gpu):
-                        raise ValueError("Selected GPU does not meet 4K gaming requirements")
+                        suitable_gpus = [g for g in gpu_components if validate_gpu_for_4k(g)]
+                        if suitable_gpus:
+                            result["components"]["gpu_id"] = suitable_gpus[0]["id"]
+                            result["explanation"] = "Selected a more suitable GPU for 4K gaming. " + result["explanation"]
+                        else:
+                            raise ValueError("Selected GPU does not meet 4K gaming requirements")
+
         except (json.JSONDecodeError, KeyError, ValueError) as e:
             print(f"Error validating OpenAI response: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error in optimize_build: {str(e)}")
