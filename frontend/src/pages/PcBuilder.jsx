@@ -16,23 +16,26 @@ import { API_URL } from '../config';
 const normalizeFormFactor = (formFactor) => {
   if (!formFactor) return '';
   
-  const ff = formFactor.toLowerCase();
+  // Convert to string in case it's not
+  const ff = String(formFactor).toLowerCase().trim();
   
-  if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'Utökad ATX';
-  if (ff.includes('micro')) return 'Micro ATX';
-  if (ff.includes('mini-mini')) return 'Mini ITX';
-  if (ff.includes('mini')) return 'Mini ITX';
-  if (ff === 'atx' || ff.includes('atx')) return 'ATX';
+  // Handle common variations and Swedish translations
+  if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'e-atx';
+  if (ff.includes('micro')) return 'micro-atx';
+  if (ff.includes('mini-mini')) return 'mini-itx'; 
+  if (ff.includes('mini')) return 'mini-itx';
+  if (ff === 'atx' || (ff.includes('atx') && !ff.includes('micro') && !ff.includes('mini'))) return 'atx';
   
+  // Log unexpected form factors
   console.log('Unexpected form factor:', formFactor);
-  return formFactor;
+  return ff;
 };
 
 const formFactorCompatibility = {
-  "Utökad ATX": ["Utökad ATX", "ATX", "Micro ATX", "Mini ITX"],
-  "ATX": ["ATX", "Micro ATX", "Mini ITX"],
-  "Micro ATX": ["Micro ATX", "Mini ITX"],
-  "Mini ITX": ["Mini ITX"]
+  "e-atx": ["e-atx", "atx", "micro-atx", "mini-itx"],
+  "atx": ["atx", "micro-atx", "mini-itx"],
+  "micro-atx": ["micro-atx", "mini-itx"],
+  "mini-itx": ["mini-itx"]
 };
 
 const PcBuilder = () => {
@@ -97,14 +100,15 @@ const PcBuilder = () => {
         }
         
         if (selectedComponents.case) {
-          const caseFormFactor = selectedComponents.case.form_factor;
-          const normalizedFormFactor = normalizeFormFactor(caseFormFactor);
-          console.log('Case form factor:', caseFormFactor, 'Normalized:', normalizedFormFactor);
+          // Add the raw form factor directly
+          requirements.formFactor = selectedComponents.case.form_factor;
+          const normalizedFF = normalizeFormFactor(requirements.formFactor);
           
-          // Set the form factor requirement directly
-          requirements.formFactor = caseFormFactor;
-          
-          console.log('Found case, adding form factor requirement:', requirements.formFactor);
+          console.log('Found case, adding form factor requirement:', {
+            original: requirements.formFactor,
+            normalized: normalizedFF,
+            supportedSizes: formFactorCompatibility[normalizedFF] || [normalizedFF]
+          });
         }
         
         if (Object.keys(requirements).length > 0) {
@@ -147,14 +151,14 @@ const PcBuilder = () => {
         
       case 'cases':
         if (selectedComponents.motherboard) {
+          // Add the raw form factor directly
           const formFactor = selectedComponents.motherboard.form_factor;
-          const normalizedFormFactor = normalizeFormFactor(formFactor);
-          console.log('Motherboard form factor:', formFactor, 'Normalized:', normalizedFormFactor);
+          const normalizedFF = normalizeFormFactor(formFactor);
           
           console.log('Case filter requirements:', {
             motherboard: selectedComponents.motherboard.name,
-            formFactor: formFactor,
-            normalizedFormFactor
+            original: formFactor,
+            normalized: normalizedFF
           });
           
           return { formFactor };

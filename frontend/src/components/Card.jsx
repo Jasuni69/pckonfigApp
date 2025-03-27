@@ -5,18 +5,27 @@ import { FiInfo } from 'react-icons/fi';
 const normalizeFormFactor = (formFactor) => {
   if (!formFactor) return '';
   
-  const ff = formFactor.toLowerCase();
+  // Convert to string in case it's not
+  const ff = String(formFactor).toLowerCase().trim();
   
   // Handle common variations and Swedish translations
-  if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'Utökad ATX';
-  if (ff.includes('micro')) return 'Micro ATX';
-  if (ff.includes('mini-mini')) return 'Mini ITX'; // Handle double "mini" case
-  if (ff.includes('mini')) return 'Mini ITX';
-  if (ff === 'atx' || ff.includes('atx')) return 'ATX';
+  if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'e-atx';
+  if (ff.includes('micro')) return 'micro-atx';
+  if (ff.includes('mini-mini')) return 'mini-itx'; 
+  if (ff.includes('mini')) return 'mini-itx';
+  if (ff === 'atx' || (ff.includes('atx') && !ff.includes('micro') && !ff.includes('mini'))) return 'atx';
   
   // Log unexpected form factors
   console.log('Unexpected form factor:', formFactor);
-  return formFactor; // Return original in case nothing matches
+  return ff; // Return lowercase trimmed version 
+};
+
+// Updated compatibility map with lowercase keys
+const formFactorCompatibility = {
+  "e-atx": ["e-atx", "atx", "micro-atx", "mini-itx"],
+  "atx": ["atx", "micro-atx", "mini-itx"],
+  "micro-atx": ["micro-atx", "mini-itx"],
+  "mini-itx": ["mini-itx"]
 };
 
 const GuideContent = ({ type }) => {
@@ -218,6 +227,15 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
           const response = await fetch(`/api/${options}`);
           const data = await response.json();
           
+          // Log all components with their form factors before filtering
+          if (options === 'motherboards' || options === 'cases') {
+            console.log(`All ${options} before filtering:`, data.map(item => ({
+              name: item.name, 
+              form_factor: item.form_factor,
+              normalized: normalizeFormFactor(item.form_factor)
+            })));
+          }
+          
           let filteredData = data;
           
           if (filterRequirements && Object.keys(filterRequirements).length > 0) {
@@ -229,79 +247,52 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
                 const compSocket = (component.socket || '').toLowerCase().replace('socket ', '');
                 const matches = compSocket.includes(reqSocket);
-                if (options === 'motherboards') {
-                  console.log(`Socket check for ${component.name}: reqSocket=${reqSocket}, compSocket=${compSocket}, matches=${matches}`);
-                }
                 return matches;
               }
-
-              // Motherboard form factor compatibility with case
+              
+              // Motherboard form factor compatibility with case 
               if (filterRequirements.formFactor && options === 'motherboards') {
-                const caseFormFactor = filterRequirements.formFactor;
-                const normalizedCaseFF = normalizeFormFactor(caseFormFactor);
-                const normalizedMoboFF = normalizeFormFactor(component.form_factor);
+                const caseFormFactor = normalizeFormFactor(filterRequirements.formFactor);
+                const moboFormFactor = normalizeFormFactor(component.form_factor);
                 
-                // Get compatible form factors for the case
-                const compatibleFormFactors = formFactorCompatibility[normalizedCaseFF] || [normalizedCaseFF];
+                // A case can fit these motherboard form factors
+                const compatibleFormFactors = formFactorCompatibility[caseFormFactor] || [caseFormFactor];
                 
-                console.log('Motherboard compatibility check:', {
-                  motherboard: component.name,
-                  moboFormFactor: component.form_factor,
-                  normalizedMoboFF,
-                  caseFormFactor,
-                  normalizedCaseFF,
-                  compatibleFormFactors,
-                  isCompatible: compatibleFormFactors.includes(normalizedMoboFF)
-                });
+                const isCompatible = compatibleFormFactors.includes(moboFormFactor);
                 
-                return compatibleFormFactors.includes(normalizedMoboFF);
+                console.log(`Checking if motherboard ${component.name} (${component.form_factor} → ${moboFormFactor}) fits in case with ${filterRequirements.formFactor} → ${caseFormFactor}, compatible with ${compatibleFormFactors.join(', ')}: ${isCompatible}`);
+                
+                return isCompatible;
               }
-
+              
               // Case compatibility with motherboard form factor
-              if (options === 'cases' && filterRequirements.formFactor) {
-                const moboFormFactor = filterRequirements.formFactor;
-                const normalizedMoboFF = normalizeFormFactor(moboFormFactor);
-                const normalizedCaseFF = normalizeFormFactor(component.form_factor);
+              if (filterRequirements.formFactor && options === 'cases') {
+                const moboFormFactor = normalizeFormFactor(filterRequirements.formFactor);
+                const caseFormFactor = normalizeFormFactor(component.form_factor);
                 
-                // A case can fit this motherboard if the case form factor is the same or larger
-                const canFit = formFactorCompatibility[normalizedCaseFF]?.includes(normalizedMoboFF);
+                // This case can fit the selected motherboard if the case form factor is compatible
+                const caseCompatibleWith = formFactorCompatibility[caseFormFactor] || [caseFormFactor];
+                const isCompatible = caseCompatibleWith.includes(moboFormFactor);
                 
-                console.log('Case compatibility check:', {
-                  case: component.name,
-                  caseFormFactor: component.form_factor,
-                  normalizedCaseFF, 
-                  moboFormFactor,
-                  normalizedMoboFF,
-                  canFit
-                });
+                console.log(`Checking if case ${component.name} (${component.form_factor} → ${caseFormFactor}) can fit motherboard with ${filterRequirements.formFactor} → ${moboFormFactor}: ${isCompatible}`);
                 
-                return canFit;
+                return isCompatible;
               }
-
+              
               // GPU power requirements
               if (options === 'gpus' && filterRequirements.maxWattage) {
                 const gpuWattage = parseInt(component.power_consumption) || 0;
                 const maxWattage = parseInt(filterRequirements.maxWattage) || 0;
-                console.log(`GPU ${component.name} power check:`, {
-                  gpuWattage,
-                  maxWattage,
-                  matches: gpuWattage <= maxWattage
-                });
                 return gpuWattage <= maxWattage;
               }
-
+              
               // PSU wattage requirements
               if (options === 'psus' && filterRequirements.minWattage) {
                 const psuWattage = parseInt(component.wattage) || 0;
                 const minWattage = parseInt(filterRequirements.minWattage) || 0;
-                console.log(`PSU ${component.name} wattage check:`, {
-                  psuWattage,
-                  minWattage,
-                  matches: psuWattage >= minWattage
-                });
                 return psuWattage >= minWattage;
               }
-
+              
               return true;
             });
             
@@ -312,19 +303,24 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               afterCount: filteredData.length,
               filtered: data.length - filteredData.length,
             });
+            
+            // Debug log all filtered components
+            if (filteredData.length === 0) {
+              console.warn(`No ${options} found after filtering with:`, filterRequirements);
+            } else if (options === 'motherboards' || options === 'cases') {
+              console.log(`Filtered ${options}:`, filteredData.map(item => ({
+                name: item.name, 
+                form_factor: item.form_factor,
+                normalized: normalizeFormFactor(item.form_factor)
+              })));
+            }
           }
           
-          // Add debug logging if no motherboards are found after filtering
-          if (options === 'motherboards' && filteredData.length === 0) {
-            console.error('No compatible motherboards found with requirements:', filterRequirements);
-            console.log('Available motherboards with form factors:');
-            data.forEach(mobo => {
-              console.log(`${mobo.name}: ${mobo.form_factor} (normalized: ${normalizeFormFactor(mobo.form_factor)})`);
-            });
-            
-            // If no motherboards are found, we'll show all motherboards with a warning
+          // If no motherboards are found after filtering, show all with a warning
+          if (options === 'motherboards' && filteredData.length === 0 && filterRequirements && filterRequirements.formFactor) {
+            console.warn('No compatible motherboards found! Showing all motherboards instead.');
+            alert(`Hittade inga moderkort som är kompatibla med detta chassi (${filterRequirements.formFactor}). Visar alla moderkort istället.`);
             filteredData = data;
-            alert('Ingen exakt matchande moderkort hittades. Visar alla moderkort - kontrollera att formen är kompatibel.');
           }
           
           // Sort components by price (highest to lowest)
