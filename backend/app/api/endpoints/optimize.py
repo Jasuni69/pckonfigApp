@@ -575,17 +575,24 @@ async def optimize_build(
         
         # Then update the prompt and API call
         messages = [
-            {"role": "system", "content": """You are a PC building expert. 
-            When optimizing builds, follow these guidelines:
-            1. For 4K gaming, the GPU MUST have at least 12GB VRAM
-            2. Evaluate each current component - only suggest upgrades if they provide meaningful improvement
-            3. Consider the overall system balance and compatibility
-            4. If the current component is already suitable, keep it
-            
-            Respond ONLY with a JSON object containing:
-            1. explanation: string explaining your recommendations and why specific upgrades are needed
-            2. components: object with component IDs (cpu_id, gpu_id, etc.) - use null to keep current component
-            """},
+            {"role": "system", "content": """You are a PC building expert who provides optimized component recommendations.
+
+PURPOSE-SPECIFIC REQUIREMENTS:
+- 4K Gaming: GPU MUST have 12GB+ VRAM (RTX 4080, 4090, RX 7900 XT/XTX)
+- AI/Machine Learning: GPU MUST have 8GB+ VRAM, prefer NVIDIA for CUDA support
+- Video Editing: Min 8-core CPU, 32GB+ RAM, 8GB+ VRAM GPU
+- 3D Rendering: Strong multi-core CPU, 16GB+ RAM, 8GB+ VRAM GPU
+- Development: 16GB+ RAM, SSD storage, 6+ core CPU
+- Basic Use: Balance cost-efficiency, prioritize reliability
+
+OPTIMIZATION RULES:
+1. Analyze each component against purpose requirements
+2. Suggest upgrades ONLY for components that limit performance
+3. IMPORTANT: Your component selections MUST use IDs from the provided options
+4. Keep current components when already suitable
+
+FORMAT: JSON with 'explanation' and component IDs (set null to keep current)
+"""},
             
             {"role": "user", "content": f"""
             Current build purpose: {purpose}
@@ -601,13 +608,12 @@ async def optimize_build(
             Storage: {json.dumps(storage_components, indent=2)}
             Coolers: {json.dumps(cooler_components, indent=2)}
             
-            Guidelines for {purpose}:
-            1. For 4K gaming, ensure the GPU has at least 12GB VRAM
-            2. Evaluate if current components meet the performance requirements
-            3. Only suggest upgrades that provide meaningful improvement
-            4. Consider value for money in recommendations
+            Analyze the current build for {purpose} use-case:
+            1. Identify components that need upgrading
+            2. Select appropriate replacements from the options provided
+            3. Explain your choices clearly
             
-            Respond with a JSON object containing your recommendations and explanation.
+            Your JSON response must include component ID values that match the provided options.
             """}
         ]
         
@@ -646,45 +652,60 @@ async def optimize_build(
                 if key not in result["components"] or result["components"][key] is None:
                     result["components"][key] = default_id
             
-            # For 4K gaming, validate the selected GPU
-            if purpose.lower() == "4k gaming":
-                # Get the selected GPU ID from OpenAI's response
-                selected_gpu_id = result["components"]["gpu_id"]
-                
-                # Check if the selected GPU meets 4K requirements
-                selected_gpu = db.query(GPU).filter(GPU.id == selected_gpu_id).first()
-                
-                # If no GPU was selected or if it doesn't meet requirements, find a suitable one
-                if not selected_gpu or not selected_gpu.memory or "12" not in selected_gpu.memory:
-                    print(f"DEBUG - Selected GPU doesn't meet 4K requirements: {selected_gpu.name if selected_gpu else 'None'}")
+            # Validate component selections based on purpose
+            if purpose.lower() == "4k gaming" or "4k" in purpose.lower() and "gaming" in purpose.lower():
+                # For 4K gaming, validate GPU VRAM
+                selected_gpu_id = result["components"].get("gpu_id")
+                if selected_gpu_id:
+                    selected_gpu = db.query(GPU).filter(GPU.id == selected_gpu_id).first()
                     
-                    # First try to find a suitable GPU from ChromaDB recommendations
-                    suitable_gpu_from_chroma = next((g for g in recommendations["gpus"] 
-                        if g["memory"] and "12" in g["memory"]), None)
+                    # Check if the selected GPU meets 4K requirements
+                    has_sufficient_vram = False
+                    if selected_gpu and selected_gpu.memory:
+                        # Extract numeric value from memory string
+                        try:
+                            memory_str = selected_gpu.memory.lower()
+                            memory_value = float(''.join(c for c in memory_str if c.isdigit() or c == '.'))
+                            has_sufficient_vram = memory_value >= 12
+                            print(f"DEBUG - GPU VRAM check: {selected_gpu.name}, {memory_str}, value: {memory_value}, sufficient: {has_sufficient_vram}")
+                        except:
+                            print(f"DEBUG - Couldn't parse memory value from {selected_gpu.memory}")
+                    
+                    if not has_sufficient_vram:
+                        # Find a suitable 4K gaming GPU
+                        suitable_gpus = [g for g in recommendations["gpus"] if g.get("memory") and "12" in str(g["memory"])]
+                        if suitable_gpus:
+                            result["components"]["gpu_id"] = suitable_gpus[0]["id"]
+                            print(f"DEBUG - Replaced GPU with suitable 4K option: {suitable_gpus[0]['name']}")
+                            result["explanation"] += " NOTE: Selected GPU was upgraded to ensure 12GB+ VRAM for 4K gaming."
+            
+            elif "ai" in purpose.lower() or "machine learning" in purpose.lower():
+                # For AI/ML, validate VRAM (8GB+ preferred)
+                selected_gpu_id = result["components"].get("gpu_id")
+                if selected_gpu_id:
+                    selected_gpu = db.query(GPU).filter(GPU.id == selected_gpu_id).first()
+                    
+                    # Check if the selected GPU has sufficient VRAM
+                    has_sufficient_vram = False
+                    if selected_gpu and selected_gpu.memory:
+                        try:
+                            memory_str = selected_gpu.memory.lower()
+                            memory_value = float(''.join(c for c in memory_str if c.isdigit() or c == '.'))
+                            has_sufficient_vram = memory_value >= 8
+                            print(f"DEBUG - GPU VRAM check for AI: {selected_gpu.name}, {memory_str}, value: {memory_value}, sufficient: {has_sufficient_vram}")
+                        except:
+                            print(f"DEBUG - Couldn't parse memory value from {selected_gpu.memory}")
+                    
+                    if not has_sufficient_vram:
+                        # Find a suitable AI/ML GPU (prefer NVIDIA for CUDA)
+                        nvidia_gpus = [g for g in recommendations["gpus"] 
+                                      if g.get("memory") and "8" in str(g["memory"]) 
+                                      and ("nvidia" in g.get("name", "").lower() or "geforce" in g.get("name", "").lower() or "rtx" in g.get("name", "").lower())]
                         
-                    if suitable_gpu_from_chroma:
-                        print(f"DEBUG - Using suitable GPU from ChromaDB: {suitable_gpu_from_chroma['name']}")
-                        result["components"]["gpu_id"] = suitable_gpu_from_chroma["id"]
-                    else:
-                        # Fallback to direct database query
-                        print("DEBUG - No suitable GPU in ChromaDB, querying database directly")
-                        suitable_gpu = db.query(GPU).filter(
-                            GPU.memory.like('%12%') | GPU.memory.like('%16%')
-                        ).first()
-                        
-                        if suitable_gpu:
-                            print(f"DEBUG - Found suitable GPU in database: {suitable_gpu.name}")
-                            result["components"]["gpu_id"] = suitable_gpu.id
-                        else:
-                            print("WARNING: No GPUs with 12GB+ VRAM found!")
-                
-                # Update explanation based on final GPU selection
-                final_gpu = db.query(GPU).filter(GPU.id == result["components"]["gpu_id"]).first()
-                if final_gpu:
-                    result["explanation"] = (
-                        f"Upgraded to {final_gpu.name} with {final_gpu.memory} VRAM "
-                        "to meet 4K gaming requirements. This GPU provides the necessary VRAM for smooth 4K gaming experience."
-                    )
+                        if nvidia_gpus:
+                            result["components"]["gpu_id"] = nvidia_gpus[0]["id"]
+                            print(f"DEBUG - Replaced GPU with suitable AI option: {nvidia_gpus[0]['name']}")
+                            result["explanation"] += " NOTE: Selected GPU was upgraded to ensure 8GB+ VRAM for AI/ML workloads."
             
             # Fetch component objects using final IDs
             cpu = db.query(CPU).filter(CPU.id == result["components"]["cpu_id"]).first() if result["components"]["cpu_id"] else None
