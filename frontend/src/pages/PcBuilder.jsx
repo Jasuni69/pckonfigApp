@@ -269,14 +269,24 @@ const PcBuilder = () => {
       return;
     }
 
+    // Get the token directly from localStorage for consistency
+    const authToken = localStorage.getItem('token');
+    
+    if (!authToken) {
+      alert('Du måste logga in igen för att fortsätta.');
+      navigate('/login');
+      return;
+    }
+
     try {
       setIsLoading(true);
       
-      // Using the updated endpoint path
+      console.log('Sending optimization request with token:', authToken.substring(0, 10) + '...');
+      
       const response = await fetch('http://16.16.99.193/api/optimize/build', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -292,8 +302,13 @@ const PcBuilder = () => {
         })
       });
 
+      if (response.status === 401) {
+        throw new Error('Din inloggning har upphört. Logga in igen för att fortsätta.');
+      }
+      
       if (!response.ok) {
-        throw new Error('Failed to optimize PC');
+        const errorText = await response.text();
+        throw new Error(`Failed to optimize PC: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
@@ -307,7 +322,13 @@ const PcBuilder = () => {
       }
     } catch (error) {
       console.error('Failed to optimize PC:', error);
-      alert('Kunde inte optimera datorn. Försök igen senare.');
+      
+      if (error.message.includes('inloggning har upphört')) {
+        alert(error.message);
+        navigate('/login');
+      } else {
+        alert('Kunde inte optimera datorn. Försök igen senare.');
+      }
     } finally {
       setIsLoading(false);
     }
