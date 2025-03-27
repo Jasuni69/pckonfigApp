@@ -569,58 +569,48 @@ async def optimize_build(
         print(f"\nRecommendations count: CPU={len(recommendations['cpus'])}, GPU={len(recommendations['gpus'])}, MB={len(recommendations['motherboards'])}, RAM={len(recommendations['ram'])}, PSU={len(recommendations['psus'])}, Case={len(recommendations['cases'])}, Storage={len(recommendations['storage'])}, Cooler={len(recommendations['coolers'])}")
         
         # Then update the prompt and API call
-        prompt = f"""
-        Analyze this PC build for {purpose}:
-
-        Current components:
-        {json.dumps(current_components, indent=2)}
-
-        Recommended components:
-        {json.dumps(recommendations, indent=2)}
-
-        CRITICAL 4K GAMING RULES:
-        ONLY ALLOWED GPUs:
-        - RTX 4080 (16GB)
-        - RTX 4090 (24GB)
-        - RX 7900 XT/XTX
-
-        FORBIDDEN GPUs:
-        - RTX 4060 Ti (8GB)
-        - RTX 4070 (12GB)
-        - Any GPU below these
-
-        If no allowed GPU exists in recommendations, you must say "No suitable 4K GPU available" in explanation.
-
-        Format:
-        {{
-          "explanation": "Brief explanation of needed changes",
-          "components": {{
-            "cpu_id": 1,
-            "gpu_id": 2,
-            "motherboard_id": 3,
-            "ram_id": 4,
-            "psu_id": 5,
-            "case_id": 6,
-            "storage_id": 7,
-            "cooler_id": 8
-          }}
-        }}
-        """
+        messages = [
+            {"role": "system", "content": """You are a PC building expert. 
+            When optimizing builds, follow these guidelines:
+            1. For 4K gaming, the GPU MUST have at least 12GB VRAM
+            2. Evaluate each current component - only suggest upgrades if they provide meaningful improvement
+            3. Consider the overall system balance and compatibility
+            4. If the current component is already suitable, keep it
+            
+            Respond ONLY with a JSON object containing:
+            1. explanation: string explaining your recommendations and why specific upgrades are needed
+            2. components: object with component IDs (cpu_id, gpu_id, etc.) - use null to keep current component
+            """},
+            
+            {"role": "user", "content": f"""
+            Current build purpose: {purpose}
+            Current components: {json.dumps(current_components, indent=2)}
+            
+            Available upgrade options:
+            CPUs: {json.dumps([c.dict() for c in cpu_components], indent=2)}
+            GPUs: {json.dumps([g.dict() for g in gpu_components], indent=2)}
+            Motherboards: {json.dumps([m.dict() for m in mb_components], indent=2)}
+            RAM: {json.dumps([r.dict() for r in ram_components], indent=2)}
+            PSUs: {json.dumps([p.dict() for p in psu_components], indent=2)}
+            Cases: {json.dumps([c.dict() for c in case_components], indent=2)}
+            Storage: {json.dumps([s.dict() for s in storage_components], indent=2)}
+            Coolers: {json.dumps([c.dict() for c in cooler_components], indent=2)}
+            
+            Guidelines for {purpose}:
+            1. For 4K gaming, ensure the GPU has at least 12GB VRAM
+            2. Evaluate if current components meet the performance requirements
+            3. Only suggest upgrades that provide meaningful improvement
+            4. Consider value for money in recommendations
+            
+            Respond with a JSON object containing your recommendations and explanation.
+            """}
+        ]
         
         print(f"\nSending prompt to OpenAI")
         
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "system", 
-                    "content": "You are a PC expert. For 4K gaming: ONLY recommend RTX 4080, 4090, or RX 7900 XT/XTX. If none available, state this clearly. NEVER recommend RTX 4060 Ti or 4070 for 4K. JSON response only."
-                },
-                {
-                    "role": "user", 
-                    "content": prompt + "\n\nRespond with JSON only."
-                }
-            ],
+            messages=messages,
             response_format={"type": "json_object"},
             temperature=0.3
         )
@@ -674,22 +664,21 @@ async def optimize_build(
         print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
         print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
 
-        # Add validation after getting the response but before creating OptimizedBuildOut
+        # After getting the OpenAI response, validate only critical requirements
         try:
-            result = json.loads(response.choices[0].message.content)
+            response_data = response.choices[0].message.content
+            result = json.loads(response_data)
             
-            # For 4K gaming builds, validate GPU selection
-            if "4k" in purpose.lower() and "gaming" in purpose.lower():
+            # Only validate GPU for 4K gaming requirement
+            if purpose.lower() == "4k gaming":
                 gpu_id = result["components"].get("gpu_id")
-                if gpu_id:
-                    gpu = db.query(GPU).filter(GPU.id == gpu_id).first()
-                    if gpu and not validate_4k_gpu(gpu.__dict__):
-                        # If selected GPU doesn't meet requirements, modify the response
-                        result["explanation"] = "No suitable GPU for 4K gaming available in recommendations. Current options don't meet minimum requirements (need RTX 4080, 4090, or RX 7900 XT/XTX). Consider waiting for better GPU options."
-                        # Keep current GPU if no suitable upgrade available
-                        result["components"]["gpu_id"] = request.gpu_id
-        except Exception as e:
-            print(f"Error in response validation: {str(e)}")
+                if gpu_id:  # Only validate if GPU is being upgraded
+                    selected_gpu = next((g for g in gpu_components if g.id == gpu_id), None)
+                    if not selected_gpu or not validate_4k_gpu(selected_gpu.__dict__):
+                        raise ValueError("Selected GPU does not meet 4K gaming requirements")
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            print(f"Error validating OpenAI response: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Invalid optimization result: {str(e)}")
 
         # Create the optimized build with both IDs and full component objects
         optimized_build = OptimizedBuildOut(
