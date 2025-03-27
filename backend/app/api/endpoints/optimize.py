@@ -591,14 +591,14 @@ async def optimize_build(
             Current components: {json.dumps(current_components, indent=2)}
             
             Available upgrade options:
-            CPUs: {json.dumps([c.dict() for c in cpu_components], indent=2)}
-            GPUs: {json.dumps([g.dict() for g in gpu_components], indent=2)}
-            Motherboards: {json.dumps([m.dict() for m in mb_components], indent=2)}
-            RAM: {json.dumps([r.dict() for r in ram_components], indent=2)}
-            PSUs: {json.dumps([p.dict() for p in psu_components], indent=2)}
-            Cases: {json.dumps([c.dict() for c in case_components], indent=2)}
-            Storage: {json.dumps([s.dict() for s in storage_components], indent=2)}
-            Coolers: {json.dumps([c.dict() for c in cooler_components], indent=2)}
+            CPUs: {json.dumps(cpu_components, indent=2)}
+            GPUs: {json.dumps(gpu_components, indent=2)}
+            Motherboards: {json.dumps(mb_components, indent=2)}
+            RAM: {json.dumps(ram_components, indent=2)}
+            PSUs: {json.dumps(psu_components, indent=2)}
+            Cases: {json.dumps(case_components, indent=2)}
+            Storage: {json.dumps(storage_components, indent=2)}
+            Coolers: {json.dumps(cooler_components, indent=2)}
             
             Guidelines for {purpose}:
             1. For 4K gaming, ensure the GPU has at least 12GB VRAM
