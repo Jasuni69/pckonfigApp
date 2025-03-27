@@ -278,6 +278,9 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             });
           }
           
+          // Sort components by price (highest to lowest)
+          filteredData = sortComponentsByPrice(filteredData);
+          
           setComponents(filteredData);
           setChoices(filteredData);
         } catch (error) {
@@ -290,6 +293,23 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
       fetchComponents();
     }
   }, [options, filterRequirements]);
+
+  // Function to sort components by price from highest to lowest
+  const sortComponentsByPrice = (components) => {
+    return [...components].sort((a, b) => {
+      // Parse prices to integer values
+      const priceA = typeof a.price === 'string' 
+        ? parseInt(a.price.replace(/[^0-9]/g, ''), 10) || 0
+        : a.price || 0;
+      
+      const priceB = typeof b.price === 'string'
+        ? parseInt(b.price.replace(/[^0-9]/g, ''), 10) || 0
+        : b.price || 0;
+      
+      // Sort from highest to lowest
+      return priceB - priceA;
+    });
+  };
 
   const filteredChoices = search
     ? choices.filter((opt) =>
