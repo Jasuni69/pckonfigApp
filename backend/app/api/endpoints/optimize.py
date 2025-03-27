@@ -575,23 +575,47 @@ async def optimize_build(
         
         # Then update the prompt and API call
         messages = [
-            {"role": "system", "content": """You are a PC building expert who provides optimized component recommendations.
+            {"role": "system", "content": """You are a PC building expert who provides comprehensive optimization recommendations.
 
 PURPOSE-SPECIFIC REQUIREMENTS:
-- 4K Gaming: GPU MUST have 12GB+ VRAM (RTX 4080, 4090, RX 7900 XT/XTX)
-- AI/Machine Learning: GPU MUST have 8GB+ VRAM, prefer NVIDIA for CUDA support
-- Video Editing: Min 8-core CPU, 32GB+ RAM, 8GB+ VRAM GPU
-- 3D Rendering: Strong multi-core CPU, 16GB+ RAM, 8GB+ VRAM GPU
-- Development: 16GB+ RAM, SSD storage, 6+ core CPU
+- 4K Gaming: 
+  * GPU: MUST have 12GB+ VRAM (RTX 4080, 4090, RX 7900 XT/XTX)
+  * CPU: At least 8 cores recommended (i7/Ryzen 7 or better)
+  * RAM: Minimum 16GB, 32GB recommended
+  * PSU: At least 750W for high-end GPUs
+  * Storage: Fast SSD required for game loading
+
+- AI/Machine Learning: 
+  * GPU: MUST have 8GB+ VRAM, prefer NVIDIA for CUDA
+  * RAM: 32GB+ recommended
+  * CPU: Multi-core performance important
+
+- Video Editing: 
+  * CPU: 8+ cores required
+  * RAM: 32GB+ recommended
+  * GPU: 8GB+ VRAM
+  * Storage: Fast, large capacity SSDs
+
+- 3D Rendering: 
+  * CPU: High core count crucial
+  * RAM: 32GB minimum
+  * GPU: 8GB+ VRAM
+  
+- Development: 
+  * RAM: 16GB+ required
+  * CPU: 6+ cores
+  * Storage: SSD required
+
 - Basic Use: Balance cost-efficiency, prioritize reliability
 
-OPTIMIZATION RULES:
-1. Analyze each component against purpose requirements
-2. Suggest upgrades ONLY for components that limit performance
-3. IMPORTANT: Your component selections MUST use IDs from the provided options
-4. Keep current components when already suitable
+ANALYSIS INSTRUCTIONS:
+1. Evaluate EVERY component against the specific purpose requirements
+2. Flag ALL components that don't meet minimum requirements
+3. For 4K gaming specifically, check CPU, RAM, PSU and GPU thoroughly
+4. Suggest upgrades ONLY from the provided component options
+5. Keep current components only if they meet requirements
 
-FORMAT: JSON with 'explanation' and component IDs (set null to keep current)
+FORMAT: JSON with 'explanation' detailing ALL necessary upgrades and component IDs
 """},
             
             {"role": "user", "content": f"""
@@ -608,12 +632,19 @@ FORMAT: JSON with 'explanation' and component IDs (set null to keep current)
             Storage: {json.dumps(storage_components, indent=2)}
             Coolers: {json.dumps(cooler_components, indent=2)}
             
-            Analyze the current build for {purpose} use-case:
-            1. Identify components that need upgrading
-            2. Select appropriate replacements from the options provided
-            3. Explain your choices clearly
+            Perform a comprehensive analysis of this build for {purpose}:
+            1. Evaluate EACH component against the requirements
+            2. Identify ALL components that need upgrading
+            3. Select specific replacements from the provided options
+            4. Explain why each upgrade is necessary
             
-            Your JSON response must include component ID values that match the provided options.
+            For 4K Gaming specifically, ensure:
+            - The CPU has sufficient cores (8+ recommended)
+            - The RAM is at least 16GB
+            - The PSU can handle high-end components (750W+)
+            - The GPU has at least 12GB VRAM
+            
+            Your JSON response must include component IDs from the provided options.
             """}
         ]
         
@@ -654,6 +685,8 @@ FORMAT: JSON with 'explanation' and component IDs (set null to keep current)
             
             # Validate component selections based on purpose
             if purpose.lower() == "4k gaming" or "4k" in purpose.lower() and "gaming" in purpose.lower():
+                explanation_updates = []
+                
                 # For 4K gaming, validate GPU VRAM
                 selected_gpu_id = result["components"].get("gpu_id")
                 if selected_gpu_id:
@@ -677,7 +710,84 @@ FORMAT: JSON with 'explanation' and component IDs (set null to keep current)
                         if suitable_gpus:
                             result["components"]["gpu_id"] = suitable_gpus[0]["id"]
                             print(f"DEBUG - Replaced GPU with suitable 4K option: {suitable_gpus[0]['name']}")
-                            result["explanation"] += " NOTE: Selected GPU was upgraded to ensure 12GB+ VRAM for 4K gaming."
+                            explanation_updates.append(f"GPU upgraded to {suitable_gpus[0]['name']} to ensure 12GB+ VRAM for 4K gaming.")
+                
+                # Validate RAM capacity for 4K gaming
+                selected_ram_id = result["components"].get("ram_id")
+                if selected_ram_id:
+                    selected_ram = db.query(RAM).filter(RAM.id == selected_ram_id).first()
+                    
+                    # Check if RAM capacity is sufficient
+                    has_sufficient_ram = False
+                    if selected_ram and selected_ram.capacity:
+                        try:
+                            ram_capacity = float(selected_ram.capacity)
+                            has_sufficient_ram = ram_capacity >= 16
+                            print(f"DEBUG - RAM capacity check: {selected_ram.name}, {ram_capacity}GB, sufficient: {has_sufficient_ram}")
+                        except:
+                            print(f"DEBUG - Couldn't parse RAM capacity from {selected_ram.capacity}")
+                    
+                    if not has_sufficient_ram:
+                        # Find suitable RAM with at least 16GB
+                        suitable_ram = [r for r in recommendations["ram"] if r.get("capacity") and float(r.get("capacity", 0)) >= 16]
+                        if suitable_ram:
+                            result["components"]["ram_id"] = suitable_ram[0]["id"]
+                            print(f"DEBUG - Replaced RAM with suitable option: {suitable_ram[0]['name']}")
+                            explanation_updates.append(f"RAM upgraded to {suitable_ram[0]['name']} for sufficient capacity for 4K gaming.")
+                
+                # Validate PSU wattage for 4K gaming
+                selected_psu_id = result["components"].get("psu_id")
+                if selected_psu_id:
+                    selected_psu = db.query(PSU).filter(PSU.id == selected_psu_id).first()
+                    
+                    # Check if PSU wattage is sufficient
+                    has_sufficient_wattage = False
+                    if selected_psu and selected_psu.wattage:
+                        try:
+                            psu_wattage = float(selected_psu.wattage)
+                            has_sufficient_wattage = psu_wattage >= 750
+                            print(f"DEBUG - PSU wattage check: {selected_psu.name}, {psu_wattage}W, sufficient: {has_sufficient_wattage}")
+                        except:
+                            print(f"DEBUG - Couldn't parse PSU wattage from {selected_psu.wattage}")
+                    
+                    if not has_sufficient_wattage:
+                        # Find suitable PSU with at least 750W
+                        suitable_psu = [p for p in recommendations["psus"] if p.get("wattage") and float(p.get("wattage", 0)) >= 750]
+                        if suitable_psu:
+                            result["components"]["psu_id"] = suitable_psu[0]["id"]
+                            print(f"DEBUG - Replaced PSU with suitable option: {suitable_psu[0]['name']}")
+                            explanation_updates.append(f"PSU upgraded to {suitable_psu[0]['name']} to provide sufficient power for 4K gaming components.")
+                
+                # Validate CPU core count for 4K gaming
+                selected_cpu_id = result["components"].get("cpu_id")
+                if selected_cpu_id:
+                    selected_cpu = db.query(CPU).filter(CPU.id == selected_cpu_id).first()
+                    
+                    # Check if CPU core count is sufficient
+                    has_sufficient_cores = False
+                    if selected_cpu and selected_cpu.cores:
+                        try:
+                            cpu_cores = int(selected_cpu.cores)
+                            has_sufficient_cores = cpu_cores >= 8
+                            print(f"DEBUG - CPU core check: {selected_cpu.name}, {cpu_cores} cores, sufficient: {has_sufficient_cores}")
+                        except:
+                            print(f"DEBUG - Couldn't parse CPU cores from {selected_cpu.cores}")
+                    
+                    if not has_sufficient_cores:
+                        # Find suitable CPU with at least 8 cores
+                        suitable_cpu = [c for c in recommendations["cpus"] if c.get("cores") and int(c.get("cores", 0)) >= 8]
+                        if suitable_cpu:
+                            result["components"]["cpu_id"] = suitable_cpu[0]["id"]
+                            print(f"DEBUG - Replaced CPU with suitable option: {suitable_cpu[0]['name']}")
+                            explanation_updates.append(f"CPU upgraded to {suitable_cpu[0]['name']} with more cores for better 4K gaming performance.")
+                
+                # Update the explanation with all component changes
+                if explanation_updates:
+                    if "explanation" not in result or not result["explanation"]:
+                        result["explanation"] = "Optimized build for 4K gaming with the following upgrades: "
+                    if not result["explanation"].endswith(" "):
+                        result["explanation"] += " "
+                    result["explanation"] += " " + " ".join(explanation_updates)
             
             elif "ai" in purpose.lower() or "machine learning" in purpose.lower():
                 # For AI/ML, validate VRAM (8GB+ preferred)
