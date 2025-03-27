@@ -13,6 +13,21 @@ import { useNavigate } from 'react-router-dom';
 import SaveBuildModal from '../components/SaveBuildModal';
 import { API_URL } from '../config';
 
+const normalizeFormFactor = (formFactor) => {
+  if (!formFactor) return '';
+  
+  const ff = formFactor.toLowerCase();
+  
+  if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'Utökad ATX';
+  if (ff.includes('micro')) return 'Micro ATX';
+  if (ff.includes('mini-mini')) return 'Mini ITX';
+  if (ff.includes('mini')) return 'Mini ITX';
+  if (ff === 'atx' || ff.includes('atx')) return 'ATX';
+  
+  console.log('Unexpected form factor:', formFactor);
+  return formFactor;
+};
+
 const formFactorCompatibility = {
   "Utökad ATX": ["Utökad ATX", "ATX", "Micro ATX", "Mini ITX"],
   "ATX": ["ATX", "Micro ATX", "Mini ITX"],
@@ -83,8 +98,13 @@ const PcBuilder = () => {
         
         if (selectedComponents.case) {
           const caseFormFactor = selectedComponents.case.form_factor;
-          requirements.compatibleFormFactors = formFactorCompatibility[caseFormFactor] || [caseFormFactor];
-          console.log('Found case, adding compatible form factors:', requirements.compatibleFormFactors);
+          const normalizedFormFactor = normalizeFormFactor(caseFormFactor);
+          console.log('Case form factor:', caseFormFactor, 'Normalized:', normalizedFormFactor);
+          
+          // Set the form factor requirement directly
+          requirements.formFactor = caseFormFactor;
+          
+          console.log('Found case, adding form factor requirement:', requirements.formFactor);
         }
         
         if (Object.keys(requirements).length > 0) {
@@ -128,10 +148,15 @@ const PcBuilder = () => {
       case 'cases':
         if (selectedComponents.motherboard) {
           const formFactor = selectedComponents.motherboard.form_factor;
+          const normalizedFormFactor = normalizeFormFactor(formFactor);
+          console.log('Motherboard form factor:', formFactor, 'Normalized:', normalizedFormFactor);
+          
           console.log('Case filter requirements:', {
             motherboard: selectedComponents.motherboard.name,
-            formFactor: formFactor
+            formFactor: formFactor,
+            normalizedFormFactor
           });
+          
           return { formFactor };
         }
         console.log('No motherboard selected for case filtering');

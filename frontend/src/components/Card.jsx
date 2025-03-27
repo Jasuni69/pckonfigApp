@@ -8,15 +8,15 @@ const normalizeFormFactor = (formFactor) => {
   const ff = formFactor.toLowerCase();
   
   // Handle common variations and Swedish translations
-  if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'e-atx';
-  if (ff.includes('micro')) return 'micro-atx';
-  if (ff.includes('mini-mini')) return 'mini-itx'; // Handle double "mini" case
-  if (ff.includes('mini')) return 'mini-itx';
-  if (ff === 'atx') return 'atx';
+  if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'Utökad ATX';
+  if (ff.includes('micro')) return 'Micro ATX';
+  if (ff.includes('mini-mini')) return 'Mini ITX'; // Handle double "mini" case
+  if (ff.includes('mini')) return 'Mini ITX';
+  if (ff === 'atx' || ff.includes('atx')) return 'ATX';
   
   // Log unexpected form factors
   console.log('Unexpected form factor:', formFactor);
-  return ff;
+  return formFactor; // Return original in case nothing matches
 };
 
 const GuideContent = ({ type }) => {
@@ -229,7 +229,53 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
                 const compSocket = (component.socket || '').toLowerCase().replace('socket ', '');
                 const matches = compSocket.includes(reqSocket);
+                if (options === 'motherboards') {
+                  console.log(`Socket check for ${component.name}: reqSocket=${reqSocket}, compSocket=${compSocket}, matches=${matches}`);
+                }
                 return matches;
+              }
+
+              // Motherboard form factor compatibility with case
+              if (filterRequirements.formFactor && options === 'motherboards') {
+                const caseFormFactor = filterRequirements.formFactor;
+                const normalizedCaseFF = normalizeFormFactor(caseFormFactor);
+                const normalizedMoboFF = normalizeFormFactor(component.form_factor);
+                
+                // Get compatible form factors for the case
+                const compatibleFormFactors = formFactorCompatibility[normalizedCaseFF] || [normalizedCaseFF];
+                
+                console.log('Motherboard compatibility check:', {
+                  motherboard: component.name,
+                  moboFormFactor: component.form_factor,
+                  normalizedMoboFF,
+                  caseFormFactor,
+                  normalizedCaseFF,
+                  compatibleFormFactors,
+                  isCompatible: compatibleFormFactors.includes(normalizedMoboFF)
+                });
+                
+                return compatibleFormFactors.includes(normalizedMoboFF);
+              }
+
+              // Case compatibility with motherboard form factor
+              if (options === 'cases' && filterRequirements.formFactor) {
+                const moboFormFactor = filterRequirements.formFactor;
+                const normalizedMoboFF = normalizeFormFactor(moboFormFactor);
+                const normalizedCaseFF = normalizeFormFactor(component.form_factor);
+                
+                // A case can fit this motherboard if the case form factor is the same or larger
+                const canFit = formFactorCompatibility[normalizedCaseFF]?.includes(normalizedMoboFF);
+                
+                console.log('Case compatibility check:', {
+                  case: component.name,
+                  caseFormFactor: component.form_factor,
+                  normalizedCaseFF, 
+                  moboFormFactor,
+                  normalizedMoboFF,
+                  canFit
+                });
+                
+                return canFit;
               }
 
               // GPU power requirements
@@ -256,16 +302,6 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                 return psuWattage >= minWattage;
               }
 
-              // Motherboard form factor compatibility
-              if (filterRequirements.compatibleFormFactors && options === 'motherboards') {
-                const compatibleFormFactors = filterRequirements.compatibleFormFactors;
-                console.log('Checking motherboard compatibility:', {
-                  motherboard: component.form_factor,
-                  compatibleFormFactors
-                });
-                return compatibleFormFactors.includes(component.form_factor);
-              }
-
               return true;
             });
             
@@ -276,6 +312,19 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               afterCount: filteredData.length,
               filtered: data.length - filteredData.length,
             });
+          }
+          
+          // Add debug logging if no motherboards are found after filtering
+          if (options === 'motherboards' && filteredData.length === 0) {
+            console.error('No compatible motherboards found with requirements:', filterRequirements);
+            console.log('Available motherboards with form factors:');
+            data.forEach(mobo => {
+              console.log(`${mobo.name}: ${mobo.form_factor} (normalized: ${normalizeFormFactor(mobo.form_factor)})`);
+            });
+            
+            // If no motherboards are found, we'll show all motherboards with a warning
+            filteredData = data;
+            alert('Ingen exakt matchande moderkort hittades. Visar alla moderkort - kontrollera att formen är kompatibel.');
           }
           
           // Sort components by price (highest to lowest)
