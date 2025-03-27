@@ -357,7 +357,7 @@ async def optimize_build(
                                     score += 20
                                 elif memory_value >= 8:
                                     score += 10
-                            except:
+                            except (ValueError, TypeError):
                                 pass
                         
                         # Prioritize high-end GPU models
@@ -372,6 +372,13 @@ async def optimize_build(
                     elif component_type == "cpu":
                         # Prioritize high core count CPUs
                         cores = component.get("cores", 0)
+                        # Make sure cores is an integer
+                        if not isinstance(cores, int):
+                            try:
+                                cores = int(cores)
+                            except (ValueError, TypeError):
+                                cores = 0
+                        
                         if cores >= 12:
                             score += 30
                         elif cores >= 8:
@@ -391,6 +398,13 @@ async def optimize_build(
                     elif component_type == "ram":
                         # Prioritize higher capacity
                         capacity = component.get("capacity", 0)
+                        # Make sure capacity is a number
+                        if not isinstance(capacity, (int, float)):
+                            try:
+                                capacity = float(capacity)
+                            except (ValueError, TypeError):
+                                capacity = 0
+                        
                         if capacity >= 32:
                             score += 30
                         elif capacity >= 16:
@@ -401,6 +415,13 @@ async def optimize_build(
                             score += 20
                         
                         speed = component.get("speed", 0)
+                        # Make sure speed is a number
+                        if not isinstance(speed, (int, float)):
+                            try:
+                                speed = float(speed)
+                            except (ValueError, TypeError):
+                                speed = 0
+                        
                         if speed >= 6000:
                             score += 20
                         elif speed >= 4800:
@@ -415,6 +436,13 @@ async def optimize_build(
                         
                         # Prioritize larger capacity
                         capacity = component.get("capacity", 0)
+                        # Make sure capacity is a number
+                        if not isinstance(capacity, (int, float)):
+                            try:
+                                capacity = float(capacity)
+                            except (ValueError, TypeError):
+                                capacity = 0
+                        
                         if capacity >= 2:
                             score += 20
                         elif capacity >= 1:
