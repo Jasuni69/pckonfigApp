@@ -104,3 +104,41 @@ async def get_user_builds(
             status_code=500,
             detail=f"Det gick inte att hämta sparade datorer: {str(e)}"
         )
+
+@router.delete("/builds/{build_id}", response_model=dict)
+async def delete_build(
+    build_id: int,
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+    try:
+        # Validate token and get user
+        db_token = db.query(Token).filter(Token.token == token).first()
+        if not db_token:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        user = db.query(User).filter(User.id == db_token.user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        # Find the build
+        build = db.query(SavedBuild).filter(SavedBuild.id == build_id).first()
+        if not build:
+            raise HTTPException(status_code=404, detail="Build not found")
+
+        # Check if the build belongs to the user
+        if build.user_id != user.id:
+            raise HTTPException(status_code=403, detail="Not authorized to delete this build")
+
+        # Delete the build
+        db.delete(build)
+        db.commit()
+        
+        return {"message": "Build deleted successfully"}
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail=f"Det gick inte att ta bort datorn: {str(e)}"
+        )
