@@ -5,10 +5,11 @@ from core.deps import get_current_user
 from schemas import OptimizationRequest, OptimizedBuildOut
 from models import CPU, GPU, RAM, PSU, Case, Storage, Cooler, Motherboard
 from ChromaDB.manager import search_components
-from typing import List
+from typing import List, Dict, Any
 import logging
 import json
 import openai
+from datetime import datetime
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -20,6 +21,11 @@ async def optimize_build(
     db: Session = Depends(get_db)
 ):
     try:
+        logger.info(f"Received optimization request: {request}")
+        
+        # Get current timestamp for created_at and updated_at fields
+        current_time = datetime.utcnow()
+        
         # Get current component details
         current_components = {}
         
@@ -164,14 +170,17 @@ async def optimize_build(
             storage_id=result["components"].get("storage_id", request.storage_id),
             cooler_id=result["components"].get("cooler_id", request.cooler_id),
             explanation=result["explanation"],
-            similarity_score=0.95
+            similarity_score=0.95,
+            created_at=current_time,
+            updated_at=current_time
         )
         
         return optimized_build
         
     except Exception as e:
-        logger.error(f"Error in optimize_build: {str(e)}", exc_info=True)
+        error_msg = f"Error in optimize_build: {str(e)}"
+        logger.error(error_msg, exc_info=True)
         raise HTTPException(
             status_code=500, 
-            detail=f"Error optimizing build: {str(e)}"
+            detail=error_msg
         )
