@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { API_URL, TOKEN_REFRESH_INTERVAL } from '../config';
+import { API_URL } from '../config';
 
 const AuthContext = createContext(null);
 
@@ -9,30 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
-  // Check auth status on initial load
   useEffect(() => {
     checkAuthStatus();
   }, []);
-
-  // Set up token refresh mechanism
-  useEffect(() => {
-    let refreshInterval;
-    
-    if (token) {
-      console.log('Setting up token refresh interval');
-      refreshInterval = setInterval(() => {
-        console.log('Refreshing token...');
-        refreshToken();
-      }, TOKEN_REFRESH_INTERVAL);
-    }
-    
-    return () => {
-      if (refreshInterval) {
-        console.log('Clearing token refresh interval');
-        clearInterval(refreshInterval);
-      }
-    };
-  }, [token]);
 
   const checkAuthStatus = async () => {
     const storedToken = localStorage.getItem('token');
@@ -80,22 +59,22 @@ export const AuthProvider = ({ children }) => {
     if (!token) return;
     
     try {
-      console.log('Attempting to refresh token');
-      const response = await fetch(`${API_URL}/api/auth/refresh-token`, {
-        method: 'POST',
+      console.log('Refreshing token...');
+      
+      // This is a simple approach that will update the timestamp in the database
+      // by calling the /me endpoint which will verify the token is still valid
+      const response = await fetch(`${API_URL}/api/auth/me`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         }
       });
       
       if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.access_token);
-        setToken(data.access_token);
-        console.log('Token refreshed successfully');
+        console.log('Token refresh succeeded');
+        // We don't need to update the token since it's the same token
+        // but with an updated timestamp in the database
       } else {
-        console.error('Failed to refresh token, logging out');
+        console.error('Token refresh failed, logging out');
         logout();
       }
     } catch (error) {
@@ -105,7 +84,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (newToken, userData) => {
-    console.log('Login called with token:', newToken.substring(0, 10) + '...');
+    console.log('Login called with token:', newToken ? newToken.substring(0, 10) + '...' : 'none');
     
     localStorage.setItem('token', newToken);
     if (userData) {
