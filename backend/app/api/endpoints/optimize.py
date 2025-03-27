@@ -464,6 +464,25 @@ async def optimize_build(
             scored_components.sort(reverse=True, key=lambda x: x[0])
             return [comp for score, comp in scored_components[:limit]]
         
+        # First, add this validation function near the top of the file
+        def validate_4k_gpu(gpu_data):
+            """Check if a GPU meets 4K gaming requirements"""
+            if not gpu_data:
+                return False
+            
+            name = gpu_data.get('name', '').lower()
+            memory = gpu_data.get('memory', '0 GB').lower()
+            
+            # Extract VRAM amount
+            try:
+                vram = int(memory.split('gb')[0].strip())
+            except:
+                vram = 0
+            
+            # Check for approved GPUs
+            valid_gpus = ['rtx 4080', 'rtx 4090', 'rx 7900 xt', 'rx 7900 xtx']
+            return any(gpu in name for gpu in valid_gpus) and vram >= 12
+        
         # Prepare component recommendations using ChromaDB
         recommendations = {}
         max_components = 3  # Maximum number of components per type to include
@@ -478,11 +497,24 @@ async def optimize_build(
         
         # GPU recommendations
         gpu_query = f"best GPU for {purpose}"
-        print(f"\nSearching ChromaDB for: {gpu_query}")
-        gpu_results = search_components(gpu_query, n_results=10)
+        print(f"\n=== GPU RECOMMENDATIONS DEBUG ===")
+        print(f"Query: {gpu_query}")
+        gpu_results = search_components(gpu_query, n_results=10)  # Increase n_results to see more options
+        print(f"Raw ChromaDB results for GPU:")
+        print(json.dumps(gpu_results, indent=2))
+
         gpu_components = extract_components_from_results(gpu_results, "gpu", max_components)
+        print(f"Extracted GPU components:")
+        print(json.dumps(gpu_components, indent=2))
+
         gpu_components = filter_components_for_purpose(gpu_components, purpose, "gpu", max_components)
+        print(f"Filtered GPU components:")
+        print(json.dumps(gpu_components, indent=2))
+
         recommendations["gpus"] = get_db_fallbacks(GPU, "gpu", gpu_components, max_components)
+        print(f"Final GPU recommendations (with fallbacks):")
+        print(json.dumps(recommendations["gpus"], indent=2))
+        print(f"=== END GPU DEBUG ===\n")
         
         # Motherboard recommendations
         mb_query = f"compatible motherboard for {purpose}"
@@ -536,7 +568,7 @@ async def optimize_build(
         
         print(f"\nRecommendations count: CPU={len(recommendations['cpus'])}, GPU={len(recommendations['gpus'])}, MB={len(recommendations['motherboards'])}, RAM={len(recommendations['ram'])}, PSU={len(recommendations['psus'])}, Case={len(recommendations['cases'])}, Storage={len(recommendations['storage'])}, Cooler={len(recommendations['coolers'])}")
         
-        # Create a concise prompt for OpenAI
+        # Then update the prompt and API call
         prompt = f"""
         Analyze this PC build for {purpose}:
 
@@ -546,29 +578,25 @@ async def optimize_build(
         Recommended components:
         {json.dumps(recommendations, indent=2)}
 
-        STRICT RULES FOR 4K GAMING:
-        DO NOT SELECT:
-        - RTX 4060 Ti (8GB VRAM)
-        - RTX 4070 (12GB but not powerful enough)
-        - Any GPU with less than 12GB VRAM
-
-        MUST SELECT FOR 4K:
-        - RTX 4080 16GB
-        - RTX 4090 24GB
+        CRITICAL 4K GAMING RULES:
+        ONLY ALLOWED GPUs:
+        - RTX 4080 (16GB)
+        - RTX 4090 (24GB)
         - RX 7900 XT/XTX
-        No exceptions to these GPU rules.
 
-        Other Requirements:
-        - Gaming: Mid/high GPU, 750W+ PSU, 16GB+ RAM
-        - Workstation: Strong CPU, 32GB+ RAM, Large SSD
-        - General Use: Balanced components, 650W+ PSU
+        FORBIDDEN GPUs:
+        - RTX 4060 Ti (8GB)
+        - RTX 4070 (12GB)
+        - Any GPU below these
+
+        If no allowed GPU exists in recommendations, you must say "No suitable 4K GPU available" in explanation.
 
         Format:
         {{
           "explanation": "Brief explanation of needed changes",
           "components": {{
             "cpu_id": 1,
-            "gpu_id": 2,    // MUST follow GPU rules above
+            "gpu_id": 2,
             "motherboard_id": 3,
             "ram_id": 4,
             "psu_id": 5,
@@ -582,18 +610,18 @@ async def optimize_build(
         print(f"\nSending prompt to OpenAI")
         
         response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",  # Switch back to 3.5-turbo
+            model="gpt-3.5-turbo",
             messages=[
                 {
                     "role": "system", 
-                    "content": "You are a PC expert. For 4K gaming, you MUST ONLY select RTX 4080, 4090, or RX 7900 XT/XTX. NEVER select RTX 4060 Ti or 4070 for 4K gaming. If no suitable GPU is available in recommendations, state this in explanation and suggest waiting for better options. Respond with JSON."
+                    "content": "You are a PC expert. For 4K gaming: ONLY recommend RTX 4080, 4090, or RX 7900 XT/XTX. If none available, state this clearly. NEVER recommend RTX 4060 Ti or 4070 for 4K. JSON response only."
                 },
                 {
                     "role": "user", 
                     "content": prompt + "\n\nRespond with JSON only."
                 }
             ],
-            response_format={"type": "json_object"},  # Add back the response format for 3.5-turbo
+            response_format={"type": "json_object"},
             temperature=0.3
         )
         
@@ -645,6 +673,23 @@ async def optimize_build(
         print(f"Case ID: {result['components'].get('case_id', request.case_id)}")
         print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
         print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
+
+        # Add validation after getting the response but before creating OptimizedBuildOut
+        try:
+            result = json.loads(response.choices[0].message.content)
+            
+            # For 4K gaming builds, validate GPU selection
+            if "4k" in purpose.lower() and "gaming" in purpose.lower():
+                gpu_id = result["components"].get("gpu_id")
+                if gpu_id:
+                    gpu = db.query(GPU).filter(GPU.id == gpu_id).first()
+                    if gpu and not validate_4k_gpu(gpu.__dict__):
+                        # If selected GPU doesn't meet requirements, modify the response
+                        result["explanation"] = "No suitable GPU for 4K gaming available in recommendations. Current options don't meet minimum requirements (need RTX 4080, 4090, or RX 7900 XT/XTX). Consider waiting for better GPU options."
+                        # Keep current GPU if no suitable upgrade available
+                        result["components"]["gpu_id"] = request.gpu_id
+        except Exception as e:
+            print(f"Error in response validation: {str(e)}")
 
         # Create the optimized build with both IDs and full component objects
         optimized_build = OptimizedBuildOut(
