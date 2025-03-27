@@ -57,7 +57,7 @@ const Login = () => {
       
       // Add a small delay before navigation to ensure state is updated
       setTimeout(() => {
-        navigate('/pcbuilderbuilder');  // Redirect to the PC builder page specifically
+        navigate('/pcbuilder');  // Redirect to the PC builder page specifically
       }, 100);
       
     } catch (err) {
