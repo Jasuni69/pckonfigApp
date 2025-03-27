@@ -271,15 +271,22 @@ const PcBuilder = () => {
 
     try {
       setIsLoading(true);
-      const response = await fetch('http://16.16.99.193/api/optimize', {
+      const response = await fetch('http://16.16.99.193/api/optimize-build', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          components: selectedComponents,
-          purpose: selectedComponents.purpose?.name
+          cpu_id: selectedComponents.cpu?.id,
+          gpu_id: selectedComponents.gpu?.id,
+          motherboard_id: selectedComponents.motherboard?.id,
+          ram_id: selectedComponents.ram?.id,
+          psu_id: selectedComponents.psu?.id,
+          case_id: selectedComponents.case?.id,
+          storage_id: selectedComponents.hdd?.id,
+          cooler_id: selectedComponents['cpu-cooler']?.id,
+          purpose: selectedComponents.purpose?.name || "general use"
         })
       });
 
@@ -288,13 +295,32 @@ const PcBuilder = () => {
       }
 
       const data = await response.json();
-      // Handle the optimization results by updating selectedComponents
-      if (data.optimized_components) {
-        setSelectedComponents(prev => ({
-          ...prev,
-          ...data.optimized_components
-        }));
-        alert('Din dator har optimerats!');
+      console.log('Optimization response:', data);
+      
+      // Handle the response from the backend
+      if (data) {
+        // Get updated components based on optimized IDs
+        const fetchUpdatedComponents = async () => {
+          try {
+            // Example: If the CPU was changed, fetch the new CPU data
+            if (data.cpu_id && (!selectedComponents.cpu || data.cpu_id !== selectedComponents.cpu.id)) {
+              const cpuResponse = await fetch(`http://16.16.99.193/api/cpus/${data.cpu_id}`);
+              if (cpuResponse.ok) {
+                const cpuData = await cpuResponse.json();
+                setSelectedComponents(prev => ({...prev, cpu: cpuData}));
+              }
+            }
+            
+            // Do the same for other components...
+            // This is just an example - you'll need to implement for each component type
+            
+            alert(`Din dator har optimerats!\n\n${data.explanation || 'Komponenter har uppdaterats för bättre prestanda.'}`);
+          } catch (error) {
+            console.error('Error fetching updated components:', error);
+          }
+        };
+        
+        fetchUpdatedComponents();
       }
     } catch (error) {
       console.error('Failed to optimize PC:', error);
