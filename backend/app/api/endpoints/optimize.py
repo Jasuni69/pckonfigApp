@@ -480,12 +480,31 @@ async def optimize_build(
         print(f"Storage: {storage}")
         print(f"Cooler: {cooler}")
 
+        # Add this just after fetching component objects
+        print(f"\nComponent IDs:")
+        print(f"CPU ID: {result['components'].get('cpu_id', request.cpu_id)}")
+        print(f"GPU ID: {result['components'].get('gpu_id', request.gpu_id)}")
+        print(f"Motherboard ID: {result['components'].get('motherboard_id', request.motherboard_id)}")
+        print(f"RAM ID: {result['components'].get('ram_id', request.ram_id)}")
+        print(f"PSU ID: {result['components'].get('psu_id', request.psu_id)}")
+        print(f"Case ID: {result['components'].get('case_id', request.case_id)}")
+        print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
+        print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
+
         # Create the optimized build with both IDs and full component objects
         optimized_build = OptimizedBuildOut(
             id=1,
             name="Optimized Build",
             purpose=purpose,
             user_id=current_user.id,
+            cpu_id=result["components"].get("cpu_id", request.cpu_id),
+            gpu_id=result["components"].get("gpu_id", request.gpu_id),
+            motherboard_id=result["components"].get("motherboard_id", request.motherboard_id),
+            ram_id=result["components"].get("ram_id", request.ram_id),
+            psu_id=result["components"].get("psu_id", request.psu_id),
+            case_id=result["components"].get("case_id", request.case_id),
+            storage_id=result["components"].get("storage_id", request.storage_id),
+            cooler_id=result["components"].get("cooler_id", request.cooler_id),
             cpu=cpu,
             gpu=gpu,
             motherboard=motherboard,
@@ -500,6 +519,21 @@ async def optimize_build(
             updated_at=current_time
         )
         
+        try:
+            # For Pydantic v2
+            if hasattr(optimized_build, "model_dump"):
+                result_dict = optimized_build.model_dump()
+                print(f"Serialized result (model_dump): {json.dumps(result_dict, default=str)}")
+            # For Pydantic v1
+            elif hasattr(optimized_build, "dict"):
+                result_dict = optimized_build.dict()
+                print(f"Serialized result (dict): {json.dumps(result_dict, default=str)}")
+            else:
+                print("Unable to serialize optimized_build - no model_dump or dict method found")
+        except Exception as e:
+            print(f"Error serializing optimized_build: {str(e)}")
+            print(traceback.format_exc())
+
         print("\n==== OPTIMIZE BUILD COMPLETE ====\n")
         return optimized_build
         
