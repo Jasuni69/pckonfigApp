@@ -632,8 +632,8 @@ async def optimize_build(
             if "components" not in result:
                 result["components"] = {}
             
-            # Set all current component IDs as defaults
-            default_component_ids = {
+            # Set defaults for any missing components
+            for key, default_id in {
                 "cpu_id": request.cpu_id,
                 "gpu_id": request.gpu_id,
                 "motherboard_id": request.motherboard_id,
@@ -642,132 +642,131 @@ async def optimize_build(
                 "case_id": request.case_id,
                 "storage_id": request.storage_id,
                 "cooler_id": request.cooler_id
-            }
-            
-            # Apply defaults for any missing component
-            for key, value in default_component_ids.items():
+            }.items():
                 if key not in result["components"] or result["components"][key] is None:
-                    result["components"][key] = value
+                    result["components"][key] = default_id
             
-            # For 4K gaming, force a GPU with 12GB+ VRAM
+            # For 4K gaming, validate the selected GPU
             if purpose.lower() == "4k gaming":
-                print("DEBUG - Checking GPU for 4K gaming")
+                # Get the selected GPU ID from OpenAI's response
+                selected_gpu_id = result["components"]["gpu_id"]
                 
-                # Find all GPUs with 12GB+ VRAM
-                suitable_gpus = []
-                for gpu in gpu_components:
-                    memory_str = gpu.get('memory', '')
-                    try:
-                        if memory_str and float(memory_str.split()[0]) >= 12:
-                            suitable_gpus.append(gpu)
-                            print(f"DEBUG - Suitable GPU found: {gpu['name']} with {gpu['memory']}")
-                    except (ValueError, AttributeError):
-                        pass
+                # Check if the selected GPU meets 4K requirements
+                selected_gpu = db.query(GPU).filter(GPU.id == selected_gpu_id).first()
                 
-                if suitable_gpus:
-                    # Select the first suitable GPU
-                    selected_gpu = suitable_gpus[0]
-                    print(f"DEBUG - Selected GPU: {selected_gpu['name']} with {selected_gpu['memory']}")
-                    result["components"]["gpu_id"] = selected_gpu["id"]
+                # If no GPU was selected or if it doesn't meet requirements, find a suitable one
+                if not selected_gpu or not selected_gpu.memory or "12" not in selected_gpu.memory:
+                    print(f"DEBUG - Selected GPU doesn't meet 4K requirements: {selected_gpu.name if selected_gpu else 'None'}")
                     
-                    # Update explanation
+                    # First try to find a suitable GPU from ChromaDB recommendations
+                    suitable_gpu_from_chroma = next((g for g in recommendations["gpus"] 
+                        if g["memory"] and "12" in g["memory"]), None)
+                        
+                    if suitable_gpu_from_chroma:
+                        print(f"DEBUG - Using suitable GPU from ChromaDB: {suitable_gpu_from_chroma['name']}")
+                        result["components"]["gpu_id"] = suitable_gpu_from_chroma["id"]
+                    else:
+                        # Fallback to direct database query
+                        print("DEBUG - No suitable GPU in ChromaDB, querying database directly")
+                        suitable_gpu = db.query(GPU).filter(
+                            GPU.memory.like('%12%') | GPU.memory.like('%16%')
+                        ).first()
+                        
+                        if suitable_gpu:
+                            print(f"DEBUG - Found suitable GPU in database: {suitable_gpu.name}")
+                            result["components"]["gpu_id"] = suitable_gpu.id
+                        else:
+                            print("WARNING: No GPUs with 12GB+ VRAM found!")
+                
+                # Update explanation based on final GPU selection
+                final_gpu = db.query(GPU).filter(GPU.id == result["components"]["gpu_id"]).first()
+                if final_gpu:
                     result["explanation"] = (
-                        f"Upgraded to {selected_gpu['name']} with {selected_gpu['memory']} VRAM "
+                        f"Upgraded to {final_gpu.name} with {final_gpu.memory} VRAM "
                         "to meet 4K gaming requirements. This GPU provides the necessary VRAM for smooth 4K gaming experience."
                     )
-                else:
-                    print("DEBUG - No suitable GPUs found with 12GB+ VRAM")
             
-            # Preserve other current components
-            result["components"]["cpu_id"] = result["components"].get("cpu_id", request.cpu_id)
-            result["components"]["motherboard_id"] = result["components"].get("motherboard_id", request.motherboard_id)
-            result["components"]["ram_id"] = result["components"].get("ram_id", request.ram_id)
-            result["components"]["psu_id"] = result["components"].get("psu_id", request.psu_id)
-            result["components"]["case_id"] = result["components"].get("case_id", request.case_id)
-            result["components"]["storage_id"] = result["components"].get("storage_id", request.storage_id)
-            result["components"]["cooler_id"] = result["components"].get("cooler_id", request.cooler_id)
+            # Fetch component objects using final IDs
+            cpu = db.query(CPU).filter(CPU.id == result["components"]["cpu_id"]).first() if result["components"]["cpu_id"] else None
+            gpu = db.query(GPU).filter(GPU.id == result["components"]["gpu_id"]).first() if result["components"]["gpu_id"] else None
+            motherboard = db.query(Motherboard).filter(Motherboard.id == result["components"]["motherboard_id"]).first() if result["components"]["motherboard_id"] else None
+            ram = db.query(RAM).filter(RAM.id == result["components"]["ram_id"]).first() if result["components"]["ram_id"] else None
+            psu = db.query(PSU).filter(PSU.id == result["components"]["psu_id"]).first() if result["components"]["psu_id"] else None
+            case = db.query(Case).filter(Case.id == result["components"]["case_id"]).first() if result["components"]["case_id"] else None
+            storage = db.query(Storage).filter(Storage.id == result["components"]["storage_id"]).first() if result["components"]["storage_id"] else None
+            cooler = db.query(Cooler).filter(Cooler.id == result["components"]["cooler_id"]).first() if result["components"]["cooler_id"] else None
 
+            print(f"\nFetched component objects:")
+            print(f"CPU: {cpu}")
+            print(f"GPU: {gpu}")
+            print(f"Motherboard: {motherboard}")
+            print(f"RAM: {ram}")
+            print(f"PSU: {psu}")
+            print(f"Case: {case}")
+            print(f"Storage: {storage}")
+            print(f"Cooler: {cooler}")
+
+            # Add this just after fetching component objects
+            print(f"\nComponent IDs:")
+            print(f"CPU ID: {result['components'].get('cpu_id', request.cpu_id)}")
+            print(f"GPU ID: {result['components'].get('gpu_id', request.gpu_id)}")
+            print(f"Motherboard ID: {result['components'].get('motherboard_id', request.motherboard_id)}")
+            print(f"RAM ID: {result['components'].get('ram_id', request.ram_id)}")
+            print(f"PSU ID: {result['components'].get('psu_id', request.psu_id)}")
+            print(f"Case ID: {result['components'].get('case_id', request.case_id)}")
+            print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
+            print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
+
+            # Create the optimized build with both IDs and full component objects
+            optimized_build = OptimizedBuildOut(
+                id=1,
+                name="Optimized Build",
+                purpose=purpose,
+                user_id=current_user.id,
+                cpu_id=result["components"].get("cpu_id", request.cpu_id),
+                gpu_id=result["components"].get("gpu_id", request.gpu_id),
+                motherboard_id=result["components"].get("motherboard_id", request.motherboard_id),
+                ram_id=result["components"].get("ram_id", request.ram_id),
+                psu_id=result["components"].get("psu_id", request.psu_id),
+                case_id=result["components"].get("case_id", request.case_id),
+                storage_id=result["components"].get("storage_id", request.storage_id),
+                cooler_id=result["components"].get("cooler_id", request.cooler_id),
+                cpu=cpu,
+                gpu=gpu,
+                motherboard=motherboard,
+                ram=ram,
+                psu=psu,
+                case=case,
+                storage=storage,
+                cooler=cooler,
+                explanation=result.get("explanation", "No explanation provided"),
+                similarity_score=0.95,
+                created_at=current_time,
+                updated_at=current_time
+            )
+            
+            try:
+                # For Pydantic v2
+                if hasattr(optimized_build, "model_dump"):
+                    result_dict = optimized_build.model_dump()
+                    print(f"Serialized result (model_dump): {json.dumps(result_dict, default=str)}")
+                # For Pydantic v1
+                elif hasattr(optimized_build, "dict"):
+                    result_dict = optimized_build.dict()
+                    print(f"Serialized result (dict): {json.dumps(result_dict, default=str)}")
+                else:
+                    print("Unable to serialize optimized_build - no model_dump or dict method found")
+            except Exception as e:
+                print(f"Error serializing optimized_build: {str(e)}")
+            print(traceback.format_exc())
+
+            print("\n==== OPTIMIZE BUILD COMPLETE ====\n")
+            return optimized_build
+            
         except (json.JSONDecodeError, KeyError, ValueError) as e:
             print(f"DEBUG - Error in optimization: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error in optimize_build: {str(e)}")
 
-        # Then fetch the components using the preserved IDs
-        cpu = db.query(CPU).filter(CPU.id == result["components"]["cpu_id"]).first() if result["components"]["cpu_id"] else None
-        gpu = db.query(GPU).filter(GPU.id == result["components"]["gpu_id"]).first() if result["components"]["gpu_id"] else None
-        motherboard = db.query(Motherboard).filter(Motherboard.id == result["components"]["motherboard_id"]).first() if result["components"]["motherboard_id"] else None
-        ram = db.query(RAM).filter(RAM.id == result["components"]["ram_id"]).first() if result["components"]["ram_id"] else None
-        psu = db.query(PSU).filter(PSU.id == result["components"]["psu_id"]).first() if result["components"]["psu_id"] else None
-        case = db.query(Case).filter(Case.id == result["components"]["case_id"]).first() if result["components"]["case_id"] else None
-        storage = db.query(Storage).filter(Storage.id == result["components"]["storage_id"]).first() if result["components"]["storage_id"] else None
-        cooler = db.query(Cooler).filter(Cooler.id == result["components"]["cooler_id"]).first() if result["components"]["cooler_id"] else None
-
-        print(f"\nFetched component objects:")
-        print(f"CPU: {cpu}")
-        print(f"GPU: {gpu}")
-        print(f"Motherboard: {motherboard}")
-        print(f"RAM: {ram}")
-        print(f"PSU: {psu}")
-        print(f"Case: {case}")
-        print(f"Storage: {storage}")
-        print(f"Cooler: {cooler}")
-
-        # Add this just after fetching component objects
-        print(f"\nComponent IDs:")
-        print(f"CPU ID: {result['components'].get('cpu_id', request.cpu_id)}")
-        print(f"GPU ID: {result['components'].get('gpu_id', request.gpu_id)}")
-        print(f"Motherboard ID: {result['components'].get('motherboard_id', request.motherboard_id)}")
-        print(f"RAM ID: {result['components'].get('ram_id', request.ram_id)}")
-        print(f"PSU ID: {result['components'].get('psu_id', request.psu_id)}")
-        print(f"Case ID: {result['components'].get('case_id', request.case_id)}")
-        print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
-        print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
-
-        # Create the optimized build with both IDs and full component objects
-        optimized_build = OptimizedBuildOut(
-            id=1,
-            name="Optimized Build",
-            purpose=purpose,
-            user_id=current_user.id,
-            cpu_id=result["components"].get("cpu_id", request.cpu_id),
-            gpu_id=result["components"].get("gpu_id", request.gpu_id),
-            motherboard_id=result["components"].get("motherboard_id", request.motherboard_id),
-            ram_id=result["components"].get("ram_id", request.ram_id),
-            psu_id=result["components"].get("psu_id", request.psu_id),
-            case_id=result["components"].get("case_id", request.case_id),
-            storage_id=result["components"].get("storage_id", request.storage_id),
-            cooler_id=result["components"].get("cooler_id", request.cooler_id),
-            cpu=cpu,
-            gpu=gpu,
-            motherboard=motherboard,
-            ram=ram,
-            psu=psu,
-            case=case,
-            storage=storage,
-            cooler=cooler,
-            explanation=result.get("explanation", "No explanation provided"),
-            similarity_score=0.95,
-            created_at=current_time,
-            updated_at=current_time
-        )
-        
-        try:
-            # For Pydantic v2
-            if hasattr(optimized_build, "model_dump"):
-                result_dict = optimized_build.model_dump()
-                print(f"Serialized result (model_dump): {json.dumps(result_dict, default=str)}")
-            # For Pydantic v1
-            elif hasattr(optimized_build, "dict"):
-                result_dict = optimized_build.dict()
-                print(f"Serialized result (dict): {json.dumps(result_dict, default=str)}")
-            else:
-                print("Unable to serialize optimized_build - no model_dump or dict method found")
-        except Exception as e:
-            print(f"Error serializing optimized_build: {str(e)}")
-            print(traceback.format_exc())
-
-        print("\n==== OPTIMIZE BUILD COMPLETE ====\n")
-        return optimized_build
-        
     except Exception as e:
         error_msg = f"Error in optimize_build: {str(e)}"
         print(f"\n==== ERROR IN OPTIMIZE BUILD ====\n")
