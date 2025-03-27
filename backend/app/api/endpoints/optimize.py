@@ -623,29 +623,48 @@ async def optimize_build(
         
         # Parse the response
         try:
-            result = json.loads(response.choices[0].message.content)
-            print(f"\nParsed result: {json.dumps(result, indent=2)}")
-        except json.JSONDecodeError:
-            print("Failed to parse response as JSON")
-            explanation_text = response.choices[0].message.content
-            result = {
-                "explanation": explanation_text,
-                "components": {}
-            }
-        
-        # Ensure the components object exists
-        if "components" not in result:
-            result["components"] = {}
-        
-        # Fetch the full component objects from the database
-        cpu = db.query(CPU).filter(CPU.id == result["components"].get("cpu_id", request.cpu_id)).first() if result["components"].get("cpu_id", request.cpu_id) else None
-        gpu = db.query(GPU).filter(GPU.id == result["components"].get("gpu_id", request.gpu_id)).first() if result["components"].get("gpu_id", request.gpu_id) else None
-        motherboard = db.query(Motherboard).filter(Motherboard.id == result["components"].get("motherboard_id", request.motherboard_id)).first() if result["components"].get("motherboard_id", request.motherboard_id) else None
-        ram = db.query(RAM).filter(RAM.id == result["components"].get("ram_id", request.ram_id)).first() if result["components"].get("ram_id", request.ram_id) else None
-        psu = db.query(PSU).filter(PSU.id == result["components"].get("psu_id", request.psu_id)).first() if result["components"].get("psu_id", request.psu_id) else None
-        case = db.query(Case).filter(Case.id == result["components"].get("case_id", request.case_id)).first() if result["components"].get("case_id", request.case_id) else None
-        storage = db.query(Storage).filter(Storage.id == result["components"].get("storage_id", request.storage_id)).first() if result["components"].get("storage_id", request.storage_id) else None
-        cooler = db.query(Cooler).filter(Cooler.id == result["components"].get("cooler_id", request.cooler_id)).first() if result["components"].get("cooler_id", request.cooler_id) else None
+            response_data = response.choices[0].message.content
+            result = json.loads(response_data)
+            
+            # Initialize components dict with current component IDs
+            if "components" not in result:
+                result["components"] = {}
+            
+            # Preserve current components if not explicitly changed
+            result["components"]["cpu_id"] = result["components"].get("cpu_id", request.cpu_id)
+            result["components"]["gpu_id"] = result["components"].get("gpu_id", request.gpu_id)
+            result["components"]["motherboard_id"] = result["components"].get("motherboard_id", request.motherboard_id)
+            result["components"]["ram_id"] = result["components"].get("ram_id", request.ram_id)
+            result["components"]["psu_id"] = result["components"].get("psu_id", request.psu_id)
+            result["components"]["case_id"] = result["components"].get("case_id", request.case_id)
+            result["components"]["storage_id"] = result["components"].get("storage_id", request.storage_id)
+            result["components"]["cooler_id"] = result["components"].get("cooler_id", request.cooler_id)
+            
+            # Validate 4K gaming GPU requirements
+            if purpose.lower() == "4k gaming":
+                gpu_id = result["components"]["gpu_id"]
+                selected_gpu = next((g for g in gpu_components if g["id"] == gpu_id), None)
+                if not selected_gpu or not validate_gpu_for_4k(selected_gpu):
+                    suitable_gpus = [g for g in gpu_components if validate_gpu_for_4k(g)]
+                    if suitable_gpus:
+                        result["components"]["gpu_id"] = suitable_gpus[0]["id"]
+                        result["explanation"] = "Selected a more suitable GPU for 4K gaming. " + result["explanation"]
+                    else:
+                        raise ValueError("No suitable GPU found for 4K gaming")
+
+        except (json.JSONDecodeError, KeyError, ValueError) as e:
+            print(f"Error validating OpenAI response: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error in optimize_build: {str(e)}")
+
+        # Then fetch the components using the preserved IDs
+        cpu = db.query(CPU).filter(CPU.id == result["components"]["cpu_id"]).first() if result["components"]["cpu_id"] else None
+        gpu = db.query(GPU).filter(GPU.id == result["components"]["gpu_id"]).first() if result["components"]["gpu_id"] else None
+        motherboard = db.query(Motherboard).filter(Motherboard.id == result["components"]["motherboard_id"]).first() if result["components"]["motherboard_id"] else None
+        ram = db.query(RAM).filter(RAM.id == result["components"]["ram_id"]).first() if result["components"]["ram_id"] else None
+        psu = db.query(PSU).filter(PSU.id == result["components"]["psu_id"]).first() if result["components"]["psu_id"] else None
+        case = db.query(Case).filter(Case.id == result["components"]["case_id"]).first() if result["components"]["case_id"] else None
+        storage = db.query(Storage).filter(Storage.id == result["components"]["storage_id"]).first() if result["components"]["storage_id"] else None
+        cooler = db.query(Cooler).filter(Cooler.id == result["components"]["cooler_id"]).first() if result["components"]["cooler_id"] else None
 
         print(f"\nFetched component objects:")
         print(f"CPU: {cpu}")
@@ -667,42 +686,6 @@ async def optimize_build(
         print(f"Case ID: {result['components'].get('case_id', request.case_id)}")
         print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
         print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
-
-        # After getting the OpenAI response, validate requirements
-        try:
-            response_data = response.choices[0].message.content
-            result = json.loads(response_data)
-            
-            # For 4K gaming, ensure GPU meets requirements
-            if purpose.lower() == "4k gaming":
-                # Check if explanation and actual selection match
-                gpu_id = result["components"].get("gpu_id")
-                
-                # If keeping current GPU, check if it meets requirements
-                if gpu_id is None:
-                    current_gpu = current_components.get("gpu", {})
-                    if not validate_gpu_for_4k(current_gpu):
-                        # Force selection of a new GPU
-                        suitable_gpus = [g for g in gpu_components if validate_gpu_for_4k(g)]
-                        if suitable_gpus:
-                            result["components"]["gpu_id"] = suitable_gpus[0]["id"]
-                            result["explanation"] = "Upgraded GPU to meet 4K gaming requirements. " + result["explanation"]
-                        else:
-                            raise ValueError("No suitable GPU found for 4K gaming")
-                else:
-                    # If selecting new GPU, validate it
-                    selected_gpu = next((g for g in gpu_components if g["id"] == gpu_id), None)
-                    if not selected_gpu or not validate_gpu_for_4k(selected_gpu):
-                        suitable_gpus = [g for g in gpu_components if validate_gpu_for_4k(g)]
-                        if suitable_gpus:
-                            result["components"]["gpu_id"] = suitable_gpus[0]["id"]
-                            result["explanation"] = "Selected a more suitable GPU for 4K gaming. " + result["explanation"]
-                        else:
-                            raise ValueError("Selected GPU does not meet 4K gaming requirements")
-
-        except (json.JSONDecodeError, KeyError, ValueError) as e:
-            print(f"Error validating OpenAI response: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error in optimize_build: {str(e)}")
 
         # Create the optimized build with both IDs and full component objects
         optimized_build = OptimizedBuildOut(
