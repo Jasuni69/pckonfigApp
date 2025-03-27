@@ -6,7 +6,6 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,55 +13,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuthStatus = async () => {
-    const storedToken = localStorage.getItem('token');
-    if (!storedToken) {
+    const token = localStorage.getItem('token');
+    if (!token) {
       setLoading(false);
       return;
     }
 
     try {
-      console.log('Checking auth status with token:', storedToken.substring(0, 10) + '...');
-      
-      const response = await fetch(`${API_URL}/api/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${storedToken}`
-        }
-      });
-      
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-        setIsAuthenticated(true);
-        setToken(storedToken);
-        console.log('Auth check successful - user is authenticated');
-      } else {
-        console.log('Auth check failed:', response.status);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setIsAuthenticated(false);
-        setUser(null);
-        setToken(null);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setIsAuthenticated(false);
-      setUser(null);
-      setToken(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const refreshToken = async () => {
-    if (!token) return;
-    
-    try {
-      console.log('Refreshing token...');
-      
-      // This is a simple approach that will update the timestamp in the database
-      // by calling the /me endpoint which will verify the token is still valid
       const response = await fetch(`${API_URL}/api/auth/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -70,54 +27,51 @@ export const AuthProvider = ({ children }) => {
       });
       
       if (response.ok) {
-        console.log('Token refresh succeeded');
-        // We don't need to update the token since it's the same token
-        // but with an updated timestamp in the database
+        const userData = await response.json();
+        setUser(userData);
+        setIsAuthenticated(true);
       } else {
-        console.error('Token refresh failed, logging out');
-        logout();
+        // Clear invalid token
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+        setUser(null);
       }
     } catch (error) {
-      console.error('Error refreshing token:', error);
-      logout();
+      console.error('Auth check failed:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      setIsAuthenticated(false);
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const login = async (newToken, userData) => {
-    console.log('Login called with token:', newToken ? newToken.substring(0, 10) + '...' : 'none');
-    
-    localStorage.setItem('token', newToken);
+  const login = async (token, userData) => {
+    localStorage.setItem('token', token);
     if (userData) {
       localStorage.setItem('user', JSON.stringify(userData));
     }
-    
-    setToken(newToken);
     setIsAuthenticated(true);
     setUser(userData);
-    
-    console.log('Login successful - user authenticated');
   };
 
   const logout = () => {
-    console.log('Logout called - clearing auth state');
-    
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setIsAuthenticated(false);
     setUser(null);
-    setToken(null);
   };
 
   return (
     <AuthContext.Provider value={{
       isAuthenticated,
       user,
-      token,
       loading,
       login,
       logout,
-      checkAuthStatus,
-      refreshToken
+      checkAuthStatus
     }}>
       {children}
     </AuthContext.Provider>

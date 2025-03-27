@@ -1,5 +1,5 @@
-// Base API URL
-export const API_URL = "http://16.16.99.193"; 
+// Base API URL - use the correct IP address for your server
+export const API_URL = "http://16.16.99.193";
 
 // Token expiration time in milliseconds (25 minutes)
 export const TOKEN_REFRESH_INTERVAL = 25 * 60 * 1000;

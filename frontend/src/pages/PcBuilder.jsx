@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Card from '../components/Card';
 import caseIcon from '../assets/icons/case.svg';
 import motherboardIcon from '../assets/icons/motherboard.svg';
@@ -27,35 +27,11 @@ const PcBuilder = () => {
     requiredWattage: 0,
     formFactor: null
   });
-  const { isAuthenticated, token, refreshToken } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-
-  // Add this useEffect for activity tracking
-  useEffect(() => {
-    if (isAuthenticated) {
-      // Reset token timeout on component mount
-      refreshToken();
-      
-      // Set up activity listeners
-      const handleActivity = () => {
-        refreshToken();
-      };
-      
-      // Listen for user activities
-      document.addEventListener('mousedown', handleActivity);
-      document.addEventListener('keydown', handleActivity);
-      document.addEventListener('touchstart', handleActivity);
-      
-      return () => {
-        document.removeEventListener('mousedown', handleActivity);
-        document.removeEventListener('keydown', handleActivity);
-        document.removeEventListener('touchstart', handleActivity);
-      };
-    }
-  }, [isAuthenticated, refreshToken]);
 
   const handleComponentSelect = (component, type) => {
     console.log(`Selected ${type}:`, component);
@@ -294,7 +270,6 @@ const PcBuilder = () => {
       return;
     }
 
-    // Get the token directly from localStorage for consistency
     const authToken = localStorage.getItem('token');
     
     if (!authToken) {
@@ -305,8 +280,6 @@ const PcBuilder = () => {
 
     try {
       setIsLoading(true);
-      
-      console.log('Sending optimization request with token:', authToken.substring(0, 10) + '...');
       
       const response = await fetch(`${API_URL}/api/optimize/build`, {
         method: 'POST',
