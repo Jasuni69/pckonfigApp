@@ -11,6 +11,7 @@ import json
 import openai
 from datetime import datetime
 import traceback
+import sys
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -22,7 +23,8 @@ async def optimize_build(
     db: Session = Depends(get_db)
 ):
     try:
-        logger.info(f"Received optimization request: {request}")
+        print("\n==== OPTIMIZE BUILD START ====\n")
+        print(f"Received optimization request for purpose: {request.purpose}")
         
         # Get current timestamp for created_at and updated_at fields
         current_time = datetime.utcnow()
@@ -121,7 +123,7 @@ async def optimize_build(
                     "price": cooler.price
                 }
 
-        logger.info(f"DEBUG: Current components: {json.dumps(current_components)}")
+        print(f"Current components: {json.dumps(current_components, indent=2)}")
         
         # Define the purpose for component search
         purpose = request.purpose or "general use"
@@ -130,38 +132,73 @@ async def optimize_build(
         def extract_components_from_results(results, component_type, limit=3):
             components = []
             try:
-                logger.info(f"DEBUG: Raw {component_type} results: {json.dumps(results)}")
+                print(f"\n--- Extracting {component_type} from ChromaDB results ---")
+                print(f"Result type: {type(results)}")
                 
-                if not results or "metadatas" not in results or not results["metadatas"] or not results["metadatas"][0]:
-                    logger.info(f"DEBUG: No valid metadatas found for {component_type}")
+                if not results:
+                    print(f"No results returned for {component_type}")
                     return components
-                    
+                
+                if not isinstance(results, dict):
+                    print(f"Results for {component_type} is not a dictionary: {results}")
+                    return components
+                
+                print(f"Result keys: {results.keys()}")
+                
+                if "metadatas" not in results or not results["metadatas"]:
+                    print(f"No 'metadatas' found in {component_type} results")
+                    return components
+                
+                if not results["metadatas"][0]:
+                    print(f"'metadatas' list is empty for {component_type}")
+                    return components
+                
+                print(f"First metadata item: {json.dumps(results['metadatas'][0][0], indent=2)}")
+                
+                # Check if there are any component types in the metadata
+                types = set()
+                for metadata_list in results["metadatas"]:
+                    for metadata in metadata_list:
+                        if "type" in metadata:
+                            types.add(metadata["type"])
+                
+                print(f"Component types found in results: {types}")
+                
                 for i, metadata in enumerate(results["metadatas"][0]):
-                    logger.info(f"DEBUG: Processing metadata {i} for {component_type}: {json.dumps(metadata)}")
+                    if i >= 3:  # Only process first few items to avoid log spam
+                        print(f"... and {len(results['metadatas'][0]) - 3} more items (skipping details for brevity)")
+                        break
+                        
+                    print(f"\nProcessing metadata {i} for {component_type}: {json.dumps(metadata, indent=2)}")
                     
                     try:
-                        # Check if this metadata is for the correct component type
-                        metadata_type = metadata.get("type", "").lower()
-                        if metadata_type != component_type.lower():
-                            logger.info(f"DEBUG: Skipping wrong type: {metadata_type} != {component_type.lower()}")
-                            continue
-                        
                         # Extract ID from metadata or ID string
                         component_id = None
+                        metadata_type = metadata.get("type", "").lower()
+                        
+                        # Check if this is for the right component type
+                        if metadata_type != component_type.lower():
+                            print(f"Skipping: metadata type '{metadata_type}' doesn't match '{component_type.lower()}'")
+                            continue
+                        
                         if "id" in metadata:
                             component_id = metadata["id"]
                             if isinstance(component_id, str) and component_id.isdigit():
                                 component_id = int(component_id)
+                            print(f"Found ID in metadata: {component_id}")
                         
                         # If no ID in metadata, try to extract from ID string
                         if component_id is None and i < len(results["ids"][0]):
                             id_str = results["ids"][0][i]
+                            print(f"Trying to extract ID from string: {id_str}")
+                            
                             if "_" in id_str:
                                 id_parts = id_str.split("_")
                                 if len(id_parts) > 1 and id_parts[-1].isdigit():
                                     component_id = int(id_parts[-1])
-                        
-                        logger.info(f"DEBUG: Extracted ID for {component_type}: {component_id}")
+                                    print(f"Extracted ID from string: {component_id}")
+                            else:
+                                print(f"ID string doesn't contain underscore: {id_str}")
                         
                         # Only add components with valid IDs
                         if component_id is not None:
@@ -212,18 +249,19 @@ async def optimize_build(
                                 })
                             
                             components.append(component_data)
-                            logger.info(f"DEBUG: Added {component_type} component: {json.dumps(component_data)}")
+                            print(f"Added component: {json.dumps(component_data, indent=2)}")
                             
                             if len(components) >= limit:
                                 break
                     except Exception as e:
-                        logger.error(f"Error processing {component_type} metadata {i}: {str(e)}")
+                        print(f"Error processing {component_type} metadata {i}: {str(e)}")
+                        print(traceback.format_exc())
                 
-                logger.info(f"DEBUG: Extracted {len(components)} {component_type} components")
+                print(f"Extracted {len(components)} {component_type} components")
                 return components
             except Exception as e:
-                logger.error(f"Error in extract_components_from_results for {component_type}: {str(e)}")
-                logger.error(traceback.format_exc())
+                print(f"Error in extract_components_from_results for {component_type}: {str(e)}")
+                print(traceback.format_exc())
                 return components
         
         # Function to get database fallbacks if ChromaDB doesn't return enough results
@@ -284,11 +322,11 @@ async def optimize_build(
                     
                     additional_components.append(component_data)
                 
-                logger.info(f"DEBUG: Added {len(additional_components)} fallback {component_type} components from database")
+                print(f"Added {len(additional_components)} fallback {component_type} components from database")
                 return existing_components + additional_components
             except Exception as e:
-                logger.error(f"Error in get_db_fallbacks for {component_type}: {str(e)}")
-                logger.error(traceback.format_exc())
+                print(f"Error in get_db_fallbacks for {component_type}: {str(e)}")
+                print(traceback.format_exc())
                 return existing_components
         
         # Prepare component recommendations using ChromaDB
@@ -297,14 +335,14 @@ async def optimize_build(
         
         # CPU recommendations
         cpu_query = f"best CPU for {purpose}"
-        logger.info(f"DEBUG: Searching ChromaDB for: {cpu_query}")
+        print(f"\nSearching ChromaDB for: {cpu_query}")
         cpu_results = search_components(cpu_query, n_results=10)
         cpu_components = extract_components_from_results(cpu_results, "cpu", max_components)
         recommendations["cpus"] = get_db_fallbacks(CPU, "cpu", cpu_components, max_components)
         
         # GPU recommendations
         gpu_query = f"best GPU for {purpose}"
-        logger.info(f"DEBUG: Searching ChromaDB for: {gpu_query}")
+        print(f"\nSearching ChromaDB for: {gpu_query}")
         gpu_results = search_components(gpu_query, n_results=10)
         gpu_components = extract_components_from_results(gpu_results, "gpu", max_components)
         recommendations["gpus"] = get_db_fallbacks(GPU, "gpu", gpu_components, max_components)
@@ -313,14 +351,14 @@ async def optimize_build(
         mb_query = f"compatible motherboard for {purpose}"
         if 'cpu' in current_components:
             mb_query += f" with {current_components['cpu']['socket']} socket"
-        logger.info(f"DEBUG: Searching ChromaDB for: {mb_query}")
+        print(f"\nSearching ChromaDB for: {mb_query}")
         mb_results = search_components(mb_query, n_results=10)
         mb_components = extract_components_from_results(mb_results, "motherboard", max_components)
         recommendations["motherboards"] = get_db_fallbacks(Motherboard, "motherboard", mb_components, max_components)
         
         # RAM recommendations
         ram_query = f"best RAM for {purpose}"
-        logger.info(f"DEBUG: Searching ChromaDB for: {ram_query}")
+        print(f"\nSearching ChromaDB for: {ram_query}")
         ram_results = search_components(ram_query, n_results=10)
         ram_components = extract_components_from_results(ram_results, "ram", max_components)
         recommendations["ram"] = get_db_fallbacks(RAM, "ram", ram_components, max_components)
@@ -329,7 +367,7 @@ async def optimize_build(
         psu_query = f"reliable PSU for {purpose}"
         if 'gpu' in current_components and current_components['gpu'].get('recommended_wattage'):
             psu_query += f" with at least {current_components['gpu']['recommended_wattage']} watts"
-        logger.info(f"DEBUG: Searching ChromaDB for: {psu_query}")
+        print(f"\nSearching ChromaDB for: {psu_query}")
         psu_results = search_components(psu_query, n_results=10)
         psu_components = extract_components_from_results(psu_results, "psu", max_components)
         recommendations["psus"] = get_db_fallbacks(PSU, "psu", psu_components, max_components)
@@ -338,26 +376,26 @@ async def optimize_build(
         case_query = f"PC case for {purpose}"
         if 'motherboard' in current_components:
             case_query += f" with {current_components['motherboard']['form_factor']} form factor support"
-        logger.info(f"DEBUG: Searching ChromaDB for: {case_query}")
+        print(f"\nSearching ChromaDB for: {case_query}")
         case_results = search_components(case_query, n_results=10)
         case_components = extract_components_from_results(case_results, "case", max_components)
         recommendations["cases"] = get_db_fallbacks(Case, "case", case_components, max_components)
         
         # Storage recommendations
         storage_query = f"storage for {purpose}"
-        logger.info(f"DEBUG: Searching ChromaDB for: {storage_query}")
+        print(f"\nSearching ChromaDB for: {storage_query}")
         storage_results = search_components(storage_query, n_results=10)
         storage_components = extract_components_from_results(storage_results, "storage", max_components)
         recommendations["storage"] = get_db_fallbacks(Storage, "storage", storage_components, max_components)
         
         # Cooler recommendations
         cooler_query = f"CPU cooler for {purpose}"
-        logger.info(f"DEBUG: Searching ChromaDB for: {cooler_query}")
+        print(f"\nSearching ChromaDB for: {cooler_query}")
         cooler_results = search_components(cooler_query, n_results=10)
         cooler_components = extract_components_from_results(cooler_results, "cooler", max_components)
         recommendations["coolers"] = get_db_fallbacks(Cooler, "cooler", cooler_components, max_components)
         
-        logger.info(f"DEBUG: Recommendations count: CPU={len(recommendations['cpus'])}, GPU={len(recommendations['gpus'])}, MB={len(recommendations['motherboards'])}, RAM={len(recommendations['ram'])}, PSU={len(recommendations['psus'])}, Case={len(recommendations['cases'])}, Storage={len(recommendations['storage'])}, Cooler={len(recommendations['coolers'])}")
+        print(f"\nRecommendations count: CPU={len(recommendations['cpus'])}, GPU={len(recommendations['gpus'])}, MB={len(recommendations['motherboards'])}, RAM={len(recommendations['ram'])}, PSU={len(recommendations['psus'])}, Case={len(recommendations['cases'])}, Storage={len(recommendations['storage'])}, Cooler={len(recommendations['coolers'])}")
         
         # Create a concise prompt for OpenAI
         prompt = f"""
@@ -393,7 +431,7 @@ async def optimize_build(
         }}
         """
         
-        logger.info(f"DEBUG: Sending prompt to OpenAI")
+        print(f"\nSending prompt to OpenAI")
         
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -404,14 +442,14 @@ async def optimize_build(
             response_format={"type": "json_object"}
         )
         
-        logger.info(f"DEBUG: OpenAI response: {response.choices[0].message.content}")
+        print(f"\nOpenAI response: {response.choices[0].message.content}")
         
         # Parse the response
         try:
             result = json.loads(response.choices[0].message.content)
-            logger.info(f"DEBUG: Parsed result: {json.dumps(result)}")
+            print(f"\nParsed result: {json.dumps(result, indent=2)}")
         except json.JSONDecodeError:
-            logger.error("Failed to parse response as JSON")
+            print("Failed to parse response as JSON")
             explanation_text = response.choices[0].message.content
             result = {
                 "explanation": explanation_text,
@@ -442,12 +480,14 @@ async def optimize_build(
             updated_at=current_time
         )
         
+        print("\n==== OPTIMIZE BUILD COMPLETE ====\n")
         return optimized_build
         
     except Exception as e:
         error_msg = f"Error in optimize_build: {str(e)}"
-        logger.error(error_msg)
-        logger.error(traceback.format_exc())  # Add stack trace for better debugging
+        print(f"\n==== ERROR IN OPTIMIZE BUILD ====\n")
+        print(error_msg)
+        print(traceback.format_exc())
         raise HTTPException(
             status_code=500, 
             detail=error_msg
