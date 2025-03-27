@@ -543,23 +543,18 @@ async def optimize_build(
         Current components:
         {json.dumps(current_components, indent=2)}
 
-        Recommended components (filtered for {purpose}):
+        Recommended components:
         {json.dumps(recommendations, indent=2)}
 
-        Based on the purpose "{purpose}", evaluate if any components need upgrading.
-        If upgrades are needed, recommend specific components by ID from the recommendations.
+        Requirements by purpose:
+        - 4K Gaming: High-end GPU (12GB+ VRAM), 850W+ PSU, 32GB RAM
+        - Gaming: Mid/high GPU, 750W+ PSU, 16GB+ RAM
+        - Workstation: Strong CPU, 32GB+ RAM, Large SSD
+        - General Use: Balanced components, 650W+ PSU
 
-        For 4K gaming, prioritize:
-        1. High-end GPUs with 10GB+ VRAM (RTX 4070 Ti/4080/4090, RX 7900 XT/XTX)
-        2. Fast CPUs with 8+ cores (i7/i9, Ryzen 7/9)
-        3. 32GB+ RAM, preferably DDR5
-        4. Fast SSD storage with 1TB+ capacity
-        5. Ensure motherboard is compatible with chosen CPU
-        6. PSU with sufficient wattage for high-end components
-
-        Format as:
+        Format:
         {{
-          "explanation": "Explanation text",
+          "explanation": "Brief explanation of needed changes",
           "components": {{
             "cpu_id": 1,
             "gpu_id": 2,
@@ -578,8 +573,14 @@ async def optimize_build(
         response = openai.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a PC building expert. Evaluate if the current build is suitable for the user's purpose. If upgrades are needed, recommend specific component upgrades from the provided options. You must respond with a valid JSON object only."},
-                {"role": "user", "content": prompt + "\n\nYou must respond with a valid JSON object using exactly the format specified above. Do not include any other text or explanation outside the JSON structure."}
+                {
+                    "role": "system", 
+                    "content": "You are a PC expert specializing in custom builds. For gaming, focus on GPU/CPU balance. For workstations, prioritize CPU/RAM. For 4K, require high VRAM GPUs. Always ensure: PSU headroom 200W+, compatible CPU/motherboard sockets, sufficient cooling. JSON only."
+                },
+                {
+                    "role": "user", 
+                    "content": prompt + "\n\nRespond with JSON only."
+                }
             ],
             temperature=0.7,
             max_tokens=800
