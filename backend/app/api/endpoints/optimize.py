@@ -552,12 +552,15 @@ async def optimize_build(
         - Workstation: Strong CPU, 32GB+ RAM, Large SSD
         - General Use: Balanced components, 650W+ PSU
 
+        IMPORTANT: Your component selections MUST match your explanation.
+        If you recommend a spec (like 12GB VRAM), you must select a component that meets it.
+
         Format:
         {{
           "explanation": "Brief explanation of needed changes",
           "components": {{
             "cpu_id": 1,
-            "gpu_id": 2,
+            "gpu_id": 2,    // Must match requirements in explanation
             "motherboard_id": 3,
             "ram_id": 4,
             "psu_id": 5,
@@ -575,11 +578,11 @@ async def optimize_build(
             messages=[
                 {
                     "role": "system", 
-                    "content": "You are a PC expert specializing in custom builds. For gaming, focus on GPU/CPU balance. For workstations, prioritize CPU/RAM. For 4K, require high VRAM GPUs. Always ensure: PSU headroom 200W+, compatible CPU/motherboard sockets, sufficient cooling. JSON only."
+                    "content": "You are a PC expert specializing in custom builds. Your component selections MUST match your explanations exactly. Never recommend components that contradict your stated requirements (e.g., don't say '12GB VRAM needed' then select an 8GB card). For gaming, focus on GPU/CPU balance. For workstations, prioritize CPU/RAM. For 4K, only select GPUs with 12GB+ VRAM. Always ensure: PSU headroom 200W+, compatible CPU/motherboard sockets, sufficient cooling. JSON only."
                 },
                 {
                     "role": "user", 
-                    "content": prompt + "\n\nRespond with JSON only."
+                    "content": prompt + "\n\nRespond with JSON only. Ensure selected components match your explanation requirements."
                 }
             ],
             temperature=0.7,
