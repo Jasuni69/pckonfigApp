@@ -121,3 +121,40 @@ async def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depen
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
+
+@router.post("/refresh-token")
+async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    try:
+        # Find the existing token
+        max_age = timedelta(minutes=int(settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+        db_token = db.query(Token).filter(
+            Token.token == token,
+            Token.created_at >= datetime.now(UTC) - max_age
+        ).first()
+        
+        if not db_token:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token invalid or expired",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
+        
+        # Update token timestamp
+        db_token.created_at = datetime.now(UTC)
+        db.commit()
+        db.refresh(db_token)
+        
+        return {
+            "access_token": db_token.token,
+            "token_type": "bearer",
+            "user": {
+                "id": db_token.user.id,
+                "email": db_token.user.email
+            }
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )

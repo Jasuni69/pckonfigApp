@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Card from '../components/Card';
 import caseIcon from '../assets/icons/case.svg';
 import motherboardIcon from '../assets/icons/motherboard.svg';
@@ -11,6 +11,7 @@ import psuIcon from '../assets/icons/psu.svg';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import SaveBuildModal from '../components/SaveBuildModal';
+import { API_URL } from '../config';
 
 const formFactorCompatibility = {
   "Utökad ATX": ["Utökad ATX", "ATX", "Micro ATX", "Mini ITX"],
@@ -26,11 +27,35 @@ const PcBuilder = () => {
     requiredWattage: 0,
     formFactor: null
   });
-  const { isAuthenticated, token } = useAuth();
+  const { isAuthenticated, token, refreshToken } = useAuth();
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+
+  // Add this useEffect for activity tracking
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Reset token timeout on component mount
+      refreshToken();
+      
+      // Set up activity listeners
+      const handleActivity = () => {
+        refreshToken();
+      };
+      
+      // Listen for user activities
+      document.addEventListener('mousedown', handleActivity);
+      document.addEventListener('keydown', handleActivity);
+      document.addEventListener('touchstart', handleActivity);
+      
+      return () => {
+        document.removeEventListener('mousedown', handleActivity);
+        document.removeEventListener('keydown', handleActivity);
+        document.removeEventListener('touchstart', handleActivity);
+      };
+    }
+  }, [isAuthenticated, refreshToken]);
 
   const handleComponentSelect = (component, type) => {
     console.log(`Selected ${type}:`, component);
@@ -197,7 +222,7 @@ const PcBuilder = () => {
           cooler_id: selectedComponents['cpu-cooler']?.id || null
         };
 
-        const response = await fetch('http://16.16.99.193/api/builds', {
+        const response = await fetch(`${API_URL}/api/builds`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -238,7 +263,7 @@ const PcBuilder = () => {
 
       console.log('Saving build data:', buildData);
 
-      const response = await fetch('http://16.16.99.193/api/builds', {
+      const response = await fetch(`${API_URL}/api/builds`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -283,7 +308,7 @@ const PcBuilder = () => {
       
       console.log('Sending optimization request with token:', authToken.substring(0, 10) + '...');
       
-      const response = await fetch('http://16.16.99.193/api/optimize/build', {
+      const response = await fetch(`${API_URL}/api/optimize/build`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${authToken}`,

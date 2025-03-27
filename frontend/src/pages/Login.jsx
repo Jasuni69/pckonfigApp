@@ -44,9 +44,21 @@ const Login = () => {
       const data = await response.json();
       console.log('Success response:', data);
 
-      await login(data.access_token, data.user);
+      // Store token and user data in localStorage directly as a backup
+      localStorage.setItem('token', data.access_token);
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+      }
 
-      navigate('/');
+      // Then call login function from context
+      await login(data.access_token, data.user);
+      
+      console.log('Login successful, redirecting to homepage');
+      
+      // Add a small delay before navigation to ensure state is updated
+      setTimeout(() => {
+        navigate('/builder');  // Redirect to the PC builder page specifically
+      }, 100);
       
     } catch (err) {
       console.error('Error:', err);
