@@ -24,7 +24,7 @@ const Login = () => {
 
     try {
       console.log('Sending data:', formData);
-      const response = await fetch('http://16.16.99.193/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,7 +57,7 @@ const Login = () => {
       
       // Add a small delay before navigation to ensure state is updated
       setTimeout(() => {
-        navigate('/builder');  // Redirect to the PC builder page specifically
+        navigate('/pcbuilderbuilder');  // Redirect to the PC builder page specifically
       }, 100);
       
     } catch (err) {
