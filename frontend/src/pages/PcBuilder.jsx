@@ -314,7 +314,63 @@ const PcBuilder = () => {
       const data = await response.json();
       console.log('Optimization response:', data);
       
-      // Just show the explanation
+      // Check if any component IDs need to be updated
+      const updatedComponents = { ...selectedComponents };
+      let hasChanges = false;
+      
+      // Helper function to fetch a component
+      const fetchComponent = async (type, id, endpoint) => {
+        try {
+          const response = await fetch(`http://16.16.99.193/api/${endpoint}/${id}`);
+          if (response.ok) {
+            const componentData = await response.json();
+            updatedComponents[type] = componentData;
+            hasChanges = true;
+          }
+        } catch (error) {
+          console.error(`Failed to fetch ${type}:`, error);
+        }
+      };
+      
+      // Check each component type and update if needed
+      if (data.cpu_id && (!selectedComponents.cpu || data.cpu_id !== selectedComponents.cpu.id)) {
+        await fetchComponent('cpu', data.cpu_id, 'cpus');
+      }
+      
+      if (data.gpu_id && (!selectedComponents.gpu || data.gpu_id !== selectedComponents.gpu.id)) {
+        await fetchComponent('gpu', data.gpu_id, 'gpus');
+      }
+      
+      if (data.motherboard_id && (!selectedComponents.motherboard || data.motherboard_id !== selectedComponents.motherboard.id)) {
+        await fetchComponent('motherboard', data.motherboard_id, 'motherboards');
+      }
+      
+      if (data.ram_id && (!selectedComponents.ram || data.ram_id !== selectedComponents.ram.id)) {
+        await fetchComponent('ram', data.ram_id, 'ram');
+      }
+      
+      if (data.psu_id && (!selectedComponents.psu || data.psu_id !== selectedComponents.psu.id)) {
+        await fetchComponent('psu', data.psu_id, 'psus');
+      }
+      
+      if (data.case_id && (!selectedComponents.case || data.case_id !== selectedComponents.case.id)) {
+        await fetchComponent('case', data.case_id, 'cases');
+      }
+      
+      if (data.storage_id && (!selectedComponents.hdd || data.storage_id !== selectedComponents.hdd.id)) {
+        await fetchComponent('hdd', data.storage_id, 'storage');
+      }
+      
+      if (data.cooler_id && (!selectedComponents['cpu-cooler'] || data.cooler_id !== selectedComponents['cpu-cooler'].id)) {
+        await fetchComponent('cpu-cooler', data.cooler_id, 'coolers');
+      }
+      
+      // Update selected components if there were changes
+      if (hasChanges) {
+        setSelectedComponents(updatedComponents);
+      }
+      
+      // Show the explanation
       if (data && data.explanation) {
         alert(`Optimeringsförslag:\n\n${data.explanation}`);
       } else {
