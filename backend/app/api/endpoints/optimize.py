@@ -13,7 +13,7 @@ import openai
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-@router.post("/optimize-build", response_model=OptimizedBuildOut)
+@router.post("/build", response_model=OptimizedBuildOut)
 async def optimize_build(
     request: OptimizationRequest,
     current_user = Depends(get_current_user),

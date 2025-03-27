@@ -271,7 +271,9 @@ const PcBuilder = () => {
 
     try {
       setIsLoading(true);
-      const response = await fetch('http://16.16.99.193/api/optimize-build', {
+      
+      // Using the updated endpoint path
+      const response = await fetch('http://16.16.99.193/api/optimize/build', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -297,30 +299,11 @@ const PcBuilder = () => {
       const data = await response.json();
       console.log('Optimization response:', data);
       
-      // Handle the response from the backend
-      if (data) {
-        // Get updated components based on optimized IDs
-        const fetchUpdatedComponents = async () => {
-          try {
-            // Example: If the CPU was changed, fetch the new CPU data
-            if (data.cpu_id && (!selectedComponents.cpu || data.cpu_id !== selectedComponents.cpu.id)) {
-              const cpuResponse = await fetch(`http://16.16.99.193/api/cpus/${data.cpu_id}`);
-              if (cpuResponse.ok) {
-                const cpuData = await cpuResponse.json();
-                setSelectedComponents(prev => ({...prev, cpu: cpuData}));
-              }
-            }
-            
-            // Do the same for other components...
-            // This is just an example - you'll need to implement for each component type
-            
-            alert(`Din dator har optimerats!\n\n${data.explanation || 'Komponenter har uppdaterats för bättre prestanda.'}`);
-          } catch (error) {
-            console.error('Error fetching updated components:', error);
-          }
-        };
-        
-        fetchUpdatedComponents();
+      // Just show the explanation
+      if (data && data.explanation) {
+        alert(`Optimeringsförslag:\n\n${data.explanation}`);
+      } else {
+        alert('Din dator har optimerats!');
       }
     } catch (error) {
       console.error('Failed to optimize PC:', error);
