@@ -466,25 +466,21 @@ async def optimize_build(
         
         # First, add this validation function near the top of the file
         def validate_gpu_for_4k(gpu):
+            print("DEBUG - Validating GPU for 4K:", gpu)  # Debug print
             if not gpu:
                 return False
             
-            # Handle both dictionary and Pydantic model
-            if hasattr(gpu, 'model_dump'):  # Pydantic v2
-                gpu_data = gpu.model_dump()
-            elif hasattr(gpu, 'dict'):  # Pydantic v1
-                gpu_data = gpu.dict()
-            else:  # Plain dictionary
-                gpu_data = gpu
-            
-            memory = gpu_data.get('memory', '')
+            memory = gpu.get('memory', '')
             if not memory:
                 return False
             
             try:
-                memory_value = float(memory.split()[0])  # Extract number from "16 GB"
+                # Extract number from string like "8 GB"
+                memory_value = float(memory.split()[0])
+                print(f"DEBUG - GPU Memory: {memory_value}GB")  # Debug print
                 return memory_value >= 12
-            except (ValueError, AttributeError):
+            except (ValueError, AttributeError) as e:
+                print(f"DEBUG - Error parsing GPU memory: {e}")  # Debug print
                 return False
         
         # Prepare component recommendations using ChromaDB
@@ -625,35 +621,45 @@ async def optimize_build(
         try:
             response_data = response.choices[0].message.content
             result = json.loads(response_data)
+            print("DEBUG - Initial OpenAI response:", result)  # Debug print
             
-            # Initialize components dict with current component IDs
+            # Preserve current components
             if "components" not in result:
                 result["components"] = {}
             
-            # Preserve current components if not explicitly changed
+            # For 4K gaming, validate GPU selection first
+            if purpose.lower() == "4k gaming":
+                print("DEBUG - Checking GPU for 4K gaming")  # Debug print
+                
+                # Get all suitable GPUs
+                suitable_gpus = [g for g in gpu_components if validate_gpu_for_4k(g)]
+                print(f"DEBUG - Found {len(suitable_gpus)} suitable GPUs:", suitable_gpus)  # Debug print
+                
+                if not suitable_gpus:
+                    raise ValueError("No GPUs with 12GB+ VRAM found for 4K gaming")
+                
+                # Always select the best suitable GPU for 4K gaming
+                selected_gpu = suitable_gpus[0]  # First one should be highest ranked
+                result["components"]["gpu_id"] = selected_gpu["id"]
+                
+                # Update explanation to be accurate
+                result["explanation"] = (
+                    f"Upgraded to {selected_gpu['name']} with {selected_gpu['memory']} VRAM "
+                    "to meet 4K gaming requirements. "
+                    "This GPU provides the necessary VRAM for smooth 4K gaming experience."
+                )
+            
+            # Preserve other current components
             result["components"]["cpu_id"] = result["components"].get("cpu_id", request.cpu_id)
-            result["components"]["gpu_id"] = result["components"].get("gpu_id", request.gpu_id)
             result["components"]["motherboard_id"] = result["components"].get("motherboard_id", request.motherboard_id)
             result["components"]["ram_id"] = result["components"].get("ram_id", request.ram_id)
             result["components"]["psu_id"] = result["components"].get("psu_id", request.psu_id)
             result["components"]["case_id"] = result["components"].get("case_id", request.case_id)
             result["components"]["storage_id"] = result["components"].get("storage_id", request.storage_id)
             result["components"]["cooler_id"] = result["components"].get("cooler_id", request.cooler_id)
-            
-            # Validate 4K gaming GPU requirements
-            if purpose.lower() == "4k gaming":
-                gpu_id = result["components"]["gpu_id"]
-                selected_gpu = next((g for g in gpu_components if g["id"] == gpu_id), None)
-                if not selected_gpu or not validate_gpu_for_4k(selected_gpu):
-                    suitable_gpus = [g for g in gpu_components if validate_gpu_for_4k(g)]
-                    if suitable_gpus:
-                        result["components"]["gpu_id"] = suitable_gpus[0]["id"]
-                        result["explanation"] = "Selected a more suitable GPU for 4K gaming. " + result["explanation"]
-                    else:
-                        raise ValueError("No suitable GPU found for 4K gaming")
 
         except (json.JSONDecodeError, KeyError, ValueError) as e:
-            print(f"Error validating OpenAI response: {str(e)}")
+            print(f"DEBUG - Error in optimization: {str(e)}")  # Debug print
             raise HTTPException(status_code=500, detail=f"Error in optimize_build: {str(e)}")
 
         # Then fetch the components using the preserved IDs
