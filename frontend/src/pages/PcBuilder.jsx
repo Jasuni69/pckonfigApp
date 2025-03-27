@@ -314,61 +314,51 @@ const PcBuilder = () => {
       const data = await response.json();
       console.log('Optimization response:', data);
       
-      // Check if any component IDs need to be updated
+      // Update the components from the full objects in the response
       const updatedComponents = { ...selectedComponents };
-      let hasChanges = false;
       
-      // Helper function to fetch a component
-      const fetchComponent = async (type, id, endpoint) => {
-        try {
-          const response = await fetch(`http://16.16.99.193/api/${endpoint}/${id}`);
-          if (response.ok) {
-            const componentData = await response.json();
-            updatedComponents[type] = componentData;
-            hasChanges = true;
-          }
-        } catch (error) {
-          console.error(`Failed to fetch ${type}:`, error);
-        }
-      };
-      
-      // Check each component type and update if needed
-      if (data.cpu_id && (!selectedComponents.cpu || data.cpu_id !== selectedComponents.cpu.id)) {
-        await fetchComponent('cpu', data.cpu_id, 'cpus');
+      // Update CPU if present in response
+      if (data.cpu) {
+        updatedComponents.cpu = data.cpu;
       }
       
-      if (data.gpu_id && (!selectedComponents.gpu || data.gpu_id !== selectedComponents.gpu.id)) {
-        await fetchComponent('gpu', data.gpu_id, 'gpus');
+      // Update GPU if present in response
+      if (data.gpu) {
+        updatedComponents.gpu = data.gpu;
       }
       
-      if (data.motherboard_id && (!selectedComponents.motherboard || data.motherboard_id !== selectedComponents.motherboard.id)) {
-        await fetchComponent('motherboard', data.motherboard_id, 'motherboards');
+      // Update motherboard if present in response
+      if (data.motherboard) {
+        updatedComponents.motherboard = data.motherboard;
       }
       
-      if (data.ram_id && (!selectedComponents.ram || data.ram_id !== selectedComponents.ram.id)) {
-        await fetchComponent('ram', data.ram_id, 'ram');
+      // Update RAM if present in response
+      if (data.ram) {
+        updatedComponents.ram = data.ram;
       }
       
-      if (data.psu_id && (!selectedComponents.psu || data.psu_id !== selectedComponents.psu.id)) {
-        await fetchComponent('psu', data.psu_id, 'psus');
+      // Update PSU if present in response
+      if (data.psu) {
+        updatedComponents.psu = data.psu;
       }
       
-      if (data.case_id && (!selectedComponents.case || data.case_id !== selectedComponents.case.id)) {
-        await fetchComponent('case', data.case_id, 'cases');
+      // Update case if present in response
+      if (data.case) {
+        updatedComponents.case = data.case;
       }
       
-      if (data.storage_id && (!selectedComponents.hdd || data.storage_id !== selectedComponents.hdd.id)) {
-        await fetchComponent('hdd', data.storage_id, 'storage');
+      // Update storage if present in response
+      if (data.storage) {
+        updatedComponents.hdd = data.storage;
       }
       
-      if (data.cooler_id && (!selectedComponents['cpu-cooler'] || data.cooler_id !== selectedComponents['cpu-cooler'].id)) {
-        await fetchComponent('cpu-cooler', data.cooler_id, 'coolers');
+      // Update cooler if present in response
+      if (data.cooler) {
+        updatedComponents['cpu-cooler'] = data.cooler;
       }
       
-      // Update selected components if there were changes
-      if (hasChanges) {
-        setSelectedComponents(updatedComponents);
-      }
+      // Update selected components
+      setSelectedComponents(updatedComponents);
       
       // Show the explanation
       if (data && data.explanation) {
