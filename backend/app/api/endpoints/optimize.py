@@ -465,23 +465,17 @@ async def optimize_build(
             return [comp for score, comp in scored_components[:limit]]
         
         # First, add this validation function near the top of the file
-        def validate_4k_gpu(gpu_data):
-            """Check if a GPU meets 4K gaming requirements"""
-            if not gpu_data:
+        def validate_gpu_for_4k(gpu):
+            if not gpu:
                 return False
-            
-            name = gpu_data.get('name', '').lower()
-            memory = gpu_data.get('memory', '0 GB').lower()
-            
-            # Extract VRAM amount
+            if not gpu.get('memory'):  # Changed from gpu.dict()
+                return False
+            memory_str = gpu['memory'].split()[0]  # Get the number from "16 GB"
             try:
-                vram = int(memory.split('gb')[0].strip())
+                memory = float(memory_str)
+                return memory >= 12
             except:
-                vram = 0
-            
-            # Check for approved GPUs
-            valid_gpus = ['rtx 4080', 'rtx 4090', 'rx 7900 xt', 'rx 7900 xtx']
-            return any(gpu in name for gpu in valid_gpus) and vram >= 12
+                return False
         
         # Prepare component recommendations using ChromaDB
         recommendations = {}
@@ -674,7 +668,7 @@ async def optimize_build(
                 gpu_id = result["components"].get("gpu_id")
                 if gpu_id:  # Only validate if GPU is being upgraded
                     selected_gpu = next((g for g in gpu_components if g.id == gpu_id), None)
-                    if not selected_gpu or not validate_4k_gpu(selected_gpu.__dict__):
+                    if not selected_gpu or not validate_gpu_for_4k(selected_gpu):
                         raise ValueError("Selected GPU does not meet 4K gaming requirements")
         except (json.JSONDecodeError, KeyError, ValueError) as e:
             print(f"Error validating OpenAI response: {str(e)}")
