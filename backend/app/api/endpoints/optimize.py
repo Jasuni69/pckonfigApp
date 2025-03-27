@@ -24,9 +24,86 @@ async def optimize_build(
         current_components = {}
         
         if request.cpu_id:
-            current_components["cpu"] = db.query(CPU).filter(CPU.id == request.cpu_id).first()
-        # Get other components the same way...
+            cpu = db.query(CPU).filter(CPU.id == request.cpu_id).first()
+            if cpu:
+                current_components["cpu"] = {
+                    "id": cpu.id,
+                    "name": cpu.name,
+                    "socket": cpu.socket,
+                    "cores": cpu.cores,
+                    "price": cpu.price
+                }
         
+        if request.gpu_id:
+            gpu = db.query(GPU).filter(GPU.id == request.gpu_id).first()
+            if gpu:
+                current_components["gpu"] = {
+                    "id": gpu.id,
+                    "name": gpu.name,
+                    "price": gpu.price,
+                    # Add other relevant GPU fields
+                }
+        
+        if request.motherboard_id:
+            mb = db.query(Motherboard).filter(Motherboard.id == request.motherboard_id).first()
+            if mb:
+                current_components["motherboard"] = {
+                    "id": mb.id,
+                    "name": mb.name,
+                    "socket": mb.socket,
+                    "form_factor": mb.form_factor,
+                    "price": mb.price
+                }
+        
+        if request.ram_id:
+            ram = db.query(RAM).filter(RAM.id == request.ram_id).first()
+            if ram:
+                current_components["ram"] = {
+                    "id": ram.id,
+                    "name": ram.name,
+                    "capacity": ram.capacity,
+                    "price": ram.price
+                }
+        
+        if request.psu_id:
+            psu = db.query(PSU).filter(PSU.id == request.psu_id).first()
+            if psu:
+                current_components["psu"] = {
+                    "id": psu.id,
+                    "name": psu.name,
+                    "wattage": psu.wattage,
+                    "price": psu.price
+                }
+        
+        if request.case_id:
+            case = db.query(Case).filter(Case.id == request.case_id).first()
+            if case:
+                current_components["case"] = {
+                    "id": case.id,
+                    "name": case.name,
+                    "form_factor": case.form_factor,
+                    "price": case.price
+                }
+        
+        if request.storage_id:
+            storage = db.query(Storage).filter(Storage.id == request.storage_id).first()
+            if storage:
+                current_components["storage"] = {
+                    "id": storage.id,
+                    "name": storage.name,
+                    "capacity": storage.capacity,
+                    "price": storage.price
+                }
+        
+        if request.cooler_id:
+            cooler = db.query(Cooler).filter(Cooler.id == request.cooler_id).first()
+            if cooler:
+                current_components["cooler"] = {
+                    "id": cooler.id,
+                    "name": cooler.name,
+                    "price": cooler.price
+                }
+
         # Get all available components
         all_cpus = [{"id": c.id, "name": c.name, "socket": c.socket, "cores": c.cores, "price": c.price} 
                    for c in db.query(CPU).all()]
