@@ -546,21 +546,29 @@ async def optimize_build(
         Recommended components:
         {json.dumps(recommendations, indent=2)}
 
-        Requirements by purpose:
-        - 4K Gaming: High-end GPU (12GB+ VRAM), 850W+ PSU, 32GB RAM
+        STRICT RULES FOR 4K GAMING:
+        DO NOT SELECT:
+        - RTX 4060 Ti (8GB VRAM)
+        - RTX 4070 (12GB but not powerful enough)
+        - Any GPU with less than 12GB VRAM
+
+        MUST SELECT FOR 4K:
+        - RTX 4080 16GB
+        - RTX 4090 24GB
+        - RX 7900 XT/XTX
+        No exceptions to these GPU rules.
+
+        Other Requirements:
         - Gaming: Mid/high GPU, 750W+ PSU, 16GB+ RAM
         - Workstation: Strong CPU, 32GB+ RAM, Large SSD
         - General Use: Balanced components, 650W+ PSU
-
-        IMPORTANT: Your component selections MUST match your explanation.
-        If you recommend a spec (like 12GB VRAM), you must select a component that meets it.
 
         Format:
         {{
           "explanation": "Brief explanation of needed changes",
           "components": {{
             "cpu_id": 1,
-            "gpu_id": 2,    // Must match requirements in explanation
+            "gpu_id": 2,    // MUST follow GPU rules above
             "motherboard_id": 3,
             "ram_id": 4,
             "psu_id": 5,
@@ -574,19 +582,19 @@ async def optimize_build(
         print(f"\nSending prompt to OpenAI")
         
         response = openai.chat.completions.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",  # Switch back to 3.5-turbo
             messages=[
                 {
                     "role": "system", 
-                    "content": "You are a PC expert specializing in custom builds. Your component selections MUST match your explanations exactly. Never recommend components that contradict your stated requirements (e.g., don't say '12GB VRAM needed' then select an 8GB card). For gaming, focus on GPU/CPU balance. For workstations, prioritize CPU/RAM. For 4K, only select GPUs with 12GB+ VRAM. Always ensure: PSU headroom 200W+, compatible CPU/motherboard sockets, sufficient cooling. JSON only."
+                    "content": "You are a PC expert. For 4K gaming, you MUST ONLY select RTX 4080, 4090, or RX 7900 XT/XTX. NEVER select RTX 4060 Ti or 4070 for 4K gaming. If no suitable GPU is available in recommendations, state this in explanation and suggest waiting for better options. Respond with JSON."
                 },
                 {
                     "role": "user", 
-                    "content": prompt + "\n\nRespond with JSON only. Ensure selected components match your explanation requirements."
+                    "content": prompt + "\n\nRespond with JSON only."
                 }
             ],
-            temperature=0.7,
-            max_tokens=800
+            response_format={"type": "json_object"},  # Add back the response format for 3.5-turbo
+            temperature=0.3
         )
         
         print(f"\nOpenAI response: {response.choices[0].message.content}")
