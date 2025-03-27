@@ -468,13 +468,23 @@ async def optimize_build(
         def validate_gpu_for_4k(gpu):
             if not gpu:
                 return False
-            if not gpu.get('memory'):  # Changed from gpu.dict()
+            
+            # Handle both dictionary and Pydantic model
+            if hasattr(gpu, 'model_dump'):  # Pydantic v2
+                gpu_data = gpu.model_dump()
+            elif hasattr(gpu, 'dict'):  # Pydantic v1
+                gpu_data = gpu.dict()
+            else:  # Plain dictionary
+                gpu_data = gpu
+            
+            memory = gpu_data.get('memory', '')
+            if not memory:
                 return False
-            memory_str = gpu['memory'].split()[0]  # Get the number from "16 GB"
+            
             try:
-                memory = float(memory_str)
-                return memory >= 12
-            except:
+                memory_value = float(memory.split()[0])  # Extract number from "16 GB"
+                return memory_value >= 12
+            except (ValueError, AttributeError):
                 return False
         
         # Prepare component recommendations using ChromaDB
@@ -672,7 +682,7 @@ async def optimize_build(
                         raise ValueError("Selected GPU does not meet 4K gaming requirements")
         except (json.JSONDecodeError, KeyError, ValueError) as e:
             print(f"Error validating OpenAI response: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Invalid optimization result: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error in optimize_build: {str(e)}")
 
         # Create the optimized build with both IDs and full component objects
         optimized_build = OptimizedBuildOut(
