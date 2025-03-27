@@ -329,6 +329,113 @@ async def optimize_build(
                 print(traceback.format_exc())
                 return existing_components
         
+        # Add this function after your existing extract_components_from_results function
+        def filter_components_for_purpose(components, purpose, component_type, limit=3):
+            """Filter and prioritize components based on purpose"""
+            if not components or len(components) <= 1:
+                return components
+            
+            purpose = purpose.lower()
+            scored_components = []
+            
+            # Score boost for high-end components in 4K gaming
+            if "4k" in purpose and "gaming" in purpose:
+                for component in components:
+                    score = 0
+                    name = component.get("name", "").lower()
+                    
+                    # GPU scoring for 4K gaming
+                    if component_type == "gpu":
+                        # Prioritize high VRAM GPUs
+                        memory_str = component.get("memory", "")
+                        if isinstance(memory_str, str) and "gb" in memory_str.lower():
+                            try:
+                                memory_value = int(memory_str.lower().split("gb")[0].strip())
+                                if memory_value >= 12:
+                                    score += 30
+                                elif memory_value >= 10:
+                                    score += 20
+                                elif memory_value >= 8:
+                                    score += 10
+                            except:
+                                pass
+                        
+                        # Prioritize high-end GPU models
+                        if any(gpu in name for gpu in ["rtx 4090", "rtx 4080", "rtx 4070 ti", "radeon 7900"]):
+                            score += 40
+                        elif any(gpu in name for gpu in ["rtx 4070", "rtx 3090", "rtx 3080", "radeon 7800"]):
+                            score += 30
+                        elif any(gpu in name for gpu in ["rtx 4060 ti", "rtx 3070", "radeon 6800"]):
+                            score += 20
+                    
+                    # CPU scoring for 4K gaming
+                    elif component_type == "cpu":
+                        # Prioritize high core count CPUs
+                        cores = component.get("cores", 0)
+                        if cores >= 12:
+                            score += 30
+                        elif cores >= 8:
+                            score += 20
+                        elif cores >= 6:
+                            score += 10
+                        
+                        # Prioritize high-end CPU models
+                        if any(cpu in name for cpu in ["i9", "ryzen 9", "7950", "7900", "13900", "14900"]):
+                            score += 30
+                        elif any(cpu in name for cpu in ["i7", "ryzen 7", "7800x3d", "13700", "14700"]):
+                            score += 20
+                        elif any(cpu in name for cpu in ["i5", "ryzen 5", "7600", "13600", "14600"]):
+                            score += 10
+                    
+                    # RAM scoring for 4K gaming
+                    elif component_type == "ram":
+                        # Prioritize higher capacity
+                        capacity = component.get("capacity", 0)
+                        if capacity >= 32:
+                            score += 30
+                        elif capacity >= 16:
+                            score += 15
+                        
+                        # Prioritize DDR5 and faster RAM
+                        if "ddr5" in name:
+                            score += 20
+                        
+                        speed = component.get("speed", 0)
+                        if speed >= 6000:
+                            score += 20
+                        elif speed >= 4800:
+                            score += 15
+                        elif speed >= 3600:
+                            score += 10
+                    
+                    # Storage scoring for 4K gaming - prefer SSDs
+                    elif component_type == "storage":
+                        if any(s in name.lower() for s in ["ssd", "nvme", "m.2"]):
+                            score += 40
+                        
+                        # Prioritize larger capacity
+                        capacity = component.get("capacity", 0)
+                        if capacity >= 2:
+                            score += 20
+                        elif capacity >= 1:
+                            score += 10
+                    
+                    # Add the base score (to maintain original ordering if scores are equal)
+                    original_index = components.index(component)
+                    base_score = len(components) - original_index
+                    score += base_score
+                    
+                    scored_components.append((score, component))
+            else:
+                # For non-4K gaming, preserve original order but still convert to scored format
+                for i, component in enumerate(components):
+                    score = len(components) - i  # Higher score for earlier items
+                    scored_components.append((score, component))
+            
+            # Sort by score (descending) and take top N
+            scored_components.sort(reverse=True, key=lambda x: x[0])
+            return [comp for score, comp in scored_components[:limit]]
+        
         # Prepare component recommendations using ChromaDB
         recommendations = {}
         max_components = 3  # Maximum number of components per type to include
@@ -338,6 +445,7 @@ async def optimize_build(
         print(f"\nSearching ChromaDB for: {cpu_query}")
         cpu_results = search_components(cpu_query, n_results=10)
         cpu_components = extract_components_from_results(cpu_results, "cpu", max_components)
+        cpu_components = filter_components_for_purpose(cpu_components, purpose, "cpu", max_components)
         recommendations["cpus"] = get_db_fallbacks(CPU, "cpu", cpu_components, max_components)
         
         # GPU recommendations
@@ -345,6 +453,7 @@ async def optimize_build(
         print(f"\nSearching ChromaDB for: {gpu_query}")
         gpu_results = search_components(gpu_query, n_results=10)
         gpu_components = extract_components_from_results(gpu_results, "gpu", max_components)
+        gpu_components = filter_components_for_purpose(gpu_components, purpose, "gpu", max_components)
         recommendations["gpus"] = get_db_fallbacks(GPU, "gpu", gpu_components, max_components)
         
         # Motherboard recommendations
@@ -361,6 +470,7 @@ async def optimize_build(
         print(f"\nSearching ChromaDB for: {ram_query}")
         ram_results = search_components(ram_query, n_results=10)
         ram_components = extract_components_from_results(ram_results, "ram", max_components)
+        ram_components = filter_components_for_purpose(ram_components, purpose, "ram", max_components)
         recommendations["ram"] = get_db_fallbacks(RAM, "ram", ram_components, max_components)
         
         # PSU recommendations
@@ -386,6 +496,7 @@ async def optimize_build(
         print(f"\nSearching ChromaDB for: {storage_query}")
         storage_results = search_components(storage_query, n_results=10)
         storage_components = extract_components_from_results(storage_results, "storage", max_components)
+        storage_components = filter_components_for_purpose(storage_components, purpose, "storage", max_components)
         recommendations["storage"] = get_db_fallbacks(Storage, "storage", storage_components, max_components)
         
         # Cooler recommendations
@@ -409,11 +520,14 @@ async def optimize_build(
 
         Based on the purpose "{purpose}", evaluate if any components need upgrading.
         If upgrades are needed, recommend specific components by ID from the recommendations.
-        If the current build is already well-suited for the purpose, indicate that no changes are needed.
 
-        Return a JSON with:
-        1. A brief explanation
-        2. Component IDs to use (keep current IDs if no change needed)
+        For 4K gaming, prioritize:
+        1. High-end GPUs with 10GB+ VRAM (RTX 4070 Ti/4080/4090, RX 7900 XT/XTX)
+        2. Fast CPUs with 8+ cores (i7/i9, Ryzen 7/9)
+        3. 32GB+ RAM, preferably DDR5
+        4. Fast SSD storage with 1TB+ capacity
+        5. Ensure motherboard is compatible with chosen CPU
+        6. PSU with sufficient wattage for high-end components
 
         Format as:
         {{
