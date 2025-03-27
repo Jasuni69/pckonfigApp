@@ -623,31 +623,55 @@ async def optimize_build(
             result = json.loads(response_data)
             print("DEBUG - Initial OpenAI response:", result)  # Debug print
             
-            # Preserve current components
+            # Initialize components to preserve current components
             if "components" not in result:
                 result["components"] = {}
             
-            # For 4K gaming, validate GPU selection first
+            # Set all current component IDs as defaults
+            default_component_ids = {
+                "cpu_id": request.cpu_id,
+                "gpu_id": request.gpu_id,
+                "motherboard_id": request.motherboard_id,
+                "ram_id": request.ram_id,
+                "psu_id": request.psu_id,
+                "case_id": request.case_id,
+                "storage_id": request.storage_id,
+                "cooler_id": request.cooler_id
+            }
+            
+            # Apply defaults for any missing component
+            for key, value in default_component_ids.items():
+                if key not in result["components"] or result["components"][key] is None:
+                    result["components"][key] = value
+            
+            # For 4K gaming, force a GPU with 12GB+ VRAM
             if purpose.lower() == "4k gaming":
-                print("DEBUG - Checking GPU for 4K gaming")  # Debug print
+                print("DEBUG - Checking GPU for 4K gaming")
                 
-                # Get all suitable GPUs
-                suitable_gpus = [g for g in gpu_components if validate_gpu_for_4k(g)]
-                print(f"DEBUG - Found {len(suitable_gpus)} suitable GPUs:", suitable_gpus)  # Debug print
+                # Find all GPUs with 12GB+ VRAM
+                suitable_gpus = []
+                for gpu in gpu_components:
+                    memory_str = gpu.get('memory', '')
+                    try:
+                        if memory_str and float(memory_str.split()[0]) >= 12:
+                            suitable_gpus.append(gpu)
+                            print(f"DEBUG - Suitable GPU found: {gpu['name']} with {gpu['memory']}")
+                    except (ValueError, AttributeError):
+                        pass
                 
-                if not suitable_gpus:
-                    raise ValueError("No GPUs with 12GB+ VRAM found for 4K gaming")
-                
-                # Always select the best suitable GPU for 4K gaming
-                selected_gpu = suitable_gpus[0]  # First one should be highest ranked
-                result["components"]["gpu_id"] = selected_gpu["id"]
-                
-                # Update explanation to be accurate
-                result["explanation"] = (
-                    f"Upgraded to {selected_gpu['name']} with {selected_gpu['memory']} VRAM "
-                    "to meet 4K gaming requirements. "
-                    "This GPU provides the necessary VRAM for smooth 4K gaming experience."
-                )
+                if suitable_gpus:
+                    # Select the first suitable GPU
+                    selected_gpu = suitable_gpus[0]
+                    print(f"DEBUG - Selected GPU: {selected_gpu['name']} with {selected_gpu['memory']}")
+                    result["components"]["gpu_id"] = selected_gpu["id"]
+                    
+                    # Update explanation
+                    result["explanation"] = (
+                        f"Upgraded to {selected_gpu['name']} with {selected_gpu['memory']} VRAM "
+                        "to meet 4K gaming requirements. This GPU provides the necessary VRAM for smooth 4K gaming experience."
+                    )
+                else:
+                    print("DEBUG - No suitable GPUs found with 12GB+ VRAM")
             
             # Preserve other current components
             result["components"]["cpu_id"] = result["components"].get("cpu_id", request.cpu_id)
@@ -659,7 +683,7 @@ async def optimize_build(
             result["components"]["cooler_id"] = result["components"].get("cooler_id", request.cooler_id)
 
         except (json.JSONDecodeError, KeyError, ValueError) as e:
-            print(f"DEBUG - Error in optimization: {str(e)}")  # Debug print
+            print(f"DEBUG - Error in optimization: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Error in optimize_build: {str(e)}")
 
         # Then fetch the components using the preserved IDs
@@ -748,3 +772,108 @@ async def optimize_build(
             status_code=500, 
             detail=error_msg
         )
+
+# Add this debug function to log the specific objects we're finding
+def debug_print_gpu_objects(gpu_components):
+    print("\nDEBUG - All GPU objects:")
+    for i, gpu in enumerate(gpu_components):
+        print(f"GPU {i+1}: ID={gpu.get('id')}, Name={gpu.get('name')}, Memory={gpu.get('memory')}")
+
+# In the optimization function, after getting all GPU components
+debug_print_gpu_objects(gpu_components)
+
+# Then, modify the validation logic
+try:
+    response_data = response.choices[0].message.content
+    result = json.loads(response_data)
+    print("DEBUG - Initial OpenAI response:", result)  # Debug print
+    
+    # Initialize components to preserve current components
+    if "components" not in result:
+        result["components"] = {}
+    
+    # Set all current component IDs as defaults
+    default_component_ids = {
+        "cpu_id": request.cpu_id,
+        "gpu_id": request.gpu_id,
+        "motherboard_id": request.motherboard_id,
+        "ram_id": request.ram_id,
+        "psu_id": request.psu_id,
+        "case_id": request.case_id,
+        "storage_id": request.storage_id,
+        "cooler_id": request.cooler_id
+    }
+    
+    # Apply defaults for any missing component
+    for key, value in default_component_ids.items():
+        if key not in result["components"] or result["components"][key] is None:
+            result["components"][key] = value
+    
+    # For 4K gaming, force a GPU with 12GB+ VRAM
+    if purpose.lower() == "4k gaming":
+        print("DEBUG - Checking GPU for 4K gaming")
+        
+        # Find all GPUs with 12GB+ VRAM
+        suitable_gpus = []
+        for gpu in gpu_components:
+            memory_str = gpu.get('memory', '')
+            try:
+                if memory_str and float(memory_str.split()[0]) >= 12:
+                    suitable_gpus.append(gpu)
+                    print(f"DEBUG - Suitable GPU found: {gpu['name']} with {gpu['memory']}")
+            except (ValueError, AttributeError):
+                pass
+        
+        if suitable_gpus:
+            # Select the first suitable GPU
+            selected_gpu = suitable_gpus[0]
+            print(f"DEBUG - Selected GPU: {selected_gpu['name']} with {selected_gpu['memory']}")
+            result["components"]["gpu_id"] = selected_gpu["id"]
+            
+            # Update explanation
+            result["explanation"] = (
+                f"Upgraded to {selected_gpu['name']} with {selected_gpu['memory']} VRAM "
+                "to meet 4K gaming requirements. This GPU provides the necessary VRAM for smooth 4K gaming experience."
+            )
+        else:
+            print("DEBUG - No suitable GPUs found with 12GB+ VRAM")
+    
+except (json.JSONDecodeError, KeyError, ValueError) as e:
+    print(f"DEBUG - Error in optimization: {str(e)}")
+    raise HTTPException(status_code=500, detail=f"Error in optimize_build: {str(e)}")
+
+# Then update how we fetch components
+# Fetch components using preserved IDs with explicit logging
+print("DEBUG - Component IDs for fetching:")
+for component_type, component_id in [
+    ("CPU", result["components"]["cpu_id"]),
+    ("GPU", result["components"]["gpu_id"]),
+    ("Motherboard", result["components"]["motherboard_id"]),
+    ("RAM", result["components"]["ram_id"]),
+    ("PSU", result["components"]["psu_id"]),
+    ("Case", result["components"]["case_id"]),
+    ("Storage", result["components"]["storage_id"]),
+    ("Cooler", result["components"]["cooler_id"]),
+]:
+    print(f"DEBUG - {component_type} ID: {component_id}")
+
+# Fetch component objects
+cpu = db.query(CPU).filter(CPU.id == result["components"]["cpu_id"]).first() if result["components"]["cpu_id"] else None
+gpu = db.query(GPU).filter(GPU.id == result["components"]["gpu_id"]).first() if result["components"]["gpu_id"] else None
+motherboard = db.query(Motherboard).filter(Motherboard.id == result["components"]["motherboard_id"]).first() if result["components"]["motherboard_id"] else None
+ram = db.query(RAM).filter(RAM.id == result["components"]["ram_id"]).first() if result["components"]["ram_id"] else None
+psu = db.query(PSU).filter(PSU.id == result["components"]["psu_id"]).first() if result["components"]["psu_id"] else None
+case = db.query(Case).filter(Case.id == result["components"]["case_id"]).first() if result["components"]["case_id"] else None
+storage = db.query(Storage).filter(Storage.id == result["components"]["storage_id"]).first() if result["components"]["storage_id"] else None
+cooler = db.query(Cooler).filter(Cooler.id == result["components"]["cooler_id"]).first() if result["components"]["cooler_id"] else None
+
+# Debug print fetched objects
+print("DEBUG - Fetched component objects:")
+print(f"CPU: {cpu}")
+print(f"GPU: {gpu}")
+print(f"Motherboard: {motherboard}")
+print(f"RAM: {ram}")
+print(f"PSU: {psu}")
+print(f"Case: {case}")
+print(f"Storage: {storage}")
+print(f"Cooler: {cooler}")
