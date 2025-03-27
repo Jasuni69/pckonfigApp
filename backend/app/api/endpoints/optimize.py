@@ -310,6 +310,10 @@ async def optimize_build(
         cooler_components = extract_components_from_results(cooler_results, "Cooler", max_components)
         recommendations["coolers"] = get_db_fallbacks(Cooler, "cooler", cooler_components, max_components)
         
+        # Add after all component recommendations are collected, just before creating the OpenAI prompt:
+        logger.info(f"Current components: {json.dumps(current_components)}")
+        logger.info(f"Recommendations count: CPU={len(recommendations['cpus'])}, GPU={len(recommendations['gpus'])}, MB={len(recommendations['motherboards'])}, RAM={len(recommendations['ram'])}, PSU={len(recommendations['psus'])}, Case={len(recommendations['cases'])}, Storage={len(recommendations['storage'])}, Cooler={len(recommendations['coolers'])}")
+
         # Create a concise prompt for OpenAI
         prompt = f"""
         Analyze this PC build for {purpose}:
@@ -353,6 +357,9 @@ async def optimize_build(
             response_format={"type": "json_object"}
         )
         
+        # Add after the OpenAI API call, before parsing the response:
+        logger.info(f"OpenAI response: {response.choices[0].message.content}")
+        
         # Parse the response
         try:
             result = json.loads(response.choices[0].message.content)
@@ -363,6 +370,9 @@ async def optimize_build(
                 "explanation": explanation_text,
                 "components": {}
             }
+        
+        # Add after parsing the result:
+        logger.info(f"Parsed result: {json.dumps(result)}")
         
         # Create the optimized build
         optimized_build = OptimizedBuildOut(
