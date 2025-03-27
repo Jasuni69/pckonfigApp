@@ -578,8 +578,8 @@ async def optimize_build(
         response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a PC building expert. Evaluate if the current build is suitable for the user's purpose. If upgrades are needed, recommend specific component upgrades from the provided options."},
-                {"role": "user", "content": prompt}
+                {"role": "system", "content": "You are a PC building expert. Evaluate if the current build is suitable for the user's purpose. If upgrades are needed, recommend specific component upgrades from the provided options. Respond with JSON."},
+                {"role": "user", "content": prompt + "\n\nRespond with a JSON object only."}
             ],
             response_format={"type": "json_object"}
         )
