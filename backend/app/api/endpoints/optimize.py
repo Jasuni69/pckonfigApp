@@ -460,20 +460,40 @@ async def optimize_build(
         if "components" not in result:
             result["components"] = {}
         
-        # Create the optimized build
+        # Fetch the full component objects from the database
+        cpu = db.query(CPU).filter(CPU.id == result["components"].get("cpu_id", request.cpu_id)).first() if result["components"].get("cpu_id", request.cpu_id) else None
+        gpu = db.query(GPU).filter(GPU.id == result["components"].get("gpu_id", request.gpu_id)).first() if result["components"].get("gpu_id", request.gpu_id) else None
+        motherboard = db.query(Motherboard).filter(Motherboard.id == result["components"].get("motherboard_id", request.motherboard_id)).first() if result["components"].get("motherboard_id", request.motherboard_id) else None
+        ram = db.query(RAM).filter(RAM.id == result["components"].get("ram_id", request.ram_id)).first() if result["components"].get("ram_id", request.ram_id) else None
+        psu = db.query(PSU).filter(PSU.id == result["components"].get("psu_id", request.psu_id)).first() if result["components"].get("psu_id", request.psu_id) else None
+        case = db.query(Case).filter(Case.id == result["components"].get("case_id", request.case_id)).first() if result["components"].get("case_id", request.case_id) else None
+        storage = db.query(Storage).filter(Storage.id == result["components"].get("storage_id", request.storage_id)).first() if result["components"].get("storage_id", request.storage_id) else None
+        cooler = db.query(Cooler).filter(Cooler.id == result["components"].get("cooler_id", request.cooler_id)).first() if result["components"].get("cooler_id", request.cooler_id) else None
+
+        print(f"\nFetched component objects:")
+        print(f"CPU: {cpu}")
+        print(f"GPU: {gpu}")
+        print(f"Motherboard: {motherboard}")
+        print(f"RAM: {ram}")
+        print(f"PSU: {psu}")
+        print(f"Case: {case}")
+        print(f"Storage: {storage}")
+        print(f"Cooler: {cooler}")
+
+        # Create the optimized build with both IDs and full component objects
         optimized_build = OptimizedBuildOut(
             id=1,
             name="Optimized Build",
             purpose=purpose,
             user_id=current_user.id,
-            cpu_id=result["components"].get("cpu_id", request.cpu_id),
-            gpu_id=result["components"].get("gpu_id", request.gpu_id),
-            motherboard_id=result["components"].get("motherboard_id", request.motherboard_id),
-            ram_id=result["components"].get("ram_id", request.ram_id),
-            psu_id=result["components"].get("psu_id", request.psu_id),
-            case_id=result["components"].get("case_id", request.case_id),
-            storage_id=result["components"].get("storage_id", request.storage_id),
-            cooler_id=result["components"].get("cooler_id", request.cooler_id),
+            cpu=cpu,
+            gpu=gpu,
+            motherboard=motherboard,
+            ram=ram,
+            psu=psu,
+            case=case,
+            storage=storage,
+            cooler=cooler,
             explanation=result.get("explanation", "No explanation provided"),
             similarity_score=0.95,
             created_at=current_time,
