@@ -189,11 +189,12 @@ async def optimize_build(
         """
         
         response = openai.chat.completions.create(
-            model="o3-mini",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "You are a PC building expert. Evaluate if the current build is suitable for the user's purpose. If upgrades are needed, recommend specific component upgrades with actual component IDs from the available options provided. If the build is already well-suited, indicate that no changes are necessary."},
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            response_format={"type": "json_object"}
         )
         
         # Add error handling for JSON parsing
