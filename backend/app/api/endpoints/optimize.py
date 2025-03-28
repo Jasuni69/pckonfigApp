@@ -590,30 +590,19 @@ PURPOSE-SPECIFIC REQUIREMENTS:
   * RAM: 32GB+ recommended
   * CPU: Multi-core performance important
 
-- Video Editing: 
-  * CPU: 8+ cores required
-  * RAM: 32GB+ recommended
-  * GPU: 8GB+ VRAM
-  * Storage: Fast, large capacity SSDs
+- Video Editing/3D Rendering/Development: (similar requirements as before)
 
-- 3D Rendering: 
-  * CPU: High core count crucial
-  * RAM: 32GB minimum
-  * GPU: 8GB+ VRAM
-  
-- Development: 
-  * RAM: 16GB+ required
-  * CPU: 6+ cores
-  * Storage: SSD required
-
-- Basic Use: Balance cost-efficiency, prioritize reliability
+CRITICAL COMPATIBILITY RULES:
+1. CPU and motherboard MUST have matching sockets (e.g., AM4, LGA1700)
+2. Motherboard must fit in the case (ATX, micro-ATX, mini-ITX)
+3. PSU must provide enough wattage for all components
+4. All compatibility requirements take priority over performance
 
 ANALYSIS INSTRUCTIONS:
-1. Evaluate EVERY component against the specific purpose requirements
-2. Flag ALL components that don't meet minimum requirements
-3. For 4K gaming specifically, check CPU, RAM, PSU and GPU thoroughly
-4. Suggest upgrades ONLY from the provided component options
-5. Keep current components only if they meet requirements
+1. First check all compatibility between components
+2. Then evaluate each component against purpose requirements
+3. Suggest upgrades from the provided options that maintain compatibility
+4. Explain all changes clearly in your response
 
 FORMAT: JSON with 'explanation' detailing ALL necessary upgrades and component IDs
 """},
@@ -632,11 +621,11 @@ FORMAT: JSON with 'explanation' detailing ALL necessary upgrades and component I
             Storage: {json.dumps(storage_components, indent=2)}
             Coolers: {json.dumps(cooler_components, indent=2)}
             
-            Perform a comprehensive analysis of this build for {purpose}:
-            1. Evaluate EACH component against the requirements
-            2. Identify ALL components that need upgrading
-            3. Select specific replacements from the provided options
-            4. Explain why each upgrade is necessary
+            Perform a comprehensive analysis of this build for {purpose} with these priorities:
+            1. FIRST ensure all components are compatible with each other
+               - CPU and motherboard MUST have the same socket
+               - Motherboard must fit in the case
+            2. THEN optimize for performance
             
             For 4K Gaming specifically, ensure:
             - The CPU has sufficient cores (8+ recommended)
@@ -848,6 +837,85 @@ FORMAT: JSON with 'explanation' detailing ALL necessary upgrades and component I
             print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
             print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
 
+            # Add form factor compatibility check
+
+            # Check motherboard and case form factor compatibility
+            selected_mb_id = result["components"].get("motherboard_id")
+            selected_case_id = result["components"].get("case_id")
+
+            if selected_mb_id and selected_case_id:
+                selected_mb = db.query(Motherboard).filter(Motherboard.id == selected_mb_id).first()
+                selected_case = db.query(Case).filter(Case.id == selected_case_id).first()
+                
+                # Define form factor compatibility hierarchy
+                form_factor_compatibility = {
+                    "e-atx": ["e-atx"],
+                    "atx": ["e-atx", "atx"],
+                    "micro-atx": ["e-atx", "atx", "micro-atx"],
+                    "mini-itx": ["e-atx", "atx", "micro-atx", "mini-itx"]
+                }
+                
+                # Function to normalize form factor strings
+                def normalize_form_factor(ff):
+                    if not ff:
+                        return ""
+                    ff_lower = ff.lower().strip()
+                    if "e-atx" in ff_lower or "eatx" in ff_lower or "extended" in ff_lower:
+                        return "e-atx"
+                    elif "micro" in ff_lower:
+                        return "micro-atx"
+                    elif "mini" in ff_lower:
+                        return "mini-itx"
+                    elif "atx" in ff_lower:
+                        return "atx"
+                    return ff_lower
+                
+                if selected_mb and selected_case and selected_mb.form_factor and selected_case.form_factor:
+                    mb_form_factor = normalize_form_factor(selected_mb.form_factor)
+                    case_form_factor = normalize_form_factor(selected_case.form_factor)
+                    
+                    # Check if the case can fit the motherboard
+                    form_factor_compatible = False
+                    
+                    # Case can fit motherboard if case form factor is in the list of compatible form factors for the motherboard
+                    if case_form_factor in form_factor_compatibility:
+                        form_factor_compatible = mb_form_factor in form_factor_compatibility[case_form_factor]
+                        
+                    print(f"DEBUG - Form factor compatibility check: MB={selected_mb.name} ({mb_form_factor}), Case={selected_case.name} ({case_form_factor}), compatible: {form_factor_compatible}")
+                    
+                    if not form_factor_compatible:
+                        print(f"DEBUG - Form factor incompatibility detected between motherboard and case")
+                        
+                        # Try to find a compatible case for the motherboard
+                        suitable_case = next((c for c in recommendations["cases"] 
+                                            if c.get("form_factor") and 
+                                            mb_form_factor in form_factor_compatibility.get(
+                                                normalize_form_factor(c.get("form_factor", "")), [])), None)
+                        
+                        if suitable_case:
+                            result["components"]["case_id"] = suitable_case["id"]
+                            print(f"DEBUG - Replaced case with compatible option: {suitable_case['name']} for {selected_mb.name}")
+                            explanation_updates.append(f"Case upgraded to {suitable_case['name']} to accommodate the {selected_mb.name} motherboard.")
+                        else:
+                            # If no compatible case found, try to find a motherboard compatible with the case
+                            suitable_mb = next((m for m in recommendations["motherboards"] 
+                                              if m.get("form_factor") and 
+                                              normalize_form_factor(m.get("form_factor", "")) in form_factor_compatibility.get(case_form_factor, [])), None)
+                            
+                            if suitable_mb:
+                                # Check CPU compatibility with this new motherboard before replacing
+                                new_mb_socket = suitable_mb.get("socket", "").lower().replace('socket ', '').replace('-', '').strip()
+                                cpu_socket = selected_cpu.socket.lower().replace('socket ', '').replace('-', '').strip() if selected_cpu else ""
+                                
+                                if new_mb_socket in cpu_socket or cpu_socket in new_mb_socket:
+                                    result["components"]["motherboard_id"] = suitable_mb["id"]
+                                    print(f"DEBUG - Replaced motherboard with compatible option: {suitable_mb['name']} for {selected_case.name}")
+                                    explanation_updates.append(f"Motherboard changed to {suitable_mb['name']} to fit in the {selected_case.name} case.")
+                                else:
+                                    print("WARNING - Found compatible motherboard for case but it's incompatible with CPU")
+                            else:
+                                print("ERROR - Could not find compatible motherboard/case combination")
+            
             # Create the optimized build with both IDs and full component objects
             optimized_build = OptimizedBuildOut(
                 id=1,
