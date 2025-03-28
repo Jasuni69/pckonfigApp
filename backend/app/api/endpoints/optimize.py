@@ -714,43 +714,56 @@ async def optimize_build(
         # Extract explanation if available
         explanation = result.get("explanation", "No explanation provided")
         
-        # Fix the socket compatibility check correctly
-        try:
-            cpu_id = result_components.get("cpu_id")
-            mb_id = result_components.get("motherboard_id")
+        # Add this function inside the optimize_build function, right before creating the optimized_build object
+        def ensure_compatible_cpu_motherboard(components, explanation):
+            """Ensure CPU and motherboard are compatible, fixing if needed"""
+            if not components.get("cpu_id") or not components.get("motherboard_id"):
+                return components, explanation
             
-            if cpu_id and mb_id:
-                cpu = db.query(CPU).filter(CPU.id == cpu_id).first()
-                mb = db.query(Motherboard).filter(Motherboard.id == mb_id).first()
-                
-                if cpu and mb:
-                    # Normalize socket names for comparison
-                    def normalize_socket(socket_str):
-                        if not socket_str:
-                            return ""
-                        socket_str = socket_str.lower().replace('socket ', '').strip()
-                        # Add more normalization rules if needed
-                        return socket_str
+            # Fetch both components
+            cpu = db.query(CPU).filter(CPU.id == components["cpu_id"]).first()
+            mb = db.query(Motherboard).filter(Motherboard.id == components["motherboard_id"]).first()
+            
+            if not cpu or not mb or not cpu.socket or not mb.socket:
+                return components, explanation
+            
+            # Normalize sockets for comparison
+            cpu_socket = cpu.socket.lower().replace('socket ', '').strip()
+            mb_socket = mb.socket.lower().replace('socket ', '').strip()
+            
+            # Check if compatible
+            if cpu_socket == mb_socket or cpu_socket in mb_socket or mb_socket in cpu_socket:
+                logger.info(f"CPU {cpu.name} is compatible with motherboard {mb.name}")
+                return components, explanation
+            
+            logger.warning(f"Incompatible components: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket})")
+            
+            # Try to find a better motherboard for this CPU from our recommendations
+            found_compatible_mb = False
+            for mb_rec in recommendations.get("motherboards", []):
+                rec_mb_socket = mb_rec.get("socket", "").lower().replace('socket ', '').strip()
+                if cpu_socket == rec_mb_socket or cpu_socket in rec_mb_socket or rec_mb_socket in cpu_socket:
+                    components["motherboard_id"] = mb_rec["id"]
+                    logger.info(f"Found compatible motherboard: {mb_rec['name']} for CPU {cpu.name}")
+                    explanation += f" NOTE: Updated motherboard to {mb_rec['name']} for compatibility with {cpu.name}."
+                    found_compatible_mb = True
+                    break
+            
+            # If no compatible motherboard found, try a compatible CPU instead
+            if not found_compatible_mb:
+                for cpu_rec in recommendations.get("cpus", []):
+                    rec_cpu_socket = cpu_rec.get("socket", "").lower().replace('socket ', '').strip()
+                    if rec_cpu_socket == mb_socket or rec_cpu_socket in mb_socket or mb_socket in rec_cpu_socket:
+                        components["cpu_id"] = cpu_rec["id"]
+                        logger.info(f"Found compatible CPU: {cpu_rec['name']} for motherboard {mb.name}")
+                        explanation += f" NOTE: Updated CPU to {cpu_rec['name']} for compatibility with {mb.name}."
+                        break
+            
+            return components, explanation
 
-                    cpu_socket = normalize_socket(cpu.socket)
-                    mb_socket = normalize_socket(mb.socket)
+        # Then before creating the optimized_build, add:
+        result_components, explanation = ensure_compatible_cpu_motherboard(result_components, explanation)
 
-                    # Direct comparison for exact match
-                    if cpu_socket != mb_socket:
-                        print(f"Socket incompatibility detected: CPU {cpu.name} ({cpu_socket}) and MB {mb.name} ({mb_socket})")
-                        
-                        # Simple fallback: revert to existing motherboard if it was compatible
-                        if request.motherboard_id and request.cpu_id == cpu_id:
-                            result_components["motherboard_id"] = request.motherboard_id
-                            print(f"Using original motherboard for compatibility")
-                        # Or just keep the original CPU
-                        else:
-                            result_components["cpu_id"] = request.cpu_id
-                            print(f"Using original CPU for compatibility")
-        except Exception as e:
-            print(f"Error in compatibility check: {str(e)}")
-            # In case of error, don't modify components
-        
         # Fetch components using final IDs
         cpu = get_component_by_id(CPU, result_components["cpu_id"], db)
         if not cpu and result_components["cpu_id"]:
