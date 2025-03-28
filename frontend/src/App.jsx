@@ -10,6 +10,7 @@ import CreateAccount from "./pages/CreateAccount";
 import Login from "./pages/Login";
 import { AuthProvider } from "./context/AuthContext";
 import SavedBuilds from "./pages/SavedBuilds";
+import BuildGallery from "./pages/BuildGallery";
 const App = () => {
   return (
     <AuthProvider>
@@ -23,6 +24,7 @@ const App = () => {
           <Route path="/createaccount" element={<CreateAccount />} />
           <Route path="/login" element={<Login />} />
           <Route path="/savedbuilds" element={<SavedBuilds />} />
+          <Route path="/buildgallery" element={<BuildGallery />} />
         </Routes>
         <Footer />
       </Router>

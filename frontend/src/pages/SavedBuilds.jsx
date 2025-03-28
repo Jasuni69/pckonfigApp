@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { X } from "lucide-react";
+import { API_URL } from '../config';
 
 const BuildCard = ({ build, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -156,7 +157,7 @@ const SavedBuilds = () => {
       console.log('Fetching builds...'); // Debug log
       console.log('Token:', localStorage.getItem('token')); // Check if token exists
 
-      const response = await fetch('http://16.16.99.193/api/builds', {
+      const response = await fetch(`${API_URL}/api/builds`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -185,7 +186,7 @@ const SavedBuilds = () => {
     if (!window.confirm('Är du säker på att du vill ta bort detta build?')) return;
 
     try {
-      const response = await fetch(`http://16.16.99.193/api/builds/${buildId}`, {
+      const response = await fetch(`${API_URL}/api/builds/${buildId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

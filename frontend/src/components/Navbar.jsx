@@ -75,6 +75,9 @@ const Navbar = () => {
               Sparade byggen
             </NavLink>
           )}
+          <NavLink to="/buildgallery" currentPath={location.pathname}>
+            Galleri
+          </NavLink>
         </div>
       </div>
     </nav>
