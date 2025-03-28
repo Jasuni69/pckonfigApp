@@ -575,30 +575,22 @@ async def optimize_build(
         
         # Then update the prompt and API call
         messages = [
-            {"role": "system", "content": """You are a PC building expert tasked with optimizing components for different purposes.
+            {"role": "system", "content": f"""You are a PC building expert who provides cost-effective recommendations.
 
-FOR 4K GAMING, THESE REQUIREMENTS ARE MANDATORY:
-- GPU: MUST have 12GB+ VRAM
-- RAM: MUST have 16GB+ capacity (32GB recommended)
-- PSU: MUST be 750W+ for high-end GPUs
-- CPU: MUST have 8+ cores for optimal performance
+PURPOSE-SPECIFIC GUIDELINES:
+- 4K Gaming: High-end GPU (12GB+ VRAM), 8+ core CPU, 32GB RAM, 750W+ PSU
+- Basic Use: Balanced components, avoid high-end parts, 4-6 core CPU, 8-16GB RAM, mid-range GPU
+- Video Editing: Prioritize CPU and RAM, SSD storage
+- Programming: Focus on RAM and CPU, moderate GPU needs
+- AI/ML: NVIDIA GPU with 8GB+ VRAM, 32GB+ RAM
 
 CRITICAL COMPATIBILITY REQUIREMENTS:
 - CPU and motherboard MUST have matching socket types
-- Case must be able to fit the motherboard form factor
+- Case must fit the motherboard form factor
 
-RESPONSE FORMAT:
-You MUST respond with a JSON object containing:
-{
-  "cpu": {"id": number},
-  "gpu": {"id": number},
-  "motherboard": {"id": number},
-  "ram": {"id": number},
-  "psu": {"id": number},
-  "explanation": "Your detailed explanation here"
-}
+The current purpose is: {purpose}
 
-Only recommend changes when necessary. If a component meets requirements, keep it.
+Your response must be in JSON format with component IDs and explanation.
 """},
             
             {"role": "user", "content": f"""
@@ -613,11 +605,15 @@ Only recommend changes when necessary. If a component meets requirements, keep i
             RAM: {json.dumps(ram_components, indent=2)}
             PSUs: {json.dumps(psu_components, indent=2)}
             
-            Given the current purpose of {purpose}, recommend necessary upgrades.
+            For {purpose}, recommend appropriate, cost-effective components.
+            Do NOT recommend unnecessarily powerful parts that would be wasted.
             
-            YOU MUST INCLUDE THE ID OF EACH RECOMMENDED COMPONENT in your response.
+            For Basic Use:
+            - Suggest balanced components (4-6 core CPU, 8-16GB RAM)
+            - Avoid high-end GPUs (4-6GB VRAM is sufficient)
+            - Focus on reliability over extreme performance
             
-            For 4K gaming:
+            For 4K Gaming:
             - Ensure GPU has at least 12GB VRAM
             - Ensure RAM is at least 16GB (32GB recommended)
             - Ensure PSU is at least 750W
@@ -1038,3 +1034,138 @@ Only recommend changes when necessary. If a component meets requirements, keep i
             status_code=500, 
             detail=error_msg
         )
+
+# Add purpose-specific validation logic that's different for each use case
+
+def validate_components_for_purpose(purpose, components, recommendations):
+    """Validate and adjust components based on the specific purpose"""
+    purpose = purpose.lower()
+    changes_made = []
+    
+    # First, ensure CPU and motherboard compatibility regardless of purpose
+    cpu_id = components.get("cpu_id")
+    mb_id = components.get("motherboard_id")
+    
+    if cpu_id and mb_id:
+        cpu = db.query(CPU).filter(CPU.id == cpu_id).first()
+        mb = db.query(Motherboard).filter(Motherboard.id == mb_id).first()
+        
+        if cpu and mb and cpu.socket and mb.socket:
+            cpu_socket = cpu.socket.lower().replace('socket ', '').replace('-', '').strip()
+            mb_socket = mb.socket.lower().replace('socket ', '').replace('-', '').strip()
+            
+            if not (cpu_socket in mb_socket or mb_socket in cpu_socket):
+                print(f"CPU-Motherboard compatibility issue: CPU {cpu.name} ({cpu_socket}) with Motherboard {mb.name} ({mb_socket})")
+                
+                # Find compatible motherboard for this CPU
+                compatible_mb = next((m for m in recommendations["motherboards"] 
+                                    if m.get("socket") and (cpu_socket in m["socket"].lower() or 
+                                                          m["socket"].lower().replace('socket ', '').strip() in cpu_socket)), 
+                                   None)
+                
+                if compatible_mb:
+                    components["motherboard_id"] = compatible_mb["id"]
+                    print(f"Replaced motherboard with compatible option: {compatible_mb['name']}")
+                    changes_made.append(f"Motherboard changed to {compatible_mb['name']} for compatibility with {cpu.name}")
+                else:
+                    # Find compatible CPU for this motherboard
+                    compatible_cpu = next((c for c in recommendations["cpus"] 
+                                         if c.get("socket") and (mb_socket in c["socket"].lower() or 
+                                                               c["socket"].lower().replace('socket ', '').strip() in mb_socket)),
+                                        None)
+                    
+                    if compatible_cpu:
+                        components["cpu_id"] = compatible_cpu["id"]
+                        print(f"Replaced CPU with compatible option: {compatible_cpu['name']}")
+                        changes_made.append(f"CPU changed to {compatible_cpu['name']} for compatibility with {mb.name}")
+    
+    # Purpose-specific validations
+    if "4k" in purpose and "gaming" in purpose:
+        # 4K Gaming requirements
+        # ... Keep your existing 4K gaming validation code ...
+        
+    elif "basic" in purpose or "användning" in purpose:
+        print("\n=== VALIDATING FOR BASIC USE ===")
+        
+        # For basic use, we want balanced, cost-effective components
+        # Avoid extremely high-end parts that would be wasted
+        
+        # 1. Check if CPU is unnecessarily powerful
+        if cpu_id:
+            cpu = db.query(CPU).filter(CPU.id == cpu_id).first()
+            if cpu:
+                core_count = int(cpu.cores) if cpu.cores else 0
+                
+                # For basic use, more than 6-8 cores is overkill
+                if core_count > 8:
+                    print(f"CPU is overpowered for basic use: {cpu.name} with {core_count} cores")
+                    
+                    # Find a more appropriate CPU
+                    appropriate_cpus = [(c["id"], c["name"], c["cores"]) for c in recommendations["cpus"] 
+                                       if c.get("cores") and 4 <= int(c["cores"]) <= 8]
+                    
+                    if appropriate_cpus:
+                        best_cpu_id, best_cpu_name, best_cpu_cores = appropriate_cpus[0]
+                        components["cpu_id"] = best_cpu_id
+                        print(f"Replaced CPU with more appropriate option: {best_cpu_name} ({best_cpu_cores} cores)")
+                        changes_made.append(f"CPU downgraded to {best_cpu_name} which is more suitable for basic use")
+        
+        # 2. Check if GPU is unnecessarily powerful
+        if components.get("gpu_id"):
+            gpu = db.query(GPU).filter(GPU.id == components["gpu_id"]).first()
+            if gpu:
+                # Extract VRAM from memory string
+                vram = 0
+                if gpu.memory:
+                    try:
+                        vram_str = gpu.memory.lower().replace('gb', '').strip()
+                        vram = float(vram_str)
+                    except:
+                        pass
+                
+                # For basic use, more than 6-8GB VRAM is usually overkill
+                if vram > 8:
+                    print(f"GPU is overpowered for basic use: {gpu.name} with {vram}GB VRAM")
+                    
+                    # Find a more appropriate GPU
+                    appropriate_gpus = [(g["id"], g["name"], g["memory"]) for g in recommendations["gpus"] 
+                                       if g.get("memory") and "gb" in g["memory"].lower() and 
+                                       float(g["memory"].lower().replace('gb', '').strip()) <= 8]
+                    
+                    if appropriate_gpus:
+                        best_gpu_id, best_gpu_name, best_gpu_memory = appropriate_gpus[0]
+                        components["gpu_id"] = best_gpu_id
+                        print(f"Replaced GPU with more appropriate option: {best_gpu_name} ({best_gpu_memory})")
+                        changes_made.append(f"GPU downgraded to {best_gpu_name} which is more suitable for basic use")
+        
+        # 3. Check if RAM is unnecessarily high capacity
+        if components.get("ram_id"):
+            ram = db.query(RAM).filter(RAM.id == components["ram_id"]).first()
+            if ram and ram.capacity:
+                ram_capacity = float(ram.capacity) if ram.capacity else 0
+                
+                # For basic use, 8-16GB RAM is typically sufficient
+                if ram_capacity > 16:
+                    print(f"RAM is overpowered for basic use: {ram.name} with {ram_capacity}GB")
+                    
+                    # Find more appropriate RAM
+                    appropriate_ram = [(r["id"], r["name"], r["capacity"]) for r in recommendations["ram"] 
+                                      if r.get("capacity") and 8 <= float(r["capacity"]) <= 16]
+                    
+                    if appropriate_ram:
+                        best_ram_id, best_ram_name, best_ram_capacity = appropriate_ram[0]
+                        components["ram_id"] = best_ram_id
+                        print(f"Replaced RAM with more appropriate option: {best_ram_name} ({best_ram_capacity}GB)")
+                        changes_made.append(f"RAM adjusted to {best_ram_name} with {best_ram_capacity}GB which is sufficient for basic use")
+    
+    # Add similar validation for other use cases (video editing, rendering, etc.)
+    
+    return changes_made
+
+# Add this to your main code after parsing the OpenAI response
+# Apply purpose-specific validation and adjustments
+purpose_changes = validate_components_for_purpose(purpose, result["components"], recommendations)
+if purpose_changes:
+    if not result.get("explanation"):
+        result["explanation"] = ""
+    result["explanation"] += " ADJUSTED COMPONENTS: " + " ".join(purpose_changes)
