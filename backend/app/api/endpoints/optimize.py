@@ -5,13 +5,14 @@ from core.deps import get_current_user
 from schemas import OptimizationRequest, OptimizedBuildOut
 from models import CPU, GPU, RAM, PSU, Case, Storage, Cooler, Motherboard
 from ChromaDB.manager import search_components
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional, Tuple
 import logging
 import json
 import openai
 from datetime import datetime
 import traceback
 import sys
+import re
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ async def optimize_build(
 ):
     try:
         print("\n==== OPTIMIZE BUILD START ====\n")
-        print(f"Received optimization request for purpose: {request.purpose}")
+        logger.info("Received optimization request for purpose: %s", request.purpose)
         
         # Get current timestamp for created_at and updated_at fields
         current_time = datetime.utcnow()
@@ -129,13 +130,13 @@ async def optimize_build(
                     "price": cooler.price
                 }
 
-        print(f"Current components: {json.dumps(current_components, indent=2)}")
+        logger.debug("Current components: %s", json.dumps(current_components, indent=2))
         
         # Define the purpose for component search
         purpose = request.purpose or "general use"
         
         # Function to extract and format component data from ChromaDB results
-        def extract_components_from_results(results, component_type, limit=3):
+        def extract_components_from_results(results: Dict[str, Any], component_type: str, limit: int = 3) -> List[Dict[str, Any]]:
             components = []
             try:
                 print(f"\n--- Extracting {component_type} from ChromaDB results ---")
@@ -285,7 +286,7 @@ async def optimize_build(
                 query = db.query(model)
                 
                 if existing_ids:
-                    query = query.filter(model.id.not_in(existing_ids))
+                    query = query.filter(~model.id.in_(existing_ids))
                 
                 db_components = query.order_by(model.price.desc()).limit(needed).all()
                 
@@ -471,23 +472,25 @@ async def optimize_build(
             return [comp for score, comp in scored_components[:limit]]
         
         # First, add this validation function near the top of the file
+        def extract_gb(memory_str):
+            """Extract gigabyte value from memory strings like '12GB', '8 GB', etc."""
+            if not memory_str or not isinstance(memory_str, str):
+                return None
+            
+            match = re.search(r"(\d+(?:\.\d+)?)\s*gb", memory_str.lower())
+            if match:
+                return float(match.group(1))
+            return None
+
         def validate_gpu_for_4k(gpu):
-            print("DEBUG - Validating GPU for 4K:", gpu)  # Debug print
+            """Check if GPU has sufficient VRAM for 4K gaming"""
+            logger.debug("Validating GPU for 4K: %s", gpu)
             if not gpu:
                 return False
             
-            memory = gpu.get('memory', '')
-            if not memory:
-                return False
-            
-            try:
-                # Extract number from string like "8 GB"
-                memory_value = float(memory.split()[0])
-                print(f"DEBUG - GPU Memory: {memory_value}GB")  # Debug print
-                return memory_value >= 12
-            except (ValueError, AttributeError) as e:
-                print(f"DEBUG - Error parsing GPU memory: {e}")  # Debug print
-                return False
+            memory_value = extract_gb(gpu.get('memory', ''))
+            logger.debug("Extracted GPU Memory: %s GB", memory_value)
+            return memory_value is not None and memory_value >= 12
         
         # Prepare component recommendations using ChromaDB
         recommendations = {}
@@ -573,599 +576,259 @@ async def optimize_build(
         
         print(f"\nRecommendations count: CPU={len(recommendations['cpus'])}, GPU={len(recommendations['gpus'])}, MB={len(recommendations['motherboards'])}, RAM={len(recommendations['ram'])}, PSU={len(recommendations['psus'])}, Case={len(recommendations['cases'])}, Storage={len(recommendations['storage'])}, Cooler={len(recommendations['coolers'])}")
         
-        # Then update the prompt and API call
-        messages = [
-            {"role": "system", "content": f"""You are a PC building expert who provides cost-effective recommendations.
+        # Create simplified component dictionaries
+        def simplify_component_data(component_dict):
+            """Remove unnecessary fields to reduce token usage"""
+            essential_fields = ["id", "name", "price"]  # Always include price
+            
+            # Add other key fields based on component type
+            if "socket" in component_dict:
+                essential_fields.append("socket")
+            if "cores" in component_dict:
+                essential_fields.append("cores")
+            if "memory" in component_dict:
+                essential_fields.append("memory")
+            if "wattage" in component_dict:
+                essential_fields.append("wattage")
+            if "form_factor" in component_dict:
+                essential_fields.append("form_factor")
+            if "capacity" in component_dict:
+                essential_fields.append("capacity")
+            
+            return {k: v for k, v in component_dict.items() if k in essential_fields}
 
-PURPOSE-SPECIFIC GUIDELINES:
-- 4K Gaming: High-end GPU (12GB+ VRAM), 8+ core CPU, 32GB RAM, 750W+ PSU
-- Basic Use: Balanced components, avoid high-end parts, 4-6 core CPU, 8-16GB RAM, mid-range GPU
-- Video Editing: Prioritize CPU and RAM, SSD storage
-- Programming: Focus on RAM and CPU, moderate GPU needs
-- AI/ML: NVIDIA GPU with 8GB+ VRAM, 32GB+ RAM
+        # Then simplify before sending to OpenAI
+        simplified_current = {k: simplify_component_data(v) for k, v in current_components.items()}
+        simplified_recommendations = {}
+        for component_type, components_list in recommendations.items():
+            simplified_recommendations[component_type] = [simplify_component_data(c) for c in components_list[:2]]  # Only include top 2
 
-CRITICAL COMPATIBILITY REQUIREMENTS:
-- CPU and motherboard MUST have matching socket types
-- Case must fit the motherboard form factor
+        # Update your prompt to use these simplified versions
+        prompt = f"""
+        Analyze this PC build for {purpose}:
 
-The current purpose is: {purpose}
+        Current components:
+        ```json
+        {json.dumps(simplified_current)}
+        ```
 
-Your response must be in JSON format with component IDs and explanation.
-"""},
-            
-            {"role": "user", "content": f"""
-            CURRENT BUILD:
-            Purpose: {purpose}
-            Components: {json.dumps(current_components, indent=2)}
-            
-            AVAILABLE UPGRADE OPTIONS:
-            CPUs: {json.dumps(cpu_components, indent=2)}
-            GPUs: {json.dumps(gpu_components, indent=2)}
-            Motherboards: {json.dumps(mb_components, indent=2)}
-            RAM: {json.dumps(ram_components, indent=2)}
-            PSUs: {json.dumps(psu_components, indent=2)}
-            
-            For {purpose}, recommend appropriate, cost-effective components.
-            Do NOT recommend unnecessarily powerful parts that would be wasted.
-            
-            For Basic Use:
-            - Suggest balanced components (4-6 core CPU, 8-16GB RAM)
-            - Avoid high-end GPUs (4-6GB VRAM is sufficient)
-            - Focus on reliability over extreme performance
-            
-            For 4K Gaming:
-            - Ensure GPU has at least 12GB VRAM
-            - Ensure RAM is at least 16GB (32GB recommended)
-            - Ensure PSU is at least 750W
-            - Ensure CPU has at least 8 cores
-            
-            Always maintain compatibility between components.
-            """}
-        ]
-        
-        print(f"\nSending prompt to OpenAI")
-        
+        Recommended components:
+        ```json
+        {json.dumps(simplified_recommendations)}
+        ```
+
+        Requirements by purpose:
+        - 4K Gaming: High-end GPU (12GB+ VRAM), 850W+ PSU, 32GB RAM
+        - Gaming: Mid/high GPU, 750W+ PSU, 16GB+ RAM
+        - Workstation: Strong CPU, 32GB+ RAM, Large SSD
+        - General Use: Balanced components, 650W+ PSU
+
+        Format:
+        {{
+          "explanation": "Brief explanation of needed changes",
+          "components": {{
+            "cpu_id": 1,
+            "gpu_id": 2,
+            "motherboard_id": 3,
+            "ram_id": 4,
+            "psu_id": 5,
+            "case_id": 6,
+            "storage_id": 7,
+            "cooler_id": 8
+          }}
+        }}
+        """
+
+        # Before sending to OpenAI
+        logger.debug("Sending prompt to OpenAI:\n%s", prompt)
+
         response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            response_format={"type": "json_object"},
-            temperature=0.3
+            model="gpt-4",
+            messages=[
+                {
+                    "role": "system", 
+                    "content": "You are a PC expert. Recommend components based on the user's specific purpose. Ensure power supply and cooling match component requirements. JSON response only."
+                },
+                {
+                    "role": "user", 
+                    "content": prompt + "\n\nRespond with JSON only."
+                }
+            ],
+            temperature=0.7,
+            max_tokens=800
         )
         
         print(f"\nOpenAI response: {response.choices[0].message.content}")
         
-        # Parse the response
+        # More defensive response handling
+        choices = getattr(response, "choices", [])
+        if not choices:
+            raise ValueError("No choices in OpenAI response")
+        
+        if not hasattr(choices[0], "message") or not hasattr(choices[0].message, "content"):
+            raise ValueError("Invalid response structure from OpenAI")
+        
+        response_data = choices[0].message.content
+        
+        # Continue with validation and parsing
+        if not response_data.strip().startswith('{'):
+            logger.error("Invalid JSON response: %s...", response_data[:100])
+            raise ValueError("Invalid JSON response from OpenAI")
+        
+        result = json.loads(response_data)
+        print("DEBUG - OpenAI response parsed successfully")
+        
+        # Initialize components to preserve current components
+        components_dict = {}
+        
+        # Try to extract components from various possible formats
+        if isinstance(result, dict):
+            # Format 1: {cpu_id: 123, gpu_id: 456, ...}
+            for key in ["cpu_id", "gpu_id", "motherboard_id", "ram_id", "psu_id", "case_id", "storage_id", "cooler_id"]:
+                if key in result:
+                    components_dict[key] = result[key]
+            
+            # Format 2: {cpu: {id: 123}, gpu: {id: 456}, ...}
+            for key in ["cpu", "gpu", "motherboard", "ram", "psu", "case", "storage", "cooler"]:
+                if key in result and isinstance(result[key], dict) and "id" in result[key]:
+                    components_dict[f"{key}_id"] = result[key]["id"]
+            
+            # Format 3: {components: {cpu_id: 123, gpu_id: 456, ...}}
+            if "components" in result and isinstance(result["components"], dict):
+                for key, value in result["components"].items():
+                    if key in ["cpu_id", "gpu_id", "motherboard_id", "ram_id", "psu_id", "case_id", "storage_id", "cooler_id"]:
+                        components_dict[key] = value
+        
+        # Final fallback - use current components if we couldn't extract anything
+        result_components = {
+            "cpu_id": components_dict.get("cpu_id", request.cpu_id),
+            "gpu_id": components_dict.get("gpu_id", request.gpu_id),
+            "motherboard_id": components_dict.get("motherboard_id", request.motherboard_id),
+            "ram_id": components_dict.get("ram_id", request.ram_id),
+            "psu_id": components_dict.get("psu_id", request.psu_id),
+            "case_id": components_dict.get("case_id", request.case_id),
+            "storage_id": components_dict.get("storage_id", request.storage_id),
+            "cooler_id": components_dict.get("cooler_id", request.cooler_id)
+        }
+        
+        # Extract explanation if available
+        explanation = result.get("explanation", "No explanation provided")
+        
+        # Fix the socket compatibility check correctly
         try:
-            response_data = response.choices[0].message.content
-            result = json.loads(response_data)
-            print("DEBUG - Initial OpenAI response:", result)
+            cpu_id = result_components.get("cpu_id")
+            mb_id = result_components.get("motherboard_id")
             
-            # Initialize the components object if not present
-            if "components" not in result:
-                result["components"] = {}
-            
-            # Extract component IDs from nested structure if needed
-            for component_type in ['cpu', 'gpu', 'motherboard', 'ram', 'psu', 'case', 'cooler', 'storage']:
-                component_key = f"{component_type}_id"
+            if cpu_id and mb_id:
+                cpu = db.query(CPU).filter(CPU.id == cpu_id).first()
+                mb = db.query(Motherboard).filter(Motherboard.id == mb_id).first()
                 
-                # Handle different possible response formats
-                if component_type in result:
-                    # Format: {"cpu": {"id": 123, ...}}
-                    if isinstance(result[component_type], dict) and "id" in result[component_type]:
-                        result["components"][component_key] = result[component_type]["id"]
-                        print(f"Found {component_type} ID in nested object: {result['components'][component_key]}")
-                        
-                # Also check if the ID is directly in the components object
-                if component_key not in result["components"] and f"{component_type}_id" in result:
-                    result["components"][component_key] = result[f"{component_type}_id"]
-                    print(f"Found {component_type}_id at root level: {result['components'][component_key]}")
-            
-            # Set defaults for any missing components
-            for key, default_id in {
-                "cpu_id": request.cpu_id,
-                "gpu_id": request.gpu_id,
-                "motherboard_id": request.motherboard_id,
-                "ram_id": request.ram_id,
-                "psu_id": request.psu_id,
-                "case_id": request.case_id,
-                "storage_id": request.storage_id,
-                "cooler_id": request.cooler_id
-            }.items():
-                if key not in result["components"] or result["components"][key] is None:
-                    result["components"][key] = default_id
-                    print(f"Using default ID for {key}: {default_id}")
-            
-            # Check CPU and motherboard socket compatibility - this should be executed first
-            def check_socket_compatibility():
-                print("\n=== CHECKING CPU AND MOTHERBOARD COMPATIBILITY ===")
-                components_changed = []
-                
-                # Get current CPU and motherboard
-                selected_cpu_id = result["components"].get("cpu_id")
-                selected_mb_id = result["components"].get("motherboard_id")
-                
-                if selected_cpu_id and selected_mb_id:
-                    selected_cpu = db.query(CPU).filter(CPU.id == selected_cpu_id).first()
-                    selected_mb = db.query(Motherboard).filter(Motherboard.id == selected_mb_id).first()
-                    
-                    if selected_cpu and selected_mb and selected_cpu.socket and selected_mb.socket:
-                        # Normalize socket strings for comparison
-                        cpu_socket = selected_cpu.socket.lower().replace('socket ', '').replace('-', '').strip()
-                        mb_socket = selected_mb.socket.lower().replace('socket ', '').replace('-', '').strip()
-                        
-                        socket_compatible = cpu_socket in mb_socket or mb_socket in cpu_socket
-                        print(f"CPU: {selected_cpu.name} with socket {cpu_socket}")
-                        print(f"Motherboard: {selected_mb.name} with socket {mb_socket}")
-                        print(f"Socket compatibility: {socket_compatible}")
-                        
-                        if not socket_compatible:
-                            print("Socket incompatibility detected! Finding compatible components...")
-                            
-                            # Look for a motherboard compatible with the CPU
-                            compatible_motherboards = []
-                            for mb in recommendations["motherboards"]:
-                                if mb.get("socket"):
-                                    mb_socket_norm = mb["socket"].lower().replace('socket ', '').replace('-', '').strip()
-                                    if cpu_socket in mb_socket_norm or mb_socket_norm in cpu_socket:
-                                        compatible_motherboards.append(mb)
-                            
-                            if compatible_motherboards:
-                                # Choose the first compatible motherboard
-                                new_mb = compatible_motherboards[0]
-                                result["components"]["motherboard_id"] = new_mb["id"]
-                                print(f"Selected compatible motherboard: {new_mb['name']} with socket {new_mb['socket']}")
-                                components_changed.append(f"Motherboard changed to {new_mb['name']} for compatibility with {selected_cpu.name} CPU")
-                            else:
-                                # No compatible motherboard found, try to find a CPU compatible with the motherboard
-                                compatible_cpus = []
-                                for cpu in recommendations["cpus"]:
-                                    if cpu.get("socket"):
-                                        cpu_socket_norm = cpu["socket"].lower().replace('socket ', '').replace('-', '').strip()
-                                        if mb_socket in cpu_socket_norm or cpu_socket_norm in mb_socket:
-                                            compatible_cpus.append(cpu)
-                                
-                                if compatible_cpus:
-                                    # Choose the first compatible CPU
-                                    new_cpu = compatible_cpus[0]
-                                    result["components"]["cpu_id"] = new_cpu["id"]
-                                    print(f"Selected compatible CPU: {new_cpu['name']} with socket {new_cpu['socket']}")
-                                    components_changed.append(f"CPU changed to {new_cpu['name']} for compatibility with {selected_mb.name} motherboard")
-                                else:
-                                    # If both approaches fail, pick new compatible pairs from recommendations
-                                    if recommendations["cpus"] and recommendations["motherboards"]:
-                                        new_cpu = recommendations["cpus"][0]
-                                        
-                                        # Find a motherboard compatible with the new CPU
-                                        new_cpu_socket = new_cpu.get("socket", "").lower().replace('socket ', '').replace('-', '').strip()
-                                        matching_mb = None
-                                        
-                                        for mb in recommendations["motherboards"]:
-                                            mb_socket_norm = mb.get("socket", "").lower().replace('socket ', '').replace('-', '').strip()
-                                            if new_cpu_socket in mb_socket_norm or mb_socket_norm in new_cpu_socket:
-                                                matching_mb = mb
-                                                break
-                                        
-                                        if matching_mb:
-                                            result["components"]["cpu_id"] = new_cpu["id"]
-                                            result["components"]["motherboard_id"] = matching_mb["id"]
-                                            print(f"Selected new compatible pair: CPU={new_cpu['name']}, MB={matching_mb['name']}")
-                                            components_changed.append(f"CPU changed to {new_cpu['name']} and motherboard to {matching_mb['name']} for compatibility")
-                                        else:
-                                            print("ERROR: Could not find compatible CPU and motherboard pair!")
-            
-            # After socket compatibility check, add this improved form factor check
-            def check_form_factor_compatibility():
-                print("\n=== CHECKING MOTHERBOARD AND CASE COMPATIBILITY ===")
-                components_changed = []
-                
-                selected_mb_id = result["components"].get("motherboard_id")
-                selected_case_id = result["components"].get("case_id")
-                
-                if selected_mb_id and selected_case_id:
-                    selected_mb = db.query(Motherboard).filter(Motherboard.id == selected_mb_id).first()
-                    selected_case = db.query(Case).filter(Case.id == selected_case_id).first()
-                    
-                    if selected_mb and selected_case and selected_mb.form_factor and selected_case.form_factor:
-                        # Normalize form factors
-                        mb_form_factor = selected_mb.form_factor.lower().strip()
-                        case_form_factor = selected_case.form_factor.lower().strip()
-                        
-                        # Standard form factors
-                        if "micro" in mb_form_factor:
-                            mb_form_factor = "micro-atx"
-                        elif "mini" in mb_form_factor:
-                            mb_form_factor = "mini-itx"
-                        elif "extend" in mb_form_factor or "e-atx" in mb_form_factor or "eatx" in mb_form_factor:
-                            mb_form_factor = "e-atx"
-                        elif "atx" in mb_form_factor:
-                            mb_form_factor = "atx"
-                            
-                        if "micro" in case_form_factor:
-                            case_form_factor = "micro-atx"
-                        elif "mini" in case_form_factor:
-                            case_form_factor = "mini-itx"
-                        elif "extend" in case_form_factor or "e-atx" in case_form_factor or "eatx" in case_form_factor:
-                            case_form_factor = "e-atx"
-                        elif "atx" in case_form_factor:
-                            case_form_factor = "atx"
-                        
-                        print(f"Motherboard: {selected_mb.name} with form factor {mb_form_factor}")
-                        print(f"Case: {selected_case.name} with form factor {case_form_factor}")
-                        
-                        # Check if case can fit motherboard
-                        form_factor_compatible = False
-                        
-                        # Compatibility table: case can fit these motherboard form factors
-                        compat_map = {
-                            "e-atx": ["e-atx", "atx", "micro-atx", "mini-itx"],
-                            "atx": ["atx", "micro-atx", "mini-itx"],
-                            "micro-atx": ["micro-atx", "mini-itx"],
-                            "mini-itx": ["mini-itx"]
-                        }
-                        
-                        if case_form_factor in compat_map:
-                            form_factor_compatible = mb_form_factor in compat_map[case_form_factor]
-                        
-                        print(f"Form factor compatibility: {form_factor_compatible}")
-                        
-                        if not form_factor_compatible:
-                            print("Form factor incompatibility detected! Finding compatible components...")
-                            
-                            # Try to find a case that fits the motherboard
-                            for case in recommendations["cases"]:
-                                if case.get("form_factor"):
-                                    case_ff = case["form_factor"].lower().strip()
-                                    if "micro" in case_ff:
-                                        case_ff = "micro-atx"
-                                    elif "mini" in case_ff:
-                                        case_ff = "mini-itx"
-                                    elif "extend" in case_ff or "e-atx" in case_ff or "eatx" in case_ff:
-                                        case_ff = "e-atx"
-                                    elif "atx" in case_ff:
-                                        case_ff = "atx"
-                                    
-                                    if case_ff in compat_map and mb_form_factor in compat_map[case_ff]:
-                                        result["components"]["case_id"] = case["id"]
-                                        print(f"Selected compatible case: {case['name']} with form factor {case['form_factor']}")
-                                        components_changed.append(f"Case changed to {case['name']} to accommodate {selected_mb.name} motherboard")
-                                        return components_changed
-                            
-                            # If no suitable case found, try to find a compatible motherboard for the case
-                            for mb in recommendations["motherboards"]:
-                                if mb.get("form_factor"):
-                                    mb_ff = mb["form_factor"].lower().strip()
-                                    if "micro" in mb_ff:
-                                        mb_ff = "micro-atx"
-                                    elif "mini" in mb_ff:
-                                        mb_ff = "mini-itx"
-                                    elif "extend" in mb_ff or "e-atx" in mb_ff or "eatx" in mb_ff:
-                                        mb_ff = "e-atx"
-                                    elif "atx" in mb_ff:
-                                        mb_ff = "atx"
-                                    
-                                    if case_form_factor in compat_map and mb_ff in compat_map[case_form_factor]:
-                                        # Check if this motherboard is also compatible with the selected CPU
-                                        cpu_socket_compatible = False
-                                        selected_cpu_id = result["components"].get("cpu_id")
-                                        if selected_cpu_id:
-                                            selected_cpu = db.query(CPU).filter(CPU.id == selected_cpu_id).first()
-                                            if selected_cpu and selected_cpu.socket and mb.get("socket"):
-                                                cpu_socket = selected_cpu.socket.lower().replace('socket ', '').strip()
-                                                mb_socket = mb["socket"].lower().replace('socket ', '').strip()
-                                                cpu_socket_compatible = cpu_socket in mb_socket or mb_socket in cpu_socket
-                                        
-                                        if cpu_socket_compatible:
-                                            result["components"]["motherboard_id"] = mb["id"]
-                                            print(f"Selected compatible motherboard: {mb['name']} with form factor {mb['form_factor']}")
-                                            components_changed.append(f"Motherboard changed to {mb['name']} to fit in {selected_case.name} case")
-            
-            # Add mandatory validation for 4K gaming requirements
-            if purpose.lower() == "4k gaming" or "4k" in purpose.lower() and "gaming" in purpose.lower():
-                print("\n=== ENFORCING 4K GAMING REQUIREMENTS ===")
-                changes_made = []
-                
-                # 1. Ensure GPU has 12GB+ VRAM
-                gpu_id = result["components"].get("gpu_id")
-                if gpu_id:
-                    gpu = db.query(GPU).filter(GPU.id == gpu_id).first()
-                    gpu_suitable = False
-                    if gpu and gpu.memory:
-                        try:
-                            # Extract numeric value from memory string
-                            memory_str = gpu.memory.lower().replace('gb', '').strip()
-                            memory_value = float(memory_str)
-                            gpu_suitable = memory_value >= 12
-                            print(f"GPU VRAM check: {gpu.name}, {memory_value}GB, suitable: {gpu_suitable}")
-                        except Exception as e:
-                            print(f"Error parsing GPU memory: {e}")
-                    
-                    if not gpu_suitable:
-                        high_vram_gpus = [(g["id"], g["name"], g["memory"]) for g in recommendations["gpus"] 
-                                         if g.get("memory") and "12" in str(g["memory"]) or "16" in str(g["memory"])]
-                        
-                        if high_vram_gpus:
-                            best_gpu_id, best_gpu_name, best_gpu_memory = high_vram_gpus[0]
-                            result["components"]["gpu_id"] = best_gpu_id
-                            print(f"Replaced GPU with 4K-suitable option: {best_gpu_name} ({best_gpu_memory})")
-                            changes_made.append(f"GPU upgraded to {best_gpu_name} with {best_gpu_memory} for 4K gaming")
-                
-                # 2. Ensure RAM has sufficient capacity (16GB+)
-                ram_id = result["components"].get("ram_id")
-                if ram_id:
-                    ram = db.query(RAM).filter(RAM.id == ram_id).first()
-                    ram_suitable = False
-                    if ram and ram.capacity:
-                        try:
-                            ram_capacity = float(ram.capacity)
-                            ram_suitable = ram_capacity >= 16
-                            print(f"RAM capacity check: {ram.name}, {ram_capacity}GB, suitable: {ram_suitable}")
-                        except Exception as e:
-                            print(f"Error parsing RAM capacity: {e}")
-                    
-                    if not ram_suitable:
-                        high_capacity_ram = [(r["id"], r["name"], r["capacity"]) for r in recommendations["ram"] 
-                                            if r.get("capacity") and float(r.get("capacity", 0)) >= 16]
-                        
-                        if high_capacity_ram:
-                            best_ram_id, best_ram_name, best_ram_capacity = high_capacity_ram[0]
-                            result["components"]["ram_id"] = best_ram_id
-                            print(f"Replaced RAM with 4K-suitable option: {best_ram_name} ({best_ram_capacity}GB)")
-                            changes_made.append(f"RAM upgraded to {best_ram_name} with {best_ram_capacity}GB for 4K gaming")
-                
-                # 3. Ensure PSU has sufficient wattage (750W+)
-                psu_id = result["components"].get("psu_id")
-                if psu_id:
-                    psu = db.query(PSU).filter(PSU.id == psu_id).first()
-                    psu_suitable = False
-                    if psu and psu.wattage:
-                        try:
-                            psu_wattage = int(psu.wattage)
-                            psu_suitable = psu_wattage >= 750
-                            print(f"PSU wattage check: {psu.name}, {psu_wattage}W, suitable: {psu_suitable}")
-                        except Exception as e:
-                            print(f"Error parsing PSU wattage: {e}")
-                    
-                    if not psu_suitable:
-                        high_wattage_psu = [(p["id"], p["name"], p["wattage"]) for p in recommendations["psus"] 
-                                           if p.get("wattage") and int(p.get("wattage", 0)) >= 750]
-                        
-                        if high_wattage_psu:
-                            best_psu_id, best_psu_name, best_psu_wattage = high_wattage_psu[0]
-                            result["components"]["psu_id"] = best_psu_id
-                            print(f"Replaced PSU with 4K-suitable option: {best_psu_name} ({best_psu_wattage}W)")
-                            changes_made.append(f"PSU upgraded to {best_psu_name} with {best_psu_wattage}W for 4K gaming")
-                
-                # 4. Run compatibility check between CPU and motherboard after enforced changes
-                check_socket_compatibility()
-                
-                # Update the explanation with enforced changes
-                if changes_made:
-                    if not result.get("explanation"):
-                        result["explanation"] = ""
-                    result["explanation"] += " ENFORCED CHANGES: " + " ".join(changes_made)
-            
-            # Fetch component objects using final IDs
-            cpu = db.query(CPU).filter(CPU.id == result["components"]["cpu_id"]).first() if result["components"]["cpu_id"] else None
-            gpu = db.query(GPU).filter(GPU.id == result["components"]["gpu_id"]).first() if result["components"]["gpu_id"] else None
-            motherboard = db.query(Motherboard).filter(Motherboard.id == result["components"]["motherboard_id"]).first() if result["components"]["motherboard_id"] else None
-            ram = db.query(RAM).filter(RAM.id == result["components"]["ram_id"]).first() if result["components"]["ram_id"] else None
-            psu = db.query(PSU).filter(PSU.id == result["components"]["psu_id"]).first() if result["components"]["psu_id"] else None
-            case = db.query(Case).filter(Case.id == result["components"]["case_id"]).first() if result["components"]["case_id"] else None
-            storage = db.query(Storage).filter(Storage.id == result["components"]["storage_id"]).first() if result["components"]["storage_id"] else None
-            cooler = db.query(Cooler).filter(Cooler.id == result["components"]["cooler_id"]).first() if result["components"]["cooler_id"] else None
+                if cpu and mb:
+                    # Normalize socket names for comparison
+                    def normalize_socket(socket_str):
+                        if not socket_str:
+                            return ""
+                        socket_str = socket_str.lower().replace('socket ', '').strip()
+                        # Add more normalization rules if needed
+                        return socket_str
 
-            print(f"\nFetched component objects:")
-            print(f"CPU: {cpu}")
-            print(f"GPU: {gpu}")
-            print(f"Motherboard: {motherboard}")
-            print(f"RAM: {ram}")
-            print(f"PSU: {psu}")
-            print(f"Case: {case}")
-            print(f"Storage: {storage}")
-            print(f"Cooler: {cooler}")
+                    cpu_socket = normalize_socket(cpu.socket)
+                    mb_socket = normalize_socket(mb.socket)
 
-            # Add this just after fetching component objects
-            print(f"\nComponent IDs:")
-            print(f"CPU ID: {result['components'].get('cpu_id', request.cpu_id)}")
-            print(f"GPU ID: {result['components'].get('gpu_id', request.gpu_id)}")
-            print(f"Motherboard ID: {result['components'].get('motherboard_id', request.motherboard_id)}")
-            print(f"RAM ID: {result['components'].get('ram_id', request.ram_id)}")
-            print(f"PSU ID: {result['components'].get('psu_id', request.psu_id)}")
-            print(f"Case ID: {result['components'].get('case_id', request.case_id)}")
-            print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
-            print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
-            
-            # Create the optimized build with both IDs and full component objects
-            optimized_build = OptimizedBuildOut(
-                id=1,
-                name="Optimized Build",
-                purpose=purpose,
-                user_id=current_user.id,
-                cpu_id=result["components"].get("cpu_id", request.cpu_id),
-                gpu_id=result["components"].get("gpu_id", request.gpu_id),
-                motherboard_id=result["components"].get("motherboard_id", request.motherboard_id),
-                ram_id=result["components"].get("ram_id", request.ram_id),
-                psu_id=result["components"].get("psu_id", request.psu_id),
-                case_id=result["components"].get("case_id", request.case_id),
-                storage_id=result["components"].get("storage_id", request.storage_id),
-                cooler_id=result["components"].get("cooler_id", request.cooler_id),
-                cpu=cpu,
-                gpu=gpu,
-                motherboard=motherboard,
-                ram=ram,
-                psu=psu,
-                case=case,
-                storage=storage,
-                cooler=cooler,
-                explanation=result.get("explanation", "No explanation provided"),
-                similarity_score=0.95,
-                created_at=current_time,
-                updated_at=current_time
-            )
-            
-            try:
-                # For Pydantic v2
-                if hasattr(optimized_build, "model_dump"):
-                    result_dict = optimized_build.model_dump()
-                    print(f"Serialized result (model_dump): {json.dumps(result_dict, default=str)}")
-                # For Pydantic v1
-                elif hasattr(optimized_build, "dict"):
-                    result_dict = optimized_build.dict()
-                    print(f"Serialized result (dict): {json.dumps(result_dict, default=str)}")
-                else:
-                    print("Unable to serialize optimized_build - no model_dump or dict method found")
-            except Exception as e:
-                print(f"Error serializing optimized_build: {str(e)}")
-            print(traceback.format_exc())
+                    # Direct comparison for exact match
+                    if cpu_socket != mb_socket:
+                        print(f"Socket incompatibility detected: CPU {cpu.name} ({cpu_socket}) and MB {mb.name} ({mb_socket})")
+                        
+                        # Simple fallback: revert to existing motherboard if it was compatible
+                        if request.motherboard_id and request.cpu_id == cpu_id:
+                            result_components["motherboard_id"] = request.motherboard_id
+                            print(f"Using original motherboard for compatibility")
+                        # Or just keep the original CPU
+                        else:
+                            result_components["cpu_id"] = request.cpu_id
+                            print(f"Using original CPU for compatibility")
+        except Exception as e:
+            print(f"Error in compatibility check: {str(e)}")
+            # In case of error, don't modify components
+        
+        # Fetch components using final IDs
+        cpu = get_component_by_id(CPU, result_components["cpu_id"], db)
+        if not cpu and result_components["cpu_id"]:
+            logger.warning("CPU with ID %s not found in database", result_components["cpu_id"])
 
-            print("\n==== OPTIMIZE BUILD COMPLETE ====\n")
-            return optimized_build
-            
-        except (json.JSONDecodeError, KeyError, ValueError) as e:
-            print(f"DEBUG - Error in optimization: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Error in optimize_build: {str(e)}")
+        gpu = get_component_by_id(GPU, result_components["gpu_id"], db)
+        if not gpu and result_components["gpu_id"]:
+            logger.warning("GPU with ID %s not found in database", result_components["gpu_id"])
 
-    except Exception as e:
-        error_msg = f"Error in optimize_build: {str(e)}"
-        print(f"\n==== ERROR IN OPTIMIZE BUILD ====\n")
-        print(error_msg)
-        print(traceback.format_exc())
-        raise HTTPException(
-            status_code=500, 
-            detail=error_msg
+        motherboard = get_component_by_id(Motherboard, result_components["motherboard_id"], db)
+        ram = get_component_by_id(RAM, result_components["ram_id"], db)
+        psu = get_component_by_id(PSU, result_components["psu_id"], db)
+        case = get_component_by_id(Case, result_components["case_id"], db)
+        storage = get_component_by_id(Storage, result_components["storage_id"], db)
+        cooler = get_component_by_id(Cooler, result_components["cooler_id"], db)
+
+        # Create the optimized build 
+        optimized_build = OptimizedBuildOut(
+            name="Optimized Build",
+            purpose=purpose,
+            user_id=current_user.id,
+            cpu_id=result_components["cpu_id"],
+            gpu_id=result_components["gpu_id"],
+            motherboard_id=result_components["motherboard_id"],
+            ram_id=result_components["ram_id"],
+            psu_id=result_components["psu_id"],
+            case_id=result_components["case_id"],
+            storage_id=result_components["storage_id"],
+            cooler_id=result_components["cooler_id"],
+            cpu=cpu,
+            gpu=gpu,
+            motherboard=motherboard,
+            ram=ram,
+            psu=psu,
+            case=case,
+            storage=storage,
+            cooler=cooler,
+            explanation=explanation,
+            similarity_score=0.95,
+            created_at=current_time,
+            updated_at=current_time
         )
 
-# Add purpose-specific validation logic that's different for each use case
+        print("\n==== OPTIMIZE BUILD COMPLETE ====\n")
+        return optimized_build
+        
+    except (json.JSONDecodeError, KeyError, ValueError) as e:
+        print(f"ERROR parsing OpenAI response: {str(e)}")
+        # Return a basic response with original components to avoid breaking the UI
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Error processing optimization response: {str(e)}"
+        )
 
-def validate_components_for_purpose(purpose, components, recommendations):
-    """Validate and adjust components based on the specific purpose"""
-    purpose = purpose.lower()
-    changes_made = []
+def extract_component_id(result, component_key):
+    """Extract component ID from various response formats"""
+    # Format 1: {cpu_id: 123, ...}
+    component_id_key = f"{component_key}_id"
+    if component_id_key in result:
+        return result[component_id_key]
     
-    # First, ensure CPU and motherboard compatibility regardless of purpose
-    cpu_id = components.get("cpu_id")
-    mb_id = components.get("motherboard_id")
+    # Format 2: {cpu: {id: 123}, ...}
+    if component_key in result and isinstance(result[component_key], dict) and "id" in result[component_key]:
+        return result[component_key]["id"]
     
-    if cpu_id and mb_id:
-        cpu = db.query(CPU).filter(CPU.id == cpu_id).first()
-        mb = db.query(Motherboard).filter(Motherboard.id == mb_id).first()
-        
-        if cpu and mb and cpu.socket and mb.socket:
-            cpu_socket = cpu.socket.lower().replace('socket ', '').replace('-', '').strip()
-            mb_socket = mb.socket.lower().replace('socket ', '').replace('-', '').strip()
-            
-            if not (cpu_socket in mb_socket or mb_socket in cpu_socket):
-                print(f"CPU-Motherboard compatibility issue: CPU {cpu.name} ({cpu_socket}) with Motherboard {mb.name} ({mb_socket})")
-                
-                # Find compatible motherboard for this CPU
-                compatible_mb = next((m for m in recommendations["motherboards"] 
-                                    if m.get("socket") and (cpu_socket in m["socket"].lower() or 
-                                                          m["socket"].lower().replace('socket ', '').strip() in cpu_socket)), 
-                                   None)
-                
-                if compatible_mb:
-                    components["motherboard_id"] = compatible_mb["id"]
-                    print(f"Replaced motherboard with compatible option: {compatible_mb['name']}")
-                    changes_made.append(f"Motherboard changed to {compatible_mb['name']} for compatibility with {cpu.name}")
-                else:
-                    # Find compatible CPU for this motherboard
-                    compatible_cpu = next((c for c in recommendations["cpus"] 
-                                         if c.get("socket") and (mb_socket in c["socket"].lower() or 
-                                                               c["socket"].lower().replace('socket ', '').strip() in mb_socket)),
-                                        None)
-                    
-                    if compatible_cpu:
-                        components["cpu_id"] = compatible_cpu["id"]
-                        print(f"Replaced CPU with compatible option: {compatible_cpu['name']}")
-                        changes_made.append(f"CPU changed to {compatible_cpu['name']} for compatibility with {mb.name}")
+    # Format 3: {components: {cpu_id: 123, ...}}
+    if "components" in result and isinstance(result["components"], dict):
+        if component_id_key in result["components"]:
+            return result["components"][component_id_key]
     
-    # Purpose-specific validations
-    if "4k" in purpose and "gaming" in purpose:
-        # 4K Gaming requirements
-        # ... Keep your existing 4K gaming validation code ...
-        
-    elif "basic" in purpose or "användning" in purpose:
-        print("\n=== VALIDATING FOR BASIC USE ===")
-        
-        # For basic use, we want balanced, cost-effective components
-        # Avoid extremely high-end parts that would be wasted
-        
-        # 1. Check if CPU is unnecessarily powerful
-        if cpu_id:
-            cpu = db.query(CPU).filter(CPU.id == cpu_id).first()
-            if cpu:
-                core_count = int(cpu.cores) if cpu.cores else 0
-                
-                # For basic use, more than 6-8 cores is overkill
-                if core_count > 8:
-                    print(f"CPU is overpowered for basic use: {cpu.name} with {core_count} cores")
-                    
-                    # Find a more appropriate CPU
-                    appropriate_cpus = [(c["id"], c["name"], c["cores"]) for c in recommendations["cpus"] 
-                                       if c.get("cores") and 4 <= int(c["cores"]) <= 8]
-                    
-                    if appropriate_cpus:
-                        best_cpu_id, best_cpu_name, best_cpu_cores = appropriate_cpus[0]
-                        components["cpu_id"] = best_cpu_id
-                        print(f"Replaced CPU with more appropriate option: {best_cpu_name} ({best_cpu_cores} cores)")
-                        changes_made.append(f"CPU downgraded to {best_cpu_name} which is more suitable for basic use")
-        
-        # 2. Check if GPU is unnecessarily powerful
-        if components.get("gpu_id"):
-            gpu = db.query(GPU).filter(GPU.id == components["gpu_id"]).first()
-            if gpu:
-                # Extract VRAM from memory string
-                vram = 0
-                if gpu.memory:
-                    try:
-                        vram_str = gpu.memory.lower().replace('gb', '').strip()
-                        vram = float(vram_str)
-                    except:
-                        pass
-                
-                # For basic use, more than 6-8GB VRAM is usually overkill
-                if vram > 8:
-                    print(f"GPU is overpowered for basic use: {gpu.name} with {vram}GB VRAM")
-                    
-                    # Find a more appropriate GPU
-                    appropriate_gpus = [(g["id"], g["name"], g["memory"]) for g in recommendations["gpus"] 
-                                       if g.get("memory") and "gb" in g["memory"].lower() and 
-                                       float(g["memory"].lower().replace('gb', '').strip()) <= 8]
-                    
-                    if appropriate_gpus:
-                        best_gpu_id, best_gpu_name, best_gpu_memory = appropriate_gpus[0]
-                        components["gpu_id"] = best_gpu_id
-                        print(f"Replaced GPU with more appropriate option: {best_gpu_name} ({best_gpu_memory})")
-                        changes_made.append(f"GPU downgraded to {best_gpu_name} which is more suitable for basic use")
-        
-        # 3. Check if RAM is unnecessarily high capacity
-        if components.get("ram_id"):
-            ram = db.query(RAM).filter(RAM.id == components["ram_id"]).first()
-            if ram and ram.capacity:
-                ram_capacity = float(ram.capacity) if ram.capacity else 0
-                
-                # For basic use, 8-16GB RAM is typically sufficient
-                if ram_capacity > 16:
-                    print(f"RAM is overpowered for basic use: {ram.name} with {ram_capacity}GB")
-                    
-                    # Find more appropriate RAM
-                    appropriate_ram = [(r["id"], r["name"], r["capacity"]) for r in recommendations["ram"] 
-                                      if r.get("capacity") and 8 <= float(r["capacity"]) <= 16]
-                    
-                    if appropriate_ram:
-                        best_ram_id, best_ram_name, best_ram_capacity = appropriate_ram[0]
-                        components["ram_id"] = best_ram_id
-                        print(f"Replaced RAM with more appropriate option: {best_ram_name} ({best_ram_capacity}GB)")
-                        changes_made.append(f"RAM adjusted to {best_ram_name} with {best_ram_capacity}GB which is sufficient for basic use")
-    
-    # Add similar validation for other use cases (video editing, rendering, etc.)
-    
-    return changes_made
+    return None
 
-# Add this to your main code after parsing the OpenAI response
-# Apply purpose-specific validation and adjustments
-purpose_changes = validate_components_for_purpose(purpose, result["components"], recommendations)
-if purpose_changes:
-    if not result.get("explanation"):
-        result["explanation"] = ""
-    result["explanation"] += " ADJUSTED COMPONENTS: " + " ".join(purpose_changes)
+def get_component_by_id(model, component_id, db, cache=None):
+    """Fetch component by ID with caching"""
+    if cache is None:
+        cache = {}
+        
+    cache_key = f"{model.__name__}_{component_id}"
+    if cache_key not in cache and component_id:
+        cache[cache_key] = db.query(model).filter(model.id == component_id).first()
+    return cache.get(cache_key)
