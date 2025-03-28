@@ -575,46 +575,55 @@ async def optimize_build(
         
         # Then update the prompt and API call
         messages = [
-            {"role": "system", "content": """You are a PC building expert who ensures compatibility while optimizing components.
+            {"role": "system", "content": """You are a PC building expert tasked with optimizing components for different purposes.
+
+FOR 4K GAMING, THESE REQUIREMENTS ARE MANDATORY:
+- GPU: MUST have 12GB+ VRAM
+- RAM: MUST have 16GB+ capacity (32GB recommended)
+- PSU: MUST be 750W+ for high-end GPUs
+- CPU: MUST have 8+ cores for optimal performance
 
 CRITICAL COMPATIBILITY REQUIREMENTS:
-1. CPU and motherboard MUST have the SAME SOCKET type (AM4, LGA1700, etc.)
-2. Case must be able to fit the motherboard form factor
-   - ATX cases fit: ATX, Micro-ATX, Mini-ITX motherboards
-   - Micro-ATX cases fit: Micro-ATX, Mini-ITX motherboards
-   - Mini-ITX cases fit: Only Mini-ITX motherboards
-
-PURPOSE-SPECIFIC REQUIREMENTS FOR 4K GAMING:
-- GPU: 12GB+ VRAM required
-- CPU: 8+ cores recommended
-- RAM: 32GB recommended
-- PSU: 750W+ recommended
-- Storage: Fast SSD required
+- CPU and motherboard MUST have matching socket types
+- Case must be able to fit the motherboard form factor
 
 RESPONSE FORMAT:
-JSON with 'components' object containing component IDs and an 'explanation' field
+You MUST respond with a JSON object containing:
+{
+  "cpu": {"id": number},
+  "gpu": {"id": number},
+  "motherboard": {"id": number},
+  "ram": {"id": number},
+  "psu": {"id": number},
+  "explanation": "Your detailed explanation here"
+}
+
+Only recommend changes when necessary. If a component meets requirements, keep it.
 """},
             
             {"role": "user", "content": f"""
             CURRENT BUILD:
             Purpose: {purpose}
-            CPU: {json.dumps(current_components.get('cpu', {}), indent=2)}
-            Motherboard: {json.dumps(current_components.get('motherboard', {}), indent=2)}
-            GPU: {json.dumps(current_components.get('gpu', {}), indent=2)}
+            Components: {json.dumps(current_components, indent=2)}
             
-            UPGRADE OPTIONS:
+            AVAILABLE UPGRADE OPTIONS:
             CPUs: {json.dumps(cpu_components, indent=2)}
-            Motherboards: {json.dumps(mb_components, indent=2)}
             GPUs: {json.dumps(gpu_components, indent=2)}
+            Motherboards: {json.dumps(mb_components, indent=2)}
+            RAM: {json.dumps(ram_components, indent=2)}
+            PSUs: {json.dumps(psu_components, indent=2)}
             
-            OTHER COMPONENTS AND OPTIONS: (truncated for brevity)
+            Given the current purpose of {purpose}, recommend necessary upgrades.
             
-            COMPATIBILITY REQUIREMENTS:
-            1. If you upgrade the CPU, you MUST select a motherboard with a matching socket
-            2. If you keep the current motherboard, any new CPU MUST have a compatible socket
-            3. The motherboard form factor must be compatible with the case
+            YOU MUST INCLUDE THE ID OF EACH RECOMMENDED COMPONENT in your response.
             
-            PROVIDE YOUR RECOMMENDATIONS AS A JSON OBJECT with component IDs and explanation.
+            For 4K gaming:
+            - Ensure GPU has at least 12GB VRAM
+            - Ensure RAM is at least 16GB (32GB recommended)
+            - Ensure PSU is at least 750W
+            - Ensure CPU has at least 8 cores
+            
+            Always maintain compatibility between components.
             """}
         ]
         
@@ -633,11 +642,27 @@ JSON with 'components' object containing component IDs and an 'explanation' fiel
         try:
             response_data = response.choices[0].message.content
             result = json.loads(response_data)
-            print("DEBUG - Initial OpenAI response:", result)  # Debug print
+            print("DEBUG - Initial OpenAI response:", result)
             
-            # Initialize components to preserve current components
+            # Initialize the components object if not present
             if "components" not in result:
                 result["components"] = {}
+            
+            # Extract component IDs from nested structure if needed
+            for component_type in ['cpu', 'gpu', 'motherboard', 'ram', 'psu', 'case', 'cooler', 'storage']:
+                component_key = f"{component_type}_id"
+                
+                # Handle different possible response formats
+                if component_type in result:
+                    # Format: {"cpu": {"id": 123, ...}}
+                    if isinstance(result[component_type], dict) and "id" in result[component_type]:
+                        result["components"][component_key] = result[component_type]["id"]
+                        print(f"Found {component_type} ID in nested object: {result['components'][component_key]}")
+                        
+                # Also check if the ID is directly in the components object
+                if component_key not in result["components"] and f"{component_type}_id" in result:
+                    result["components"][component_key] = result[f"{component_type}_id"]
+                    print(f"Found {component_type}_id at root level: {result['components'][component_key]}")
             
             # Set defaults for any missing components
             for key, default_id in {
@@ -652,6 +677,7 @@ JSON with 'components' object containing component IDs and an 'explanation' fiel
             }.items():
                 if key not in result["components"] or result["components"][key] is None:
                     result["components"][key] = default_id
+                    print(f"Using default ID for {key}: {default_id}")
             
             # Check CPU and motherboard socket compatibility - this should be executed first
             def check_socket_compatibility():
@@ -836,25 +862,91 @@ JSON with 'components' object containing component IDs and an 'explanation' fiel
                                             result["components"]["motherboard_id"] = mb["id"]
                                             print(f"Selected compatible motherboard: {mb['name']} with form factor {mb['form_factor']}")
                                             components_changed.append(f"Motherboard changed to {mb['name']} to fit in {selected_case.name} case")
-            # After parsing the OpenAI response, run the compatibility check first
-            explanation_updates = []
-            socket_updates = check_socket_compatibility()
-            if socket_updates:
-                explanation_updates.extend(socket_updates)
-
-            # Then run the other validation checks for 4K gaming
+            
+            # Add mandatory validation for 4K gaming requirements
             if purpose.lower() == "4k gaming" or "4k" in purpose.lower() and "gaming" in purpose.lower():
-                # GPU validation
-                # CPU validation 
-                # RAM validation
-                # PSU validation
-                # Keep your existing validation code for these components
+                print("\n=== ENFORCING 4K GAMING REQUIREMENTS ===")
+                changes_made = []
                 
-                # Update the explanation with all component changes
-                if explanation_updates:
-                    if "explanation" not in result or not result["explanation"]:
-                        result["explanation"] = "Optimized build for 4K gaming with the following updates: "
-                    result["explanation"] += " " + " ".join(explanation_updates)
+                # 1. Ensure GPU has 12GB+ VRAM
+                gpu_id = result["components"].get("gpu_id")
+                if gpu_id:
+                    gpu = db.query(GPU).filter(GPU.id == gpu_id).first()
+                    gpu_suitable = False
+                    if gpu and gpu.memory:
+                        try:
+                            # Extract numeric value from memory string
+                            memory_str = gpu.memory.lower().replace('gb', '').strip()
+                            memory_value = float(memory_str)
+                            gpu_suitable = memory_value >= 12
+                            print(f"GPU VRAM check: {gpu.name}, {memory_value}GB, suitable: {gpu_suitable}")
+                        except Exception as e:
+                            print(f"Error parsing GPU memory: {e}")
+                    
+                    if not gpu_suitable:
+                        high_vram_gpus = [(g["id"], g["name"], g["memory"]) for g in recommendations["gpus"] 
+                                         if g.get("memory") and "12" in str(g["memory"]) or "16" in str(g["memory"])]
+                        
+                        if high_vram_gpus:
+                            best_gpu_id, best_gpu_name, best_gpu_memory = high_vram_gpus[0]
+                            result["components"]["gpu_id"] = best_gpu_id
+                            print(f"Replaced GPU with 4K-suitable option: {best_gpu_name} ({best_gpu_memory})")
+                            changes_made.append(f"GPU upgraded to {best_gpu_name} with {best_gpu_memory} for 4K gaming")
+                
+                # 2. Ensure RAM has sufficient capacity (16GB+)
+                ram_id = result["components"].get("ram_id")
+                if ram_id:
+                    ram = db.query(RAM).filter(RAM.id == ram_id).first()
+                    ram_suitable = False
+                    if ram and ram.capacity:
+                        try:
+                            ram_capacity = float(ram.capacity)
+                            ram_suitable = ram_capacity >= 16
+                            print(f"RAM capacity check: {ram.name}, {ram_capacity}GB, suitable: {ram_suitable}")
+                        except Exception as e:
+                            print(f"Error parsing RAM capacity: {e}")
+                    
+                    if not ram_suitable:
+                        high_capacity_ram = [(r["id"], r["name"], r["capacity"]) for r in recommendations["ram"] 
+                                            if r.get("capacity") and float(r.get("capacity", 0)) >= 16]
+                        
+                        if high_capacity_ram:
+                            best_ram_id, best_ram_name, best_ram_capacity = high_capacity_ram[0]
+                            result["components"]["ram_id"] = best_ram_id
+                            print(f"Replaced RAM with 4K-suitable option: {best_ram_name} ({best_ram_capacity}GB)")
+                            changes_made.append(f"RAM upgraded to {best_ram_name} with {best_ram_capacity}GB for 4K gaming")
+                
+                # 3. Ensure PSU has sufficient wattage (750W+)
+                psu_id = result["components"].get("psu_id")
+                if psu_id:
+                    psu = db.query(PSU).filter(PSU.id == psu_id).first()
+                    psu_suitable = False
+                    if psu and psu.wattage:
+                        try:
+                            psu_wattage = int(psu.wattage)
+                            psu_suitable = psu_wattage >= 750
+                            print(f"PSU wattage check: {psu.name}, {psu_wattage}W, suitable: {psu_suitable}")
+                        except Exception as e:
+                            print(f"Error parsing PSU wattage: {e}")
+                    
+                    if not psu_suitable:
+                        high_wattage_psu = [(p["id"], p["name"], p["wattage"]) for p in recommendations["psus"] 
+                                           if p.get("wattage") and int(p.get("wattage", 0)) >= 750]
+                        
+                        if high_wattage_psu:
+                            best_psu_id, best_psu_name, best_psu_wattage = high_wattage_psu[0]
+                            result["components"]["psu_id"] = best_psu_id
+                            print(f"Replaced PSU with 4K-suitable option: {best_psu_name} ({best_psu_wattage}W)")
+                            changes_made.append(f"PSU upgraded to {best_psu_name} with {best_psu_wattage}W for 4K gaming")
+                
+                # 4. Run compatibility check between CPU and motherboard after enforced changes
+                check_socket_compatibility()
+                
+                # Update the explanation with enforced changes
+                if changes_made:
+                    if not result.get("explanation"):
+                        result["explanation"] = ""
+                    result["explanation"] += " ENFORCED CHANGES: " + " ".join(changes_made)
             
             # Fetch component objects using final IDs
             cpu = db.query(CPU).filter(CPU.id == result["components"]["cpu_id"]).first() if result["components"]["cpu_id"] else None
