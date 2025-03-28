@@ -190,4 +190,35 @@ class OptimizedBuildOut(SavedBuildOut):
     explanation: str  # AI's explanation for the recommendations
     similarity_score: float  # ChromaDB similarity score
 
+    model_config = ConfigDict(from_attributes=True)
+
+class BuildRatingCreate(BaseModel):
+    rating: float  # 0-5 stars
+    comment: Optional[str] = None
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class BuildRatingOut(BaseModel):
+    id: int
+    user_id: int
+    rating: float
+    comment: Optional[str] = None
+    created_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class PublishedBuildOut(BaseModel):
+    id: int
+    build: SavedBuildOut
+    user_id: int
+    avg_rating: float
+    rating_count: int
+    created_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class PublicBuildResponse(BaseModel):
+    builds: list[PublishedBuildOut]
+    total: int
+    
     model_config = ConfigDict(from_attributes=True) 

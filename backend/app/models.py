@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
@@ -154,6 +154,7 @@ class SavedBuild(Base):
     cooler_id = Column(Integer, ForeignKey("cpu_coolers.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    is_published = Column(Boolean, default=False)
     
     # Relationships
     user = relationship("User", back_populates="saved_builds")
@@ -180,3 +181,37 @@ class OptimizationHistory(Base):
     user: Mapped["User"] = relationship(back_populates="optimization_history")
     original_build: Mapped[Optional["SavedBuild"]] = relationship(foreign_keys=[original_build_id])
     optimized_build: Mapped["SavedBuild"] = relationship(foreign_keys=[optimized_build_id])
+
+class PublishedBuild(Base):
+    __tablename__ = "published_builds"
+
+    id = Column(Integer, primary_key=True, index=True)
+    build_id = Column(Integer, ForeignKey("saved_builds.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    avg_rating = Column(Float, default=0)  # Average rating (0-5)
+    rating_count = Column(Integer, default=0)  # Number of ratings
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    build = relationship("SavedBuild")
+    user = relationship("User")
+    ratings = relationship("BuildRating", back_populates="published_build")
+
+class BuildRating(Base):
+    __tablename__ = "build_ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    published_build_id = Column(Integer, ForeignKey("published_builds.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    rating = Column(Float, nullable=False)  # Rating from 0-5
+    comment = Column(String, nullable=True)  # Optional comment with rating
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    published_build = relationship("PublishedBuild", back_populates="ratings")
+    user = relationship("User")
+    
+    # Composite unique constraint to ensure a user can only rate a build once
+    __table_args__ = (
+        UniqueConstraint('published_build_id', 'user_id', name='unique_user_build_rating'),
+    )

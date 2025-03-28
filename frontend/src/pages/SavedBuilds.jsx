@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { X } from "lucide-react";
 import { API_URL } from '../config';
 
-const BuildCard = ({ build, onDelete }) => {
+const BuildCard = ({ build, onDelete, onPublish }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -14,6 +14,11 @@ const BuildCard = ({ build, onDelete }) => {
     <div className="bg-slate-200 rounded-lg p-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-lg font-semibold">{build.name}</h3>
+        {build.isPublished && (
+          <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+            Publicerad
+          </span>
+        )}
       </div>
       
       <div
@@ -117,6 +122,17 @@ const BuildCard = ({ build, onDelete }) => {
 
             {/* Action Buttons */}
             <div className="mt-4 flex justify-end space-x-2">
+              {!build.isPublished && (
+                <button
+                  onClick={() => {
+                    onPublish(build.id);
+                    setIsOpen(false);
+                  }}
+                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                >
+                  Publicera
+                </button>
+              )}
               <button
                 onClick={() => {
                   onDelete(build.id);
@@ -202,6 +218,34 @@ const SavedBuilds = () => {
     }
   };
 
+  const handlePublish = async (buildId) => {
+    if (!window.confirm('Är du säker på att du vill publicera detta build?')) return;
+
+    try {
+      const response = await fetch(`${API_URL}/api/builds/${buildId}/publish`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to publish build');
+      
+      // Update the local state to reflect the published status
+      setBuilds(builds.map(build => 
+        build.id === buildId 
+          ? { ...build, isPublished: true }
+          : build
+      ));
+
+      alert('Bygget har publicerats!');
+    } catch (error) {
+      console.error('Error publishing build:', error);
+      alert('Kunde inte publicera bygget. Försök igen senare.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-400 to-slate-200 pt-28 px-4">
@@ -237,6 +281,7 @@ const SavedBuilds = () => {
                   key={build.id} 
                   build={build} 
                   onDelete={handleDelete}
+                  onPublish={handlePublish}
                 />
               ))
             )}
