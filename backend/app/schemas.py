@@ -154,6 +154,7 @@ class SavedBuildCreate(BaseModel):
     case_id: Optional[int] = None
     storage_id: Optional[int] = None
     cooler_id: Optional[int] = None
+    is_published: Optional[bool] = False
 
 class SavedBuildOut(BaseModel):
     id: int

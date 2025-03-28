@@ -226,7 +226,8 @@ const PcBuilder = () => {
         psu_id: selectedComponents.psu?.id || null,
         case_id: selectedComponents.case?.id || null,
         storage_id: selectedComponents.hdd?.id || null,
-        cooler_id: selectedComponents['cpu-cooler']?.id || null
+        cooler_id: selectedComponents['cpu-cooler']?.id || null,
+        is_published: false
       };
 
       console.log('Saving build data:', buildData);
