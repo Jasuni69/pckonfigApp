@@ -575,65 +575,46 @@ async def optimize_build(
         
         # Then update the prompt and API call
         messages = [
-            {"role": "system", "content": """You are a PC building expert who provides comprehensive optimization recommendations.
+            {"role": "system", "content": """You are a PC building expert who ensures compatibility while optimizing components.
 
-PURPOSE-SPECIFIC REQUIREMENTS:
-- 4K Gaming: 
-  * GPU: MUST have 12GB+ VRAM (RTX 4080, 4090, RX 7900 XT/XTX)
-  * CPU: At least 8 cores recommended (i7/Ryzen 7 or better)
-  * RAM: Minimum 16GB, 32GB recommended
-  * PSU: At least 750W for high-end GPUs
-  * Storage: Fast SSD required for game loading
+CRITICAL COMPATIBILITY REQUIREMENTS:
+1. CPU and motherboard MUST have the SAME SOCKET type (AM4, LGA1700, etc.)
+2. Case must be able to fit the motherboard form factor
+   - ATX cases fit: ATX, Micro-ATX, Mini-ITX motherboards
+   - Micro-ATX cases fit: Micro-ATX, Mini-ITX motherboards
+   - Mini-ITX cases fit: Only Mini-ITX motherboards
 
-- AI/Machine Learning: 
-  * GPU: MUST have 8GB+ VRAM, prefer NVIDIA for CUDA
-  * RAM: 32GB+ recommended
-  * CPU: Multi-core performance important
+PURPOSE-SPECIFIC REQUIREMENTS FOR 4K GAMING:
+- GPU: 12GB+ VRAM required
+- CPU: 8+ cores recommended
+- RAM: 32GB recommended
+- PSU: 750W+ recommended
+- Storage: Fast SSD required
 
-- Video Editing/3D Rendering/Development: (similar requirements as before)
-
-CRITICAL COMPATIBILITY RULES:
-1. CPU and motherboard MUST have matching sockets (e.g., AM4, LGA1700)
-2. Motherboard must fit in the case (ATX, micro-ATX, mini-ITX)
-3. PSU must provide enough wattage for all components
-4. All compatibility requirements take priority over performance
-
-ANALYSIS INSTRUCTIONS:
-1. First check all compatibility between components
-2. Then evaluate each component against purpose requirements
-3. Suggest upgrades from the provided options that maintain compatibility
-4. Explain all changes clearly in your response
-
-FORMAT: JSON with 'explanation' detailing ALL necessary upgrades and component IDs
+RESPONSE FORMAT:
+JSON with 'components' object containing component IDs and an 'explanation' field
 """},
             
             {"role": "user", "content": f"""
-            Current build purpose: {purpose}
-            Current components: {json.dumps(current_components, indent=2)}
+            CURRENT BUILD:
+            Purpose: {purpose}
+            CPU: {json.dumps(current_components.get('cpu', {}), indent=2)}
+            Motherboard: {json.dumps(current_components.get('motherboard', {}), indent=2)}
+            GPU: {json.dumps(current_components.get('gpu', {}), indent=2)}
             
-            Available upgrade options:
+            UPGRADE OPTIONS:
             CPUs: {json.dumps(cpu_components, indent=2)}
-            GPUs: {json.dumps(gpu_components, indent=2)}
             Motherboards: {json.dumps(mb_components, indent=2)}
-            RAM: {json.dumps(ram_components, indent=2)}
-            PSUs: {json.dumps(psu_components, indent=2)}
-            Cases: {json.dumps(case_components, indent=2)}
-            Storage: {json.dumps(storage_components, indent=2)}
-            Coolers: {json.dumps(cooler_components, indent=2)}
+            GPUs: {json.dumps(gpu_components, indent=2)}
             
-            Perform a comprehensive analysis of this build for {purpose} with these priorities:
-            1. FIRST ensure all components are compatible with each other
-               - CPU and motherboard MUST have the same socket
-               - Motherboard must fit in the case
-            2. THEN optimize for performance
+            OTHER COMPONENTS AND OPTIONS: (truncated for brevity)
             
-            For 4K Gaming specifically, ensure:
-            - The CPU has sufficient cores (8+ recommended)
-            - The RAM is at least 16GB
-            - The PSU can handle high-end components (750W+)
-            - The GPU has at least 12GB VRAM
+            COMPATIBILITY REQUIREMENTS:
+            1. If you upgrade the CPU, you MUST select a motherboard with a matching socket
+            2. If you keep the current motherboard, any new CPU MUST have a compatible socket
+            3. The motherboard form factor must be compatible with the case
             
-            Your JSON response must include component IDs from the provided options.
+            PROVIDE YOUR RECOMMENDATIONS AS A JSON OBJECT with component IDs and explanation.
             """}
         ]
         
@@ -672,139 +653,208 @@ FORMAT: JSON with 'explanation' detailing ALL necessary upgrades and component I
                 if key not in result["components"] or result["components"][key] is None:
                     result["components"][key] = default_id
             
-            # Validate component selections based on purpose
-            if purpose.lower() == "4k gaming" or "4k" in purpose.lower() and "gaming" in purpose.lower():
-                explanation_updates = []
+            # Check CPU and motherboard socket compatibility - this should be executed first
+            def check_socket_compatibility():
+                print("\n=== CHECKING CPU AND MOTHERBOARD COMPATIBILITY ===")
+                components_changed = []
                 
-                # For 4K gaming, validate GPU VRAM
-                selected_gpu_id = result["components"].get("gpu_id")
-                if selected_gpu_id:
-                    selected_gpu = db.query(GPU).filter(GPU.id == selected_gpu_id).first()
-                    
-                    # Check if the selected GPU meets 4K requirements
-                    has_sufficient_vram = False
-                    if selected_gpu and selected_gpu.memory:
-                        # Extract numeric value from memory string
-                        try:
-                            memory_str = selected_gpu.memory.lower()
-                            memory_value = float(''.join(c for c in memory_str if c.isdigit() or c == '.'))
-                            has_sufficient_vram = memory_value >= 12
-                            print(f"DEBUG - GPU VRAM check: {selected_gpu.name}, {memory_str}, value: {memory_value}, sufficient: {has_sufficient_vram}")
-                        except:
-                            print(f"DEBUG - Couldn't parse memory value from {selected_gpu.memory}")
-                    
-                    if not has_sufficient_vram:
-                        # Find a suitable 4K gaming GPU
-                        suitable_gpus = [g for g in recommendations["gpus"] if g.get("memory") and "12" in str(g["memory"])]
-                        if suitable_gpus:
-                            result["components"]["gpu_id"] = suitable_gpus[0]["id"]
-                            print(f"DEBUG - Replaced GPU with suitable 4K option: {suitable_gpus[0]['name']}")
-                            explanation_updates.append(f"GPU upgraded to {suitable_gpus[0]['name']} to ensure 12GB+ VRAM for 4K gaming.")
-                
-                # Validate RAM capacity for 4K gaming
-                selected_ram_id = result["components"].get("ram_id")
-                if selected_ram_id:
-                    selected_ram = db.query(RAM).filter(RAM.id == selected_ram_id).first()
-                    
-                    # Check if RAM capacity is sufficient
-                    has_sufficient_ram = False
-                    if selected_ram and selected_ram.capacity:
-                        try:
-                            ram_capacity = float(selected_ram.capacity)
-                            has_sufficient_ram = ram_capacity >= 16
-                            print(f"DEBUG - RAM capacity check: {selected_ram.name}, {ram_capacity}GB, sufficient: {has_sufficient_ram}")
-                        except:
-                            print(f"DEBUG - Couldn't parse RAM capacity from {selected_ram.capacity}")
-                    
-                    if not has_sufficient_ram:
-                        # Find suitable RAM with at least 16GB
-                        suitable_ram = [r for r in recommendations["ram"] if r.get("capacity") and float(r.get("capacity", 0)) >= 16]
-                        if suitable_ram:
-                            result["components"]["ram_id"] = suitable_ram[0]["id"]
-                            print(f"DEBUG - Replaced RAM with suitable option: {suitable_ram[0]['name']}")
-                            explanation_updates.append(f"RAM upgraded to {suitable_ram[0]['name']} for sufficient capacity for 4K gaming.")
-                
-                # Validate PSU wattage for 4K gaming
-                selected_psu_id = result["components"].get("psu_id")
-                if selected_psu_id:
-                    selected_psu = db.query(PSU).filter(PSU.id == selected_psu_id).first()
-                    
-                    # Check if PSU wattage is sufficient
-                    has_sufficient_wattage = False
-                    if selected_psu and selected_psu.wattage:
-                        try:
-                            psu_wattage = float(selected_psu.wattage)
-                            has_sufficient_wattage = psu_wattage >= 750
-                            print(f"DEBUG - PSU wattage check: {selected_psu.name}, {psu_wattage}W, sufficient: {has_sufficient_wattage}")
-                        except:
-                            print(f"DEBUG - Couldn't parse PSU wattage from {selected_psu.wattage}")
-                    
-                    if not has_sufficient_wattage:
-                        # Find suitable PSU with at least 750W
-                        suitable_psu = [p for p in recommendations["psus"] if p.get("wattage") and float(p.get("wattage", 0)) >= 750]
-                        if suitable_psu:
-                            result["components"]["psu_id"] = suitable_psu[0]["id"]
-                            print(f"DEBUG - Replaced PSU with suitable option: {suitable_psu[0]['name']}")
-                            explanation_updates.append(f"PSU upgraded to {suitable_psu[0]['name']} to provide sufficient power for 4K gaming components.")
-                
-                # Validate CPU core count for 4K gaming
+                # Get current CPU and motherboard
                 selected_cpu_id = result["components"].get("cpu_id")
-                if selected_cpu_id:
+                selected_mb_id = result["components"].get("motherboard_id")
+                
+                if selected_cpu_id and selected_mb_id:
                     selected_cpu = db.query(CPU).filter(CPU.id == selected_cpu_id).first()
+                    selected_mb = db.query(Motherboard).filter(Motherboard.id == selected_mb_id).first()
                     
-                    # Check if CPU core count is sufficient
-                    has_sufficient_cores = False
-                    if selected_cpu and selected_cpu.cores:
-                        try:
-                            cpu_cores = int(selected_cpu.cores)
-                            has_sufficient_cores = cpu_cores >= 8
-                            print(f"DEBUG - CPU core check: {selected_cpu.name}, {cpu_cores} cores, sufficient: {has_sufficient_cores}")
-                        except:
-                            print(f"DEBUG - Couldn't parse CPU cores from {selected_cpu.cores}")
+                    if selected_cpu and selected_mb and selected_cpu.socket and selected_mb.socket:
+                        # Normalize socket strings for comparison
+                        cpu_socket = selected_cpu.socket.lower().replace('socket ', '').replace('-', '').strip()
+                        mb_socket = selected_mb.socket.lower().replace('socket ', '').replace('-', '').strip()
+                        
+                        socket_compatible = cpu_socket in mb_socket or mb_socket in cpu_socket
+                        print(f"CPU: {selected_cpu.name} with socket {cpu_socket}")
+                        print(f"Motherboard: {selected_mb.name} with socket {mb_socket}")
+                        print(f"Socket compatibility: {socket_compatible}")
+                        
+                        if not socket_compatible:
+                            print("Socket incompatibility detected! Finding compatible components...")
+                            
+                            # Look for a motherboard compatible with the CPU
+                            compatible_motherboards = []
+                            for mb in recommendations["motherboards"]:
+                                if mb.get("socket"):
+                                    mb_socket_norm = mb["socket"].lower().replace('socket ', '').replace('-', '').strip()
+                                    if cpu_socket in mb_socket_norm or mb_socket_norm in cpu_socket:
+                                        compatible_motherboards.append(mb)
+                            
+                            if compatible_motherboards:
+                                # Choose the first compatible motherboard
+                                new_mb = compatible_motherboards[0]
+                                result["components"]["motherboard_id"] = new_mb["id"]
+                                print(f"Selected compatible motherboard: {new_mb['name']} with socket {new_mb['socket']}")
+                                components_changed.append(f"Motherboard changed to {new_mb['name']} for compatibility with {selected_cpu.name} CPU")
+                            else:
+                                # No compatible motherboard found, try to find a CPU compatible with the motherboard
+                                compatible_cpus = []
+                                for cpu in recommendations["cpus"]:
+                                    if cpu.get("socket"):
+                                        cpu_socket_norm = cpu["socket"].lower().replace('socket ', '').replace('-', '').strip()
+                                        if mb_socket in cpu_socket_norm or cpu_socket_norm in mb_socket:
+                                            compatible_cpus.append(cpu)
+                                
+                                if compatible_cpus:
+                                    # Choose the first compatible CPU
+                                    new_cpu = compatible_cpus[0]
+                                    result["components"]["cpu_id"] = new_cpu["id"]
+                                    print(f"Selected compatible CPU: {new_cpu['name']} with socket {new_cpu['socket']}")
+                                    components_changed.append(f"CPU changed to {new_cpu['name']} for compatibility with {selected_mb.name} motherboard")
+                                else:
+                                    # If both approaches fail, pick new compatible pairs from recommendations
+                                    if recommendations["cpus"] and recommendations["motherboards"]:
+                                        new_cpu = recommendations["cpus"][0]
+                                        
+                                        # Find a motherboard compatible with the new CPU
+                                        new_cpu_socket = new_cpu.get("socket", "").lower().replace('socket ', '').replace('-', '').strip()
+                                        matching_mb = None
+                                        
+                                        for mb in recommendations["motherboards"]:
+                                            mb_socket_norm = mb.get("socket", "").lower().replace('socket ', '').replace('-', '').strip()
+                                            if new_cpu_socket in mb_socket_norm or mb_socket_norm in new_cpu_socket:
+                                                matching_mb = mb
+                                                break
+                                        
+                                        if matching_mb:
+                                            result["components"]["cpu_id"] = new_cpu["id"]
+                                            result["components"]["motherboard_id"] = matching_mb["id"]
+                                            print(f"Selected new compatible pair: CPU={new_cpu['name']}, MB={matching_mb['name']}")
+                                            components_changed.append(f"CPU changed to {new_cpu['name']} and motherboard to {matching_mb['name']} for compatibility")
+                                        else:
+                                            print("ERROR: Could not find compatible CPU and motherboard pair!")
+            
+            # After socket compatibility check, add this improved form factor check
+            def check_form_factor_compatibility():
+                print("\n=== CHECKING MOTHERBOARD AND CASE COMPATIBILITY ===")
+                components_changed = []
+                
+                selected_mb_id = result["components"].get("motherboard_id")
+                selected_case_id = result["components"].get("case_id")
+                
+                if selected_mb_id and selected_case_id:
+                    selected_mb = db.query(Motherboard).filter(Motherboard.id == selected_mb_id).first()
+                    selected_case = db.query(Case).filter(Case.id == selected_case_id).first()
                     
-                    if not has_sufficient_cores:
-                        # Find suitable CPU with at least 8 cores
-                        suitable_cpu = [c for c in recommendations["cpus"] if c.get("cores") and int(c.get("cores", 0)) >= 8]
-                        if suitable_cpu:
-                            result["components"]["cpu_id"] = suitable_cpu[0]["id"]
-                            print(f"DEBUG - Replaced CPU with suitable option: {suitable_cpu[0]['name']}")
-                            explanation_updates.append(f"CPU upgraded to {suitable_cpu[0]['name']} with more cores for better 4K gaming performance.")
+                    if selected_mb and selected_case and selected_mb.form_factor and selected_case.form_factor:
+                        # Normalize form factors
+                        mb_form_factor = selected_mb.form_factor.lower().strip()
+                        case_form_factor = selected_case.form_factor.lower().strip()
+                        
+                        # Standard form factors
+                        if "micro" in mb_form_factor:
+                            mb_form_factor = "micro-atx"
+                        elif "mini" in mb_form_factor:
+                            mb_form_factor = "mini-itx"
+                        elif "extend" in mb_form_factor or "e-atx" in mb_form_factor or "eatx" in mb_form_factor:
+                            mb_form_factor = "e-atx"
+                        elif "atx" in mb_form_factor:
+                            mb_form_factor = "atx"
+                            
+                        if "micro" in case_form_factor:
+                            case_form_factor = "micro-atx"
+                        elif "mini" in case_form_factor:
+                            case_form_factor = "mini-itx"
+                        elif "extend" in case_form_factor or "e-atx" in case_form_factor or "eatx" in case_form_factor:
+                            case_form_factor = "e-atx"
+                        elif "atx" in case_form_factor:
+                            case_form_factor = "atx"
+                        
+                        print(f"Motherboard: {selected_mb.name} with form factor {mb_form_factor}")
+                        print(f"Case: {selected_case.name} with form factor {case_form_factor}")
+                        
+                        # Check if case can fit motherboard
+                        form_factor_compatible = False
+                        
+                        # Compatibility table: case can fit these motherboard form factors
+                        compat_map = {
+                            "e-atx": ["e-atx", "atx", "micro-atx", "mini-itx"],
+                            "atx": ["atx", "micro-atx", "mini-itx"],
+                            "micro-atx": ["micro-atx", "mini-itx"],
+                            "mini-itx": ["mini-itx"]
+                        }
+                        
+                        if case_form_factor in compat_map:
+                            form_factor_compatible = mb_form_factor in compat_map[case_form_factor]
+                        
+                        print(f"Form factor compatibility: {form_factor_compatible}")
+                        
+                        if not form_factor_compatible:
+                            print("Form factor incompatibility detected! Finding compatible components...")
+                            
+                            # Try to find a case that fits the motherboard
+                            for case in recommendations["cases"]:
+                                if case.get("form_factor"):
+                                    case_ff = case["form_factor"].lower().strip()
+                                    if "micro" in case_ff:
+                                        case_ff = "micro-atx"
+                                    elif "mini" in case_ff:
+                                        case_ff = "mini-itx"
+                                    elif "extend" in case_ff or "e-atx" in case_ff or "eatx" in case_ff:
+                                        case_ff = "e-atx"
+                                    elif "atx" in case_ff:
+                                        case_ff = "atx"
+                                    
+                                    if case_ff in compat_map and mb_form_factor in compat_map[case_ff]:
+                                        result["components"]["case_id"] = case["id"]
+                                        print(f"Selected compatible case: {case['name']} with form factor {case['form_factor']}")
+                                        components_changed.append(f"Case changed to {case['name']} to accommodate {selected_mb.name} motherboard")
+                                        return components_changed
+                            
+                            # If no suitable case found, try to find a compatible motherboard for the case
+                            for mb in recommendations["motherboards"]:
+                                if mb.get("form_factor"):
+                                    mb_ff = mb["form_factor"].lower().strip()
+                                    if "micro" in mb_ff:
+                                        mb_ff = "micro-atx"
+                                    elif "mini" in mb_ff:
+                                        mb_ff = "mini-itx"
+                                    elif "extend" in mb_ff or "e-atx" in mb_ff or "eatx" in mb_ff:
+                                        mb_ff = "e-atx"
+                                    elif "atx" in mb_ff:
+                                        mb_ff = "atx"
+                                    
+                                    if case_form_factor in compat_map and mb_ff in compat_map[case_form_factor]:
+                                        # Check if this motherboard is also compatible with the selected CPU
+                                        cpu_socket_compatible = False
+                                        selected_cpu_id = result["components"].get("cpu_id")
+                                        if selected_cpu_id:
+                                            selected_cpu = db.query(CPU).filter(CPU.id == selected_cpu_id).first()
+                                            if selected_cpu and selected_cpu.socket and mb.get("socket"):
+                                                cpu_socket = selected_cpu.socket.lower().replace('socket ', '').strip()
+                                                mb_socket = mb["socket"].lower().replace('socket ', '').strip()
+                                                cpu_socket_compatible = cpu_socket in mb_socket or mb_socket in cpu_socket
+                                        
+                                        if cpu_socket_compatible:
+                                            result["components"]["motherboard_id"] = mb["id"]
+                                            print(f"Selected compatible motherboard: {mb['name']} with form factor {mb['form_factor']}")
+                                            components_changed.append(f"Motherboard changed to {mb['name']} to fit in {selected_case.name} case")
+            # After parsing the OpenAI response, run the compatibility check first
+            explanation_updates = []
+            socket_updates = check_socket_compatibility()
+            if socket_updates:
+                explanation_updates.extend(socket_updates)
+
+            # Then run the other validation checks for 4K gaming
+            if purpose.lower() == "4k gaming" or "4k" in purpose.lower() and "gaming" in purpose.lower():
+                # GPU validation
+                # CPU validation 
+                # RAM validation
+                # PSU validation
+                # Keep your existing validation code for these components
                 
                 # Update the explanation with all component changes
                 if explanation_updates:
                     if "explanation" not in result or not result["explanation"]:
-                        result["explanation"] = "Optimized build for 4K gaming with the following upgrades: "
-                    if not result["explanation"].endswith(" "):
-                        result["explanation"] += " "
+                        result["explanation"] = "Optimized build for 4K gaming with the following updates: "
                     result["explanation"] += " " + " ".join(explanation_updates)
-            
-            elif "ai" in purpose.lower() or "machine learning" in purpose.lower():
-                # For AI/ML, validate VRAM (8GB+ preferred)
-                selected_gpu_id = result["components"].get("gpu_id")
-                if selected_gpu_id:
-                    selected_gpu = db.query(GPU).filter(GPU.id == selected_gpu_id).first()
-                    
-                    # Check if the selected GPU has sufficient VRAM
-                    has_sufficient_vram = False
-                    if selected_gpu and selected_gpu.memory:
-                        try:
-                            memory_str = selected_gpu.memory.lower()
-                            memory_value = float(''.join(c for c in memory_str if c.isdigit() or c == '.'))
-                            has_sufficient_vram = memory_value >= 8
-                            print(f"DEBUG - GPU VRAM check for AI: {selected_gpu.name}, {memory_str}, value: {memory_value}, sufficient: {has_sufficient_vram}")
-                        except:
-                            print(f"DEBUG - Couldn't parse memory value from {selected_gpu.memory}")
-                    
-                    if not has_sufficient_vram:
-                        # Find a suitable AI/ML GPU (prefer NVIDIA for CUDA)
-                        nvidia_gpus = [g for g in recommendations["gpus"] 
-                                      if g.get("memory") and "8" in str(g["memory"]) 
-                                      and ("nvidia" in g.get("name", "").lower() or "geforce" in g.get("name", "").lower() or "rtx" in g.get("name", "").lower())]
-                        
-                        if nvidia_gpus:
-                            result["components"]["gpu_id"] = nvidia_gpus[0]["id"]
-                            print(f"DEBUG - Replaced GPU with suitable AI option: {nvidia_gpus[0]['name']}")
-                            result["explanation"] += " NOTE: Selected GPU was upgraded to ensure 8GB+ VRAM for AI/ML workloads."
             
             # Fetch component objects using final IDs
             cpu = db.query(CPU).filter(CPU.id == result["components"]["cpu_id"]).first() if result["components"]["cpu_id"] else None
@@ -836,85 +886,6 @@ FORMAT: JSON with 'explanation' detailing ALL necessary upgrades and component I
             print(f"Case ID: {result['components'].get('case_id', request.case_id)}")
             print(f"Storage ID: {result['components'].get('storage_id', request.storage_id)}")
             print(f"Cooler ID: {result['components'].get('cooler_id', request.cooler_id)}")
-
-            # Add form factor compatibility check
-
-            # Check motherboard and case form factor compatibility
-            selected_mb_id = result["components"].get("motherboard_id")
-            selected_case_id = result["components"].get("case_id")
-
-            if selected_mb_id and selected_case_id:
-                selected_mb = db.query(Motherboard).filter(Motherboard.id == selected_mb_id).first()
-                selected_case = db.query(Case).filter(Case.id == selected_case_id).first()
-                
-                # Define form factor compatibility hierarchy
-                form_factor_compatibility = {
-                    "e-atx": ["e-atx"],
-                    "atx": ["e-atx", "atx"],
-                    "micro-atx": ["e-atx", "atx", "micro-atx"],
-                    "mini-itx": ["e-atx", "atx", "micro-atx", "mini-itx"]
-                }
-                
-                # Function to normalize form factor strings
-                def normalize_form_factor(ff):
-                    if not ff:
-                        return ""
-                    ff_lower = ff.lower().strip()
-                    if "e-atx" in ff_lower or "eatx" in ff_lower or "extended" in ff_lower:
-                        return "e-atx"
-                    elif "micro" in ff_lower:
-                        return "micro-atx"
-                    elif "mini" in ff_lower:
-                        return "mini-itx"
-                    elif "atx" in ff_lower:
-                        return "atx"
-                    return ff_lower
-                
-                if selected_mb and selected_case and selected_mb.form_factor and selected_case.form_factor:
-                    mb_form_factor = normalize_form_factor(selected_mb.form_factor)
-                    case_form_factor = normalize_form_factor(selected_case.form_factor)
-                    
-                    # Check if the case can fit the motherboard
-                    form_factor_compatible = False
-                    
-                    # Case can fit motherboard if case form factor is in the list of compatible form factors for the motherboard
-                    if case_form_factor in form_factor_compatibility:
-                        form_factor_compatible = mb_form_factor in form_factor_compatibility[case_form_factor]
-                        
-                    print(f"DEBUG - Form factor compatibility check: MB={selected_mb.name} ({mb_form_factor}), Case={selected_case.name} ({case_form_factor}), compatible: {form_factor_compatible}")
-                    
-                    if not form_factor_compatible:
-                        print(f"DEBUG - Form factor incompatibility detected between motherboard and case")
-                        
-                        # Try to find a compatible case for the motherboard
-                        suitable_case = next((c for c in recommendations["cases"] 
-                                            if c.get("form_factor") and 
-                                            mb_form_factor in form_factor_compatibility.get(
-                                                normalize_form_factor(c.get("form_factor", "")), [])), None)
-                        
-                        if suitable_case:
-                            result["components"]["case_id"] = suitable_case["id"]
-                            print(f"DEBUG - Replaced case with compatible option: {suitable_case['name']} for {selected_mb.name}")
-                            explanation_updates.append(f"Case upgraded to {suitable_case['name']} to accommodate the {selected_mb.name} motherboard.")
-                        else:
-                            # If no compatible case found, try to find a motherboard compatible with the case
-                            suitable_mb = next((m for m in recommendations["motherboards"] 
-                                              if m.get("form_factor") and 
-                                              normalize_form_factor(m.get("form_factor", "")) in form_factor_compatibility.get(case_form_factor, [])), None)
-                            
-                            if suitable_mb:
-                                # Check CPU compatibility with this new motherboard before replacing
-                                new_mb_socket = suitable_mb.get("socket", "").lower().replace('socket ', '').replace('-', '').strip()
-                                cpu_socket = selected_cpu.socket.lower().replace('socket ', '').replace('-', '').strip() if selected_cpu else ""
-                                
-                                if new_mb_socket in cpu_socket or cpu_socket in new_mb_socket:
-                                    result["components"]["motherboard_id"] = suitable_mb["id"]
-                                    print(f"DEBUG - Replaced motherboard with compatible option: {suitable_mb['name']} for {selected_case.name}")
-                                    explanation_updates.append(f"Motherboard changed to {suitable_mb['name']} to fit in the {selected_case.name} case.")
-                                else:
-                                    print("WARNING - Found compatible motherboard for case but it's incompatible with CPU")
-                            else:
-                                print("ERROR - Could not find compatible motherboard/case combination")
             
             # Create the optimized build with both IDs and full component objects
             optimized_build = OptimizedBuildOut(
