@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import SaveBuildModal from '../components/SaveBuildModal';
 import { API_URL } from '../config';
+import OptimizationResultsModal from '../components/OptimizationResultsModal';
 
 const normalizeFormFactor = (formFactor) => {
   if (!formFactor) return '';
@@ -50,6 +51,8 @@ const PcBuilder = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showOptimizationModal, setShowOptimizationModal] = useState(false);
+  const [optimizationData, setOptimizationData] = useState(null);
 
   const handleComponentSelect = (component, type) => {
     console.log(`Selected ${type}:`, component);
@@ -387,12 +390,9 @@ const PcBuilder = () => {
       // Update selected components
       setSelectedComponents(updatedComponents);
       
-      // Show the explanation
-      if (data && data.explanation) {
-        alert(`Optimeringsförslag:\n\n${data.explanation}`);
-      } else {
-        alert('Din dator har optimerats!');
-      }
+      // Show the explanation in a modal instead of an alert
+      setOptimizationData(data);
+      setShowOptimizationModal(true);
     } catch (error) {
       console.error('Failed to optimize PC:', error);
       
@@ -542,6 +542,12 @@ const PcBuilder = () => {
         isOpen={showSaveModal}
         onClose={() => setShowSaveModal(false)}
         onSave={handleSave}
+      />
+
+      <OptimizationResultsModal
+        isOpen={showOptimizationModal}
+        onClose={() => setShowOptimizationModal(false)}
+        optimizationResult={optimizationData}
       />
     </div>
   );
