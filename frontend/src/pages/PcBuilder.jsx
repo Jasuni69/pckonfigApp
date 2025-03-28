@@ -200,65 +200,25 @@ const PcBuilder = () => {
     purpose: "Användningsområde",
   };
 
-  const handleAuthenticatedAction = async (action) => {
-    if (!isAuthenticated) {
-      if (window.confirm('Du måste logga in för att använda denna funktion. Vill du logga in nu?')) {
-        navigate('/login');
-      }
-      return;
-    }
-
-    if (action === 'save') {
-      try {
-        setIsSaving(true);
-        
-        // Check if there are any components selected
-        if (Object.keys(selectedComponents).length === 0) {
-          alert('Välj minst en komponent innan du sparar');
-          return;
-        }
-
-        const buildData = {
-          name: "Min PC Build",
-          cpu_id: selectedComponents.cpu?.id || null,
-          gpu_id: selectedComponents.gpu?.id || null,
-          motherboard_id: selectedComponents.motherboard?.id || null,
-          ram_id: selectedComponents.ram?.id || null,
-          psu_id: selectedComponents.psu?.id || null,
-          case_id: selectedComponents.case?.id || null,
-          storage_id: selectedComponents.hdd?.id || null,
-          cooler_id: selectedComponents['cpu-cooler']?.id || null
-        };
-
-        const response = await fetch(`${API_URL}/api/builds`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(buildData)
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to save build');
-        }
-
-        alert('Din dator har sparats!');
-      } catch (error) {
-        console.error('Error saving build:', error);
-        alert('Kunde inte spara datorn. Försök igen senare.');
-      } finally {
-        setIsSaving(false);
-      }
-    }
-  };
-
   const handleSave = async (buildName) => {
     try {
+      // Validate input
+      if (!buildName.trim()) {
+        alert('Du måste ange ett namn för din dator');
+        return;
+      }
+      
+      // Check if there are any components selected
+      if (Object.keys(selectedComponents).filter(key => key !== 'purpose').length === 0) {
+        alert('Välj minst en komponent innan du sparar');
+        setShowSaveModal(false);
+        return;
+      }
+      
       setIsSaving(true);
       const buildData = {
-        name: buildName,
-        purpose: selectedComponents.purpose?.name || null,
+        name: buildName.trim(),
+        purpose: selectedComponents.purpose?.name || selectedComponents.purpose || null,
         cpu_id: selectedComponents.cpu?.id || null,
         gpu_id: selectedComponents.gpu?.id || null,
         motherboard_id: selectedComponents.motherboard?.id || null,
@@ -280,15 +240,19 @@ const PcBuilder = () => {
         body: JSON.stringify(buildData)
       });
 
+      // Try to get detailed error information if available
+      const responseData = await response.json().catch(() => null);
+      
       if (!response.ok) {
-        throw new Error('Failed to save build');
+        console.error('Failed to save build:', response.status, responseData);
+        throw new Error(`Failed to save build: ${response.status} - ${responseData?.detail || 'Unknown error'}`);
       }
 
       alert('Din dator har sparats!');
       setShowSaveModal(false);
     } catch (error) {
       console.error('Error saving build:', error);
-      alert('Kunde inte spara datorn. Försök igen senare.');
+      alert(`Kunde inte spara datorn: ${error.message}`);
     } finally {
       setIsSaving(false);
     }
@@ -514,9 +478,17 @@ const PcBuilder = () => {
                       if (!isAuthenticated) {
                         if (window.confirm('Du måste logga in för att spara din dator. Vill du logga in nu?')) {
                           navigate('/login');
+                          return;
                         }
                         return;
                       }
+                      
+                      // Check for components before showing the modal
+                      if (Object.keys(selectedComponents).filter(key => key !== 'purpose').length === 0) {
+                        alert('Välj minst en komponent innan du sparar');
+                        return;
+                      }
+                      
                       setShowSaveModal(true);
                     }}
                     disabled={isSaving}
@@ -554,3 +526,4 @@ const PcBuilder = () => {
 };
 
 export default PcBuilder;
+
