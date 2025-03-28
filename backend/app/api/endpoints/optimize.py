@@ -769,6 +769,7 @@ async def optimize_build(
 
         # Create the optimized build 
         optimized_build = OptimizedBuildOut(
+            id=1,
             name="Optimized Build",
             purpose=purpose,
             user_id=current_user.id,
