@@ -177,7 +177,7 @@ const BuildDetail = () => {
                 {/* Main image - replace with actual image when available */}
                 <div className="bg-gray-200 rounded-lg aspect-[4/3] overflow-hidden">
                   <img 
-                    src="https://via.placeholder.com/800x600" 
+                    src="/placeholder-image.jpg" 
                     alt={`${buildData.name}`}
                     className="w-full h-full object-cover"
                   />
@@ -188,7 +188,7 @@ const BuildDetail = () => {
                 {[1, 2, 3, 4].map((img) => (
                   <div key={img} className="bg-gray-200 rounded-lg aspect-square overflow-hidden">
                     <img 
-                      src={`https://via.placeholder.com/200x200?text=Image+${img}`} 
+                      src="/placeholder-image.jpg" 
                       alt={`${buildData.name} detail ${img}`}
                       className="w-full h-full object-cover"
                     />
@@ -206,7 +206,7 @@ const BuildDetail = () => {
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
                     <img 
-                      src="https://via.placeholder.com/100?text=CPU" 
+                      src="/placeholder-image.jpg" 
                       alt={buildData.cpu.name}
                       className="w-full h-full object-contain p-2"
                     />
@@ -228,7 +228,7 @@ const BuildDetail = () => {
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
                     <img 
-                      src="https://via.placeholder.com/100?text=GPU" 
+                      src="/placeholder-image.jpg" 
                       alt={buildData.gpu.name}
                       className="w-full h-full object-contain p-2"
                     />
@@ -248,7 +248,7 @@ const BuildDetail = () => {
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
                     <img 
-                      src="https://via.placeholder.com/100?text=MB" 
+                      src="/placeholder-image.jpg" 
                       alt={buildData.motherboard.name}
                       className="w-full h-full object-contain p-2"
                     />
@@ -269,7 +269,7 @@ const BuildDetail = () => {
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
                     <img 
-                      src="https://via.placeholder.com/100?text=RAM" 
+                      src="/placeholder-image.jpg" 
                       alt={buildData.ram.name}
                       className="w-full h-full object-contain p-2"
                     />
@@ -290,7 +290,7 @@ const BuildDetail = () => {
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
                     <img 
-                      src="https://via.placeholder.com/100?text=Storage" 
+                      src="/placeholder-image.jpg" 
                       alt={buildData.storage.name}
                       className="w-full h-full object-contain p-2"
                     />
@@ -311,7 +311,7 @@ const BuildDetail = () => {
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
                     <img 
-                      src="https://via.placeholder.com/100?text=Case" 
+                      src="/placeholder-image.jpg" 
                       alt={buildData.case.name}
                       className="w-full h-full object-contain p-2"
                     />
@@ -332,7 +332,7 @@ const BuildDetail = () => {
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
                     <img 
-                      src="https://via.placeholder.com/100?text=PSU" 
+                      src="/placeholder-image.jpg" 
                       alt={buildData.psu.name}
                       className="w-full h-full object-contain p-2"
                     />
@@ -353,7 +353,7 @@ const BuildDetail = () => {
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
                     <img 
-                      src="https://via.placeholder.com/100?text=Cooler" 
+                      src="/placeholder-image.jpg" 
                       alt={buildData.cooler.name}
                       className="w-full h-full object-contain p-2"
                     />

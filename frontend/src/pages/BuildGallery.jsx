@@ -303,9 +303,8 @@ export default function BuildGallery() {
                 <div key={publishedBuild.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                   <a href={`/build/${publishedBuild.id}`} className="block">
                     <div className="relative h-48 bg-gray-100">
-                      {/* Placeholder image - you might want to add actual build images */}
                       <img 
-                        src="https://via.placeholder.com/400x300" 
+                        src="/placeholder-image.jpg" 
                         alt={`${build.name} Preview`} 
                         className="w-full h-full object-cover"
                       />
