@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from models import CPU, GPU, Motherboard, RAM, Storage, PSU, Cooler, Case, SavedBuild, Token, User, PublishedBuild, BuildRating
-from schemas import CPUModel, GPUModel, MotherboardModel, RAMModel, StorageModel, PSUModel, CoolerModel, CaseModel, SavedBuildCreate, SavedBuildOut, PublicBuildResponse, BuildRatingCreate, BuildRatingOut
+from schemas import CPUModel, GPUModel, MotherboardModel, RAMModel, StorageModel, PSUModel, CoolerModel, CaseModel, SavedBuildCreate, SavedBuildOut, PublicBuildResponse, BuildRatingCreate, BuildRatingOut, PublishedBuildOut
 from .auth import oauth2_scheme
 from typing import Optional
 
@@ -326,4 +326,23 @@ async def get_build_ratings(
         raise HTTPException(
             status_code=500,
             detail=f"Det gick inte att hämta betyg: {str(e)}"
+        )
+
+@router.get("/builds/public/{published_build_id}", response_model=PublishedBuildOut)
+async def get_published_build(
+    published_build_id: int,
+    db: Session = Depends(get_db)
+):
+    try:
+        # Get the published build with the given ID
+        published_build = db.query(PublishedBuild).filter(PublishedBuild.id == published_build_id).first()
+        if not published_build:
+            raise HTTPException(status_code=404, detail="Published build not found")
+            
+        return published_build
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Det gick inte att hämta den publicerade datorn: {str(e)}"
         )
