@@ -278,7 +278,7 @@ const BuildDetail = () => {
                     <div key={rating.id} className="bg-white p-4 rounded-lg shadow">
                       <div className="flex items-center mb-2">
                         <div className="flex mr-2">
-                          {[1, 2, a3, 4, 5].map((star) => (
+                          {[1, 2, 3, 4, 5].map((star) => (
                             <svg 
                               key={star} 
                               fill={star <= rating.rating ? "#FFB800" : "#E5E5E5"} 

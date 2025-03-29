@@ -201,6 +201,7 @@ class BuildRatingCreate(BaseModel):
 
 class BuildRatingOut(BaseModel):
     id: int
+    published_build_id: int
     user_id: int
     rating: float
     comment: Optional[str] = None
@@ -215,6 +216,7 @@ class PublishedBuildOut(BaseModel):
     avg_rating: float
     rating_count: int
     created_at: datetime
+    ratings: list[BuildRatingOut] = []
     
     model_config = ConfigDict(from_attributes=True)
 
