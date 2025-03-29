@@ -1,9 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
-const SearchBuildDropdown = ({ label, placeholder, options }) => {
+const SearchBuildDropdown = ({ label, placeholder, options, onChange, value }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedOption, setSelectedOption] = useState(null)
+
+  // Update selected option when value prop changes
+  useEffect(() => {
+    setSelectedOption(value);
+  }, [value]);
 
   const filteredOptions = options.filter(option =>
     option.toLowerCase().includes(searchTerm.toLowerCase())
@@ -43,6 +48,9 @@ const SearchBuildDropdown = ({ label, placeholder, options }) => {
                   setSelectedOption(option)
                   setIsOpen(false)
                   setSearchTerm('')
+                  if (onChange) {
+                    onChange(option)
+                  }
                 }}
               >
                 {option}
