@@ -131,8 +131,59 @@ const BuildDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
-        <div className="text-xl">Loading build details...</div>
+      <div className="min-h-screen bg-slate-100 py-8 mt-28">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            {/* Skeleton Header */}
+            <div className="bg-gray-800 p-6">
+              <div className="h-8 bg-gray-700 rounded animate-pulse w-1/3 mb-3"></div>
+              <div className="flex items-center mt-2">
+                <div className="flex space-x-1">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="h-5 w-5 bg-gray-700 rounded animate-pulse"></div>
+                  ))}
+                </div>
+                <div className="h-4 bg-gray-700 rounded animate-pulse w-24 ml-2"></div>
+              </div>
+              <div className="h-4 bg-gray-700 rounded animate-pulse w-1/2 mt-2"></div>
+            </div>
+            
+            {/* Skeleton Content */}
+            <div className="p-6 flex flex-col md:flex-row gap-8">
+              {/* Skeleton Image */}
+              <div className="md:w-1/3">
+                <div className="w-full h-64 bg-gray-200 rounded-lg animate-pulse"></div>
+              </div>
+              
+              {/* Skeleton Components List */}
+              <div className="md:w-2/3">
+                <div className="h-6 bg-gray-200 rounded animate-pulse w-1/4 mb-4"></div>
+                <div className="space-y-4">
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                    <div key={i} className="flex justify-between items-center border-b pb-2">
+                      <div className="h-5 bg-gray-200 rounded animate-pulse w-1/2"></div>
+                      <div className="h-5 bg-gray-200 rounded animate-pulse w-16"></div>
+                    </div>
+                  ))}
+                  <div className="flex justify-between items-center pt-4 border-t border-gray-800">
+                    <div className="h-6 bg-gray-200 rounded animate-pulse w-16"></div>
+                    <div className="h-6 bg-gray-200 rounded animate-pulse w-20"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Skeleton Comments */}
+            <div className="p-6 bg-gray-50 border-t">
+              <div className="h-6 bg-gray-200 rounded animate-pulse w-1/4 mb-4"></div>
+              <div className="space-y-3">
+                <div className="h-10 bg-gray-200 rounded animate-pulse w-1/3"></div>
+                <div className="h-32 bg-gray-200 rounded animate-pulse w-full"></div>
+                <div className="h-10 bg-gray-200 rounded animate-pulse w-1/4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

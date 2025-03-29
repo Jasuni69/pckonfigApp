@@ -147,8 +147,43 @@ export default function BuildGallery() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg">Loading components...</div>
+      <div className="flex min-h-screen">
+        <div className="w-64 bg-white border-r border-gray-200 p-4 mt-40">
+          {/* Skeleton sidebar */}
+          <div className="flex flex-col gap-4">
+            <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
+            <div className="h-8 bg-gray-200 rounded animate-pulse w-full mt-2"></div>
+            
+            {/* Skeleton dropdowns */}
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="flex flex-col gap-1">
+                <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
+                <div className="h-8 bg-gray-200 rounded animate-pulse w-full"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex-1 p-4 bg-gradient-to-b from-slate-400 to-slate-200 mt-28">
+          <div className="h-8 bg-gray-200 rounded animate-pulse w-48 mb-6"></div>
+          
+          {/* Skeleton cards grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="h-48 bg-gray-200 animate-pulse"></div>
+                <div className="p-4">
+                  <div className="h-5 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-full mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3 mb-2"></div>
+                  <div className="h-5 bg-gray-200 rounded animate-pulse w-1/4 mt-3"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
