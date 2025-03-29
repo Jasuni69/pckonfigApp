@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { API_URL } from '../config';
 
-const BuildDetail = () => {
+export default function BuildDetail() {
   const { id } = useParams();
   const [build, setBuild] = useState(null);
   const [ratings, setRatings] = useState([]);
@@ -215,7 +215,8 @@ const BuildDetail = () => {
                     <h3 className="font-medium">CPU</h3>
                     <p>{buildData.cpu.name}</p>
                     <p className="text-sm text-gray-600 mt-1">
-                      {buildData.cpu.cores} cores, {buildData.cpu.threads} threads
+                      {buildData.cpu.cores} cores
+                      {buildData.cpu.threads && `, ${buildData.cpu.threads} threads`}
                       {buildData.cpu.base_clock && `, ${buildData.cpu.base_clock} GHz`}
                     </p>
                     <p className="font-medium mt-1">{buildData.cpu.price} kr</p>
@@ -256,15 +257,14 @@ const BuildDetail = () => {
                     <h3 className="font-medium">Motherboard</h3>
                     <p>{buildData.motherboard.name}</p>
                     <p className="text-sm text-gray-600 mt-1">
-                      {buildData.motherboard.socket}, {buildData.motherboard.form_factor}
+                      {buildData.motherboard.socket && `${buildData.motherboard.socket}`}
+                      {buildData.motherboard.form_factor && `, ${buildData.motherboard.form_factor}`}
                     </p>
                     <p className="font-medium mt-1">{buildData.motherboard.price} kr</p>
                   </div>
                 </div>
               )}
               
-              {/* Add similar blocks for other components */}
-              {/* RAM */}
               {buildData.ram && (
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
@@ -278,14 +278,14 @@ const BuildDetail = () => {
                     <h3 className="font-medium">RAM</h3>
                     <p>{buildData.ram.name}</p>
                     <p className="text-sm text-gray-600 mt-1">
-                      {buildData.ram.capacity && `${buildData.ram.capacity}GB, ${buildData.ram.speed} MHz`}
+                      {buildData.ram.capacity && `${buildData.ram.capacity}GB`} 
+                      {buildData.ram.speed && `, ${buildData.ram.speed} MHz`}
                     </p>
                     <p className="font-medium mt-1">{buildData.ram.price} kr</p>
                   </div>
                 </div>
               )}
-
-              {/* Storage */}
+              
               {buildData.storage && (
                 <div className="flex items-start">
                   <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
@@ -299,15 +299,75 @@ const BuildDetail = () => {
                     <h3 className="font-medium">Storage</h3>
                     <p>{buildData.storage.name}</p>
                     <p className="text-sm text-gray-600 mt-1">
-                      {buildData.storage.capacity && `${buildData.storage.capacity}GB, ${buildData.storage.type}`}
+                      {buildData.storage.capacity && `${buildData.storage.capacity}GB`}
+                      {buildData.storage.type && `, ${buildData.storage.type}`}
                     </p>
                     <p className="font-medium mt-1">{buildData.storage.price} kr</p>
                   </div>
                 </div>
               )}
-
-              {/* Case */}
-              {/* ... other components ... */}
+              
+              {buildData.case && (
+                <div className="flex items-start">
+                  <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
+                    <img 
+                      src="https://via.placeholder.com/100?text=Case" 
+                      alt={buildData.case.name}
+                      className="w-full h-full object-contain p-2"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Case</h3>
+                    <p>{buildData.case.name}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {buildData.case.form_factor && `${buildData.case.form_factor}`}
+                      {buildData.case.color && `, ${buildData.case.color}`}
+                    </p>
+                    <p className="font-medium mt-1">{buildData.case.price} kr</p>
+                  </div>
+                </div>
+              )}
+              
+              {buildData.psu && (
+                <div className="flex items-start">
+                  <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
+                    <img 
+                      src="https://via.placeholder.com/100?text=PSU" 
+                      alt={buildData.psu.name}
+                      className="w-full h-full object-contain p-2"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Power Supply</h3>
+                    <p>{buildData.psu.name}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {buildData.psu.wattage && `${buildData.psu.wattage}W`}
+                      {buildData.psu.efficiency && `, ${buildData.psu.efficiency}`}
+                    </p>
+                    <p className="font-medium mt-1">{buildData.psu.price} kr</p>
+                  </div>
+                </div>
+              )}
+              
+              {buildData.cooler && (
+                <div className="flex items-start">
+                  <div className="w-24 h-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 mr-4">
+                    <img 
+                      src="https://via.placeholder.com/100?text=Cooler" 
+                      alt={buildData.cooler.name}
+                      className="w-full h-full object-contain p-2"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Cooler</h3>
+                    <p>{buildData.cooler.name}</p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {buildData.cooler.type && `${buildData.cooler.type}`}
+                    </p>
+                    <p className="font-medium mt-1">{buildData.cooler.price} kr</p>
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="mt-6 pt-4 border-t border-gray-200">
@@ -410,5 +470,4 @@ const BuildDetail = () => {
       </div>
     </div>
   );
-}  
-export default BuildDetail;
+}
