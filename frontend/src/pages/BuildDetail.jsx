@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { API_URL } from '../config';
 
-export default function BuildDetail() {
+const BuildDetail = () => {
   const { id } = useParams();
   const [build, setBuild] = useState(null);
   const [ratings, setRatings] = useState([]);
@@ -471,3 +471,5 @@ export default function BuildDetail() {
     </div>
   );
 }
+
+export default BuildDetail;
