@@ -7,10 +7,9 @@ const BuildDetail = () => {
   
   return (
     <div style={{padding: "50px", backgroundColor: "red", color: "white", minHeight: "100vh"}}>
-      <h1>BUILD DETAIL TEST PAGE</h1>
+      <h1>BUILDssss DETAIL TEST PAGE</h1>
       <p>Build ID: {id}</p>
     </div>
   );
 };
-
 export default BuildDetail;
