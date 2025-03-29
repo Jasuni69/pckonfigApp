@@ -276,7 +276,7 @@ export default function BuildGallery() {
         </section>
       </div>
 
-      <div className="flex-1 p-4 bg-gradient-to-b from-slate-400 to-slate-200">
+      <div className="flex-1 p-4 bg-gradient-to-b from-slate-400 to-slate-200 mt-28">
         <h1 className="text-2xl font-bold mb-6">Build Gallery</h1>
         
         {/* Display builds grid */}
