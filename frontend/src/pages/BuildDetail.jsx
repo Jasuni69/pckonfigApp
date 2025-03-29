@@ -15,26 +15,84 @@ const BuildDetail = () => {
   useEffect(() => {
     const fetchBuildDetails = async () => {
       try {
-        // Fetch the build details
+        console.log("Fetching build with ID:", id);
+        
+        // Create placeholder data for testing
+        const placeholderBuild = {
+          id: parseInt(id),
+          build: {
+            name: "Example Gaming PC",
+            purpose: "1080p Gaming",
+            cpu: { 
+              name: "AMD Ryzen 5 5600X", 
+              cores: 6, 
+              threads: 12, 
+              price: 2799 
+            },
+            gpu: { 
+              name: "NVIDIA RTX 3060", 
+              memory: "12GB GDDR6",
+              price: 3999 
+            },
+            motherboard: { 
+              name: "MSI B550 Tomahawk", 
+              socket: "AM4", 
+              form_factor: "ATX",
+              price: 1799 
+            },
+            ram: { 
+              name: "Corsair Vengeance 16GB", 
+              capacity: 16, 
+              speed: 3200,
+              price: 899 
+            },
+            storage: { 
+              name: "Samsung 970 EVO 1TB", 
+              capacity: 1000, 
+              type: "NVMe SSD",
+              price: 1299 
+            },
+            case: { 
+              name: "NZXT H510", 
+              form_factor: "Mid Tower", 
+              color: "Black",
+              price: 999 
+            },
+            psu: { 
+              name: "Corsair RM650", 
+              wattage: 650, 
+              efficiency: "80+ Gold",
+              price: 1099 
+            },
+            cooler: { 
+              name: "Cooler Master Hyper 212", 
+              type: "Air",
+              price: 499 
+            }
+          },
+          user_id: 1,
+          avg_rating: 4.5,
+          rating_count: 12,
+          created_at: new Date().toISOString()
+        };
+        
+        // Use placeholder data for now
+        setBuild(placeholderBuild);
+        setLoading(false);
+        
+        // When your backend endpoint is ready, uncomment this:
+        /*
         const buildResponse = await fetch(`${API_URL}/api/builds/public/${id}`);
         if (!buildResponse.ok) {
           throw new Error(`Error fetching build: ${buildResponse.status}`);
         }
-        const buildData = await buildResponse.json();
-        setBuild(buildData);
-
-        // Fetch ratings for this build
-        const ratingsResponse = await fetch(`${API_URL}/api/builds/public/${id}/ratings`);
-        if (!ratingsResponse.ok) {
-          throw new Error(`Error fetching ratings: ${ratingsResponse.status}`);
-        }
-        const ratingsData = await ratingsResponse.json();
-        setRatings(ratingsData);
-
+        const data = await buildResponse.json();
+        setBuild(data);
         setLoading(false);
+        */
       } catch (err) {
         console.error('Error fetching build details:', err);
-        setError('Failed to load build details');
+        setError(`Failed to load build details: ${err.message}`);
         setLoading(false);
       }
     };
