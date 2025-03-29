@@ -76,12 +76,8 @@ const BuildDetail = () => {
           created_at: new Date().toISOString()
         };
         
-        // Use placeholder data for now
-        setBuild(placeholderBuild);
-        setLoading(false);
+      
         
-        // When your backend endpoint is ready, uncomment this:
-        /*
         const buildResponse = await fetch(`${API_URL}/api/builds/public/${id}`);
         if (!buildResponse.ok) {
           throw new Error(`Error fetching build: ${buildResponse.status}`);
@@ -89,7 +85,7 @@ const BuildDetail = () => {
         const data = await buildResponse.json();
         setBuild(data);
         setLoading(false);
-        */
+
       } catch (err) {
         console.error('Error fetching build details:', err);
         setError(`Failed to load build details: ${err.message}`);

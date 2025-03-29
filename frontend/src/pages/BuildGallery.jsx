@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import SearchBuildDropdown from '../components/SearchBuildDropdown'
 import { API_URL } from '../config'
+import { Link } from 'react-router-dom'
 
 export default function BuildGallery() {
   const [components, setComponents] = useState({
@@ -301,7 +302,7 @@ export default function BuildGallery() {
               
               return (
                 <div key={publishedBuild.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <a href={`/build/${publishedBuild.id}`} className="block">
+                  <Link to={`/build/${publishedBuild.id}`} className="block">
                     <div className="relative h-48 bg-gray-100">
                       <img 
                         src="/placeholder-image.jpg" 
@@ -342,7 +343,7 @@ export default function BuildGallery() {
                         <span className="font-bold text-lg">{totalPrice} kr</span>
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 </div>
               );
             })
