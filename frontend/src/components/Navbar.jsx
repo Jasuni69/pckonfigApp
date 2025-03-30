@@ -67,9 +67,6 @@ const Navbar = () => {
           <NavLink to="/pcbuilder" currentPath={location.pathname}>
             Bygg din PC
           </NavLink>
-          <NavLink to="/pcparts" currentPath={location.pathname}>
-            PC-delar
-          </NavLink>
           {isAuthenticated && (
             <NavLink to="/savedbuilds" currentPath={location.pathname}>
               Sparade byggen
