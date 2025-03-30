@@ -103,10 +103,10 @@ const BuildCarousel = () => {
             <div>
               <h2 className="text-3xl font-bold mb-2">{build.name}</h2>
               <p className="text-lg mb-1">
-                {cpuInfo?.name || 'CPU'} | {gpuInfo?.name || 'GPU'}
+                {cpuInfo ? cpuInfo.name : 'No CPU'} | {gpuInfo ? gpuInfo.name : 'No GPU'}
               </p>
               <p className="text-sm text-slate-300 mb-4">
-                {ramInfo?.name || 'RAM'} | {storageInfo?.name || 'Storage'}
+                {ramInfo ? ramInfo.name : 'No RAM'} | {storageInfo ? storageInfo.name : 'No Storage'}
               </p>
               
               {/* Show rating if available */}
@@ -180,7 +180,7 @@ const Home = () => {
       <div className="flex justify-center items-center min-h-screen pt-16">
         <div className="container px-4 flex flex-col items-center">
           
-          <h1 className="text-4xl font-bold text-center text-slate-800 mb-8">Featured Builds</h1>
+          <h1 className="text-4xl font-bold text-center text-slate-800 mb-8">Showcase</h1>
           <BuildCarousel />
           
           <p className="text-xl text-slate-700 mt-6 text-center max-w-2xl">

@@ -350,7 +350,7 @@ export default function BuildGallery() {
                       <h3 className="font-semibold text-lg">{build.name}</h3>
                       <p className="text-sm text-gray-600 mt-1">
                         {/* Display key components */}
-                        {cpuInfo?.name || 'CPU'} | {gpuInfo?.name || 'GPU'} | {ramInfo?.name || 'RAM'} | {storageInfo?.name || 'Storage'}
+                        {cpuInfo ? cpuInfo.name : 'No CPU'} | {gpuInfo ? gpuInfo.name : 'No GPU'} | {ramInfo ? ramInfo.name : 'No RAM'} | {storageInfo ? storageInfo.name : 'No Storage'}
                       </p>
                       
                       {publishedBuild.avg_rating > 0 && (
