@@ -38,6 +38,8 @@ export default function BuildGallery() {
     storage_id: null,
     cooler_id: null,
     psu_id: null,
+    min_price: null,
+    max_price: null,
     skip: 0,
     limit: 20
   })
@@ -59,6 +61,8 @@ export default function BuildGallery() {
       if (filters.storage_id) queryParams.append('storage_id', filters.storage_id);
       if (filters.cooler_id) queryParams.append('cooler_id', filters.cooler_id);
       if (filters.psu_id) queryParams.append('psu_id', filters.psu_id);
+      if (filters.min_price) queryParams.append('min_price', filters.min_price);
+      if (filters.max_price) queryParams.append('max_price', filters.max_price);
       queryParams.append('skip', filters.skip);
       queryParams.append('limit', filters.limit);
       
@@ -160,6 +164,8 @@ export default function BuildGallery() {
       storage_id: null,
       cooler_id: null,
       psu_id: null,
+      min_price: null,
+      max_price: null,
       skip: 0,
       limit: 20
     });
@@ -331,17 +337,36 @@ export default function BuildGallery() {
                 type="number"
                 placeholder="Min"
                 className="w-full px-2 py-1 text-sm border rounded"
+                value={filters.min_price || ''}
+                onChange={(e) => {
+                  const value = e.target.value ? parseInt(e.target.value) : null;
+                  handleFilterChange('min_price', value);
+                }}
+                min="0"
               />
               <span>-</span>
               <input
                 type="number"
                 placeholder="Max"
                 className="w-full px-2 py-1 text-sm border rounded"
+                value={filters.max_price || ''}
+                onChange={(e) => {
+                  const value = e.target.value ? parseInt(e.target.value) : null;
+                  handleFilterChange('max_price', value);
+                }}
+                min="0"
               />
             </div>
             {/* Price Range Bar */}
             <div className="h-1 bg-gray-200 rounded">
-              <div className="h-full w-3/4 bg-blue-600 rounded"></div>
+              <div 
+                className="h-full bg-blue-600 rounded"
+                style={{ 
+                  width: filters.max_price ? 
+                    `${Math.min(100, (filters.min_price || 0) / filters.max_price * 100)}%` : 
+                    filters.min_price ? '50%' : '75%' 
+                }}
+              ></div>
             </div>
           </div>
         </section>

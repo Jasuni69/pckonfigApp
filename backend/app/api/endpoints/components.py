@@ -156,12 +156,14 @@ async def get_published_builds(
     storage_id: Optional[int] = None,
     cooler_id: Optional[int] = None,
     psu_id: Optional[int] = None,
+    min_price: Optional[int] = None,
+    max_price: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
     try:
         query = db.query(PublishedBuild).join(SavedBuild)
         
-        # Apply filters if provided
+        # Apply component filters if provided
         if purpose:
             query = query.filter(SavedBuild.purpose == purpose)
         if cpu_id:
@@ -179,11 +181,35 @@ async def get_published_builds(
         if psu_id:
             query = query.filter(SavedBuild.psu_id == psu_id)
             
-        # Get total count
-        total = query.count()
+        # Get all builds matching the component filters
+        builds = query.order_by(PublishedBuild.created_at.desc()).all()
         
-        # Apply pagination
-        builds = query.order_by(PublishedBuild.created_at.desc()).offset(skip).limit(limit).all()
+        # Post-filter by price if needed (we need to calculate total price for each build)
+        if min_price is not None or max_price is not None:
+            filtered_builds = []
+            for published_build in builds:
+                # Calculate the total price of the build
+                build = published_build.build
+                total_price = 0
+                
+                # Add up component prices
+                for component_name in ['cpu', 'gpu', 'motherboard', 'ram', 'psu', 'case', 'storage', 'cooler']:
+                    component = getattr(build, component_name, None)
+                    if component and hasattr(component, 'price'):
+                        total_price += component.price or 0
+                
+                # Check if within price range
+                if (min_price is None or total_price >= min_price) and \
+                   (max_price is None or total_price <= max_price):
+                    filtered_builds.append(published_build)
+            
+            # Update builds and count for pagination
+            total = len(filtered_builds)
+            builds = filtered_builds[skip:skip+limit]
+        else:
+            # If no price filtering, apply pagination and get count from query
+            total = query.count()
+            builds = query.order_by(PublishedBuild.created_at.desc()).offset(skip).limit(limit).all()
         
         return {"builds": builds, "total": total}
         
