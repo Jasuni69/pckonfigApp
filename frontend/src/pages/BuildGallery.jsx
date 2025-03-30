@@ -42,6 +42,42 @@ export default function BuildGallery() {
     limit: 20
   })
 
+  // Function to fetch published builds with current filters
+  const fetchPublishedBuilds = async (isInitialLoad = false) => {
+    try {
+      if (isInitialLoad) {
+        setLoading(true);
+      }
+      
+      // Build query parameters from filters
+      const queryParams = new URLSearchParams();
+      if (filters.purpose) queryParams.append('purpose', filters.purpose);
+      if (filters.cpu_id) queryParams.append('cpu_id', filters.cpu_id);
+      if (filters.gpu_id) queryParams.append('gpu_id', filters.gpu_id);
+      if (filters.case_id) queryParams.append('case_id', filters.case_id);
+      if (filters.ram_id) queryParams.append('ram_id', filters.ram_id);
+      if (filters.storage_id) queryParams.append('storage_id', filters.storage_id);
+      if (filters.cooler_id) queryParams.append('cooler_id', filters.cooler_id);
+      if (filters.psu_id) queryParams.append('psu_id', filters.psu_id);
+      queryParams.append('skip', filters.skip);
+      queryParams.append('limit', filters.limit);
+      
+      console.log("Fetching with filters:", filters);
+      console.log("Query params:", queryParams.toString());
+      
+      const response = await fetch(`${API_URL}/api/builds/public?${queryParams}`);
+      const data = await response.json();
+      
+      setPublishedBuilds(data.builds);
+      setTotalBuilds(data.total);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching published builds:', err);
+      setError('Failed to load builds');
+      setLoading(false);
+    }
+  };
+
   // Fetch components and builds
   useEffect(() => {
     const fetchComponents = async () => {
@@ -83,7 +119,7 @@ export default function BuildGallery() {
         })
         
         // Fetch published builds after components are loaded
-        fetchPublishedBuilds();
+        fetchPublishedBuilds(true);
       } catch (err) {
         console.error('Error fetching components:', err)
         setError('Failed to load components')
@@ -94,45 +130,12 @@ export default function BuildGallery() {
     fetchComponents()
   }, [])
 
-  // Function to fetch published builds with current filters
-  const fetchPublishedBuilds = async () => {
-    try {
-      setLoading(true);
-      // Build query parameters from filters
-      const queryParams = new URLSearchParams();
-      if (filters.purpose) queryParams.append('purpose', filters.purpose);
-      if (filters.cpu_id) queryParams.append('cpu_id', filters.cpu_id);
-      if (filters.gpu_id) queryParams.append('gpu_id', filters.gpu_id);
-      if (filters.case_id) queryParams.append('case_id', filters.case_id);
-      if (filters.ram_id) queryParams.append('ram_id', filters.ram_id);
-      if (filters.storage_id) queryParams.append('storage_id', filters.storage_id);
-      if (filters.cooler_id) queryParams.append('cooler_id', filters.cooler_id);
-      if (filters.psu_id) queryParams.append('psu_id', filters.psu_id);
-      queryParams.append('skip', filters.skip);
-      queryParams.append('limit', filters.limit);
-      
-      console.log("Fetching with filters:", filters);
-      console.log("Query params:", queryParams.toString());
-      
-      const response = await fetch(`${API_URL}/api/builds/public?${queryParams}`);
-      const data = await response.json();
-      
-      setPublishedBuilds(data.builds);
-      setTotalBuilds(data.total);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching published builds:', err);
-      setError('Failed to load builds');
-      setLoading(false);
-    }
-  };
-
   // Add a useEffect to fetch builds when filters change
   useEffect(() => {
     // Skip the initial render when components aren't loaded yet
     if (Object.keys(componentMaps.cpuMap).length > 0) {
       console.log("Filters changed, fetching builds:", filters);
-      fetchPublishedBuilds();
+      fetchPublishedBuilds(false);
     }
   }, [filters, componentMaps.cpuMap]); // Add componentMaps.cpuMap as a dependency to ensure it's loaded
 
@@ -348,7 +351,8 @@ export default function BuildGallery() {
         <h1 className="text-2xl font-bold mb-6">Build Gallery</h1>
         
         {/* Display builds grid */}
-        {loading ? (
+        {loading && Object.keys(componentMaps.cpuMap).length === 0 ? (
+          // Only show full skeleton loader for initial page load
           <div className="space-y-4">
             <div className="h-8 bg-gray-200 rounded animate-pulse w-48 mb-6"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
