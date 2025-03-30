@@ -153,6 +153,9 @@ async def get_published_builds(
     gpu_id: Optional[int] = None,
     case_id: Optional[int] = None,
     ram_id: Optional[int] = None,
+    storage_id: Optional[int] = None,
+    cooler_id: Optional[int] = None,
+    psu_id: Optional[int] = None,
     db: Session = Depends(get_db)
 ):
     try:
@@ -169,6 +172,12 @@ async def get_published_builds(
             query = query.filter(SavedBuild.case_id == case_id)
         if ram_id:
             query = query.filter(SavedBuild.ram_id == ram_id)
+        if storage_id:
+            query = query.filter(SavedBuild.storage_id == storage_id)
+        if cooler_id:
+            query = query.filter(SavedBuild.cooler_id == cooler_id)
+        if psu_id:
+            query = query.filter(SavedBuild.psu_id == psu_id)
             
         # Get total count
         total = query.count()

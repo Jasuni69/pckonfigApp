@@ -24,7 +24,7 @@ const BuildDetail = () => {
         setBuild(data);
       } catch (err) {
         console.error('Error fetching build:', err);
-        setError('Could not load build details. Please try again later.');
+          setError('Could not load build details. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -38,7 +38,7 @@ const BuildDetail = () => {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!rating) {
-      alert('Please select a rating before submitting');
+      alert('Betygsätt först');
       return;
     }
 
@@ -47,7 +47,7 @@ const BuildDetail = () => {
       // Get token from localStorage (assuming you store it there)
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('You must be logged in to leave a comment');
+        alert('Du måste vara inloggad för att lämna en kommentar');
         return;
       }
 
@@ -64,19 +64,19 @@ const BuildDetail = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to submit comment');
+        throw new Error('Misslyckades att skicka kommentar');
       }
 
       // Reset form
       setComment('');
       setRating(0);
-      alert('Your comment has been submitted!');
+      alert('Din kommentar har skickats!');
       
       // Reload build to show updated ratings
       window.location.reload();
     } catch (err) {
       console.error('Error submitting comment:', err);
-      alert('Could not submit your comment. Please try again later.');
+      alert('Kunde inte skicka din kommentar. Vänligen försök igen senare.');
     } finally {
       setCommentSubmitting(false);
     }
