@@ -5,7 +5,6 @@ import { API_URL } from '../config';
 const BuildDetail = () => {
   const { id } = useParams();
   const [build, setBuild] = useState(null);
-  const [components, setComponents] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [comment, setComment] = useState('');
@@ -21,60 +20,13 @@ const BuildDetail = () => {
           throw new Error('Failed to fetch build details');
         }
         const data = await response.json();
+        console.log("Fetched build data:", data);
         setBuild(data);
-        
-        // Fetch component details
-        await fetchComponents(data.build);
       } catch (err) {
         console.error('Error fetching build:', err);
         setError('Could not load build details. Please try again later.');
       } finally {
         setLoading(false);
-      }
-    };
-
-    // Fetch component details for the build
-    const fetchComponents = async (buildData) => {
-      try {
-        const componentTypes = [
-          { type: 'cpu', id: buildData.cpu_id },
-          { type: 'gpu', id: buildData.gpu_id },
-          { type: 'motherboard', id: buildData.motherboard_id },
-          { type: 'ram', id: buildData.ram_id },
-          { type: 'storage', id: buildData.storage_id },
-          { type: 'psu', id: buildData.psu_id },
-          { type: 'case', id: buildData.case_id },
-          { type: 'cooler', id: buildData.cooler_id }
-        ];
-
-        // Create promises for all component API calls
-        const promises = componentTypes.map(async ({ type, id }) => {
-          if (id) {
-            const endpoint = type === 'ram' ? 'ram' : `${type}s`; // Handle special case for 'ram'
-            const response = await fetch(`${API_URL}/api/${endpoint}`);
-            if (!response.ok) {
-              throw new Error(`Failed to fetch ${type} details`);
-            }
-            const components = await response.json();
-            return { type, component: components.find(c => c.id === id) };
-          }
-          return { type, component: null };
-        });
-
-        // Wait for all API calls to complete
-        const results = await Promise.all(promises);
-        
-        // Convert results array to an object
-        const componentsObject = results.reduce((acc, { type, component }) => {
-          acc[type] = component;
-          return acc;
-        }, {});
-        
-        console.log("Fetched components:", componentsObject);
-        setComponents(componentsObject);
-      } catch (err) {
-        console.error('Error fetching components:', err);
-        setError('Could not load component details. Please try again later.');
       }
     };
 
@@ -205,10 +157,19 @@ const BuildDetail = () => {
     );
   }
 
+  const buildData = build.build;
+  
   // Calculate total price
-  const totalPrice = Object.values(components)
-    .filter(component => component && component.price)
-    .reduce((sum, component) => sum + component.price, 0);
+  const totalPrice = [
+    buildData.cpu?.price || 0,
+    buildData.gpu?.price || 0,
+    buildData.motherboard?.price || 0,
+    buildData.ram?.price || 0,
+    buildData.storage?.price || 0,
+    buildData.psu?.price || 0,
+    buildData.case?.price || 0,
+    buildData.cooler?.price || 0
+  ].reduce((sum, price) => sum + price, 0);
 
   return (
     <div className="min-h-screen bg-slate-100 py-8 mt-28">
@@ -216,7 +177,7 @@ const BuildDetail = () => {
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {/* Build Header */}
           <div className="bg-gray-800 text-white p-6">
-            <h1 className="text-2xl font-bold">{build.build.name}</h1>
+            <h1 className="text-2xl font-bold">{buildData.name}</h1>
             <div className="mt-2 flex items-center">
               <div className="flex">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -235,7 +196,7 @@ const BuildDetail = () => {
                 {build.avg_rating ? build.avg_rating.toFixed(1) : 'No ratings'} ({build.rating_count || 0} reviews)
               </span>
             </div>
-            <p className="mt-2 text-gray-300">Purpose: {build.build.purpose || 'Not specified'}</p>
+            <p className="mt-2 text-gray-300">Purpose: {buildData.purpose || 'Not specified'}</p>
           </div>
           
           {/* Build Content */}
@@ -244,7 +205,7 @@ const BuildDetail = () => {
             <div className="md:w-1/3">
               <img 
                 src="/placeholder-image.jpg" 
-                alt={`${build.build.name} Preview`} 
+                alt={`${buildData.name} Preview`} 
                 className="w-full h-auto rounded-lg shadow-md"
               />
             </div>
@@ -253,100 +214,93 @@ const BuildDetail = () => {
             <div className="md:w-2/3">
               <h2 className="text-xl font-semibold mb-4">Components</h2>
               <div className="space-y-4">
-                {console.log("Components in render:", components)}
-                {Object.keys(components).length === 0 ? (
-                  <p className="text-gray-500">No components found for this build.</p>
-                ) : (
-                  <>
-                    {/* CPU */}
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <span className="font-medium capitalize">CPU: </span>
-                        <span>{components.cpu ? components.cpu.name : 'No CPU selected'}</span>
-                      </div>
-                      <div className="font-semibold">
-                        {components.cpu?.price ? `${components.cpu.price} kr` : 'N/A'}
-                      </div>
-                    </div>
-                    
-                    {/* GPU */}
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <span className="font-medium capitalize">GPU: </span>
-                        <span>{components.gpu ? components.gpu.name : 'No GPU selected'}</span>
-                      </div>
-                      <div className="font-semibold">
-                        {components.gpu?.price ? `${components.gpu.price} kr` : 'N/A'}
-                      </div>
-                    </div>
-                    
-                    {/* Motherboard */}
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <span className="font-medium capitalize">Motherboard: </span>
-                        <span>{components.motherboard ? components.motherboard.name : 'No Motherboard selected'}</span>
-                      </div>
-                      <div className="font-semibold">
-                        {components.motherboard?.price ? `${components.motherboard.price} kr` : 'N/A'}
-                      </div>
-                    </div>
-                    
-                    {/* RAM */}
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <span className="font-medium capitalize">RAM: </span>
-                        <span>{components.ram ? components.ram.name : 'No RAM selected'}</span>
-                      </div>
-                      <div className="font-semibold">
-                        {components.ram?.price ? `${components.ram.price} kr` : 'N/A'}
-                      </div>
-                    </div>
-                    
-                    {/* Storage */}
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <span className="font-medium capitalize">Storage: </span>
-                        <span>{components.storage ? components.storage.name : 'No Storage selected'}</span>
-                      </div>
-                      <div className="font-semibold">
-                        {components.storage?.price ? `${components.storage.price} kr` : 'N/A'}
-                      </div>
-                    </div>
-                    
-                    {/* PSU */}
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <span className="font-medium capitalize">PSU: </span>
-                        <span>{components.psu ? components.psu.name : 'No PSU selected'}</span>
-                      </div>
-                      <div className="font-semibold">
-                        {components.psu?.price ? `${components.psu.price} kr` : 'N/A'}
-                      </div>
-                    </div>
-                    
-                    {/* Case */}
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <span className="font-medium capitalize">Case: </span>
-                        <span>{components.case ? components.case.name : 'No Case selected'}</span>
-                      </div>
-                      <div className="font-semibold">
-                        {components.case?.price ? `${components.case.price} kr` : 'N/A'}
-                      </div>
-                    </div>
-                    
-                    {/* Cooler */}
-                    <div className="flex justify-between items-center border-b pb-2">
-                      <div>
-                        <span className="font-medium capitalize">Cooler: </span>
-                        <span>{components.cooler ? components.cooler.name : 'No Cooler selected'}</span>
-                      </div>
-                      <div className="font-semibold">
-                        {components.cooler?.price ? `${components.cooler.price} kr` : 'N/A'}
-                      </div>
-                    </div>
-                  </>
-                )}
+                {/* CPU */}
+                <div className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <span className="font-medium capitalize">CPU: </span>
+                    <span>{buildData.cpu ? buildData.cpu.name : 'No CPU selected'}</span>
+                  </div>
+                  <div className="font-semibold">
+                    {buildData.cpu?.price ? `${buildData.cpu.price} kr` : 'N/A'}
+                  </div>
+                </div>
+                
+                {/* GPU */}
+                <div className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <span className="font-medium capitalize">GPU: </span>
+                    <span>{buildData.gpu ? buildData.gpu.name : 'No GPU selected'}</span>
+                  </div>
+                  <div className="font-semibold">
+                    {buildData.gpu?.price ? `${buildData.gpu.price} kr` : 'N/A'}
+                  </div>
+                </div>
+                
+                {/* Motherboard */}
+                <div className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <span className="font-medium capitalize">Motherboard: </span>
+                    <span>{buildData.motherboard ? buildData.motherboard.name : 'No Motherboard selected'}</span>
+                  </div>
+                  <div className="font-semibold">
+                    {buildData.motherboard?.price ? `${buildData.motherboard.price} kr` : 'N/A'}
+                  </div>
+                </div>
+                
+                {/* RAM */}
+                <div className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <span className="font-medium capitalize">RAM: </span>
+                    <span>{buildData.ram ? buildData.ram.name : 'No RAM selected'}</span>
+                  </div>
+                  <div className="font-semibold">
+                    {buildData.ram?.price ? `${buildData.ram.price} kr` : 'N/A'}
+                  </div>
+                </div>
+                
+                {/* Storage */}
+                <div className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <span className="font-medium capitalize">Storage: </span>
+                    <span>{buildData.storage ? buildData.storage.name : 'No Storage selected'}</span>
+                  </div>
+                  <div className="font-semibold">
+                    {buildData.storage?.price ? `${buildData.storage.price} kr` : 'N/A'}
+                  </div>
+                </div>
+                
+                {/* PSU */}
+                <div className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <span className="font-medium capitalize">PSU: </span>
+                    <span>{buildData.psu ? buildData.psu.name : 'No PSU selected'}</span>
+                  </div>
+                  <div className="font-semibold">
+                    {buildData.psu?.price ? `${buildData.psu.price} kr` : 'N/A'}
+                  </div>
+                </div>
+                
+                {/* Case */}
+                <div className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <span className="font-medium capitalize">Case: </span>
+                    <span>{buildData.case ? buildData.case.name : 'No Case selected'}</span>
+                  </div>
+                  <div className="font-semibold">
+                    {buildData.case?.price ? `${buildData.case.price} kr` : 'N/A'}
+                  </div>
+                </div>
+                
+                {/* Cooler */}
+                <div className="flex justify-between items-center border-b pb-2">
+                  <div>
+                    <span className="font-medium capitalize">Cooler: </span>
+                    <span>{buildData.cooler ? buildData.cooler.name : 'No Cooler selected'}</span>
+                  </div>
+                  <div className="font-semibold">
+                    {buildData.cooler?.price ? `${buildData.cooler.price} kr` : 'N/A'}
+                  </div>
+                </div>
                 
                 {/* Total Price */}
                 <div className="flex justify-between items-center pt-4 border-t border-gray-800">

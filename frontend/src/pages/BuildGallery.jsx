@@ -321,18 +321,16 @@ export default function BuildGallery() {
               // Get the associated saved build
               const build = publishedBuild.build;
               
-              // Get component details using our maps
-              const cpuInfo = componentMaps.cpuMap[build.cpu_id];
-              const gpuInfo = componentMaps.gpuMap[build.gpu_id];
-              const ramInfo = componentMaps.ramMap[build.ram_id];
-              const storageInfo = componentMaps.storageMap[build.storage_id];
-              
-              // Calculate approximate total price (add your own pricing logic)
+              // Calculate approximate total price
               const totalPrice = [
-                cpuInfo?.price || 0,
-                gpuInfo?.price || 0,
-                ramInfo?.price || 0,
-                storageInfo?.price || 0
+                build.cpu?.price || 0,
+                build.gpu?.price || 0,
+                build.ram?.price || 0,
+                build.storage?.price || 0,
+                build.motherboard?.price || 0,
+                build.psu?.price || 0,
+                build.case?.price || 0,
+                build.cooler?.price || 0
               ].reduce((sum, price) => sum + price, 0);
               
               return (
@@ -350,7 +348,7 @@ export default function BuildGallery() {
                       <h3 className="font-semibold text-lg">{build.name}</h3>
                       <p className="text-sm text-gray-600 mt-1">
                         {/* Display key components */}
-                        {cpuInfo ? cpuInfo.name : 'No CPU'} | {gpuInfo ? gpuInfo.name : 'No GPU'} | {ramInfo ? ramInfo.name : 'No RAM'} | {storageInfo ? storageInfo.name : 'No Storage'}
+                        {build.cpu ? build.cpu.name : 'No CPU'} | {build.gpu ? build.gpu.name : 'No GPU'} | {build.ram ? build.ram.name : 'No RAM'} | {build.storage ? build.storage.name : 'No Storage'}
                       </p>
                       
                       {publishedBuild.avg_rating > 0 && (

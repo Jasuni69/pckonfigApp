@@ -6,37 +6,14 @@ const BuildCarousel = () => {
   const [builds, setBuilds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [componentMaps, setComponentMaps] = useState({});
 
   useEffect(() => {
-    const fetchBuildsAndComponents = async () => {
+    const fetchBuilds = async () => {
       try {
         // Fetch top 5 builds
         const buildsResponse = await fetch(`${API_URL}/api/builds/public?limit=5`);
         const buildsData = await buildsResponse.json();
-        
-        // Fetch component data for displaying details
-        const [cpusRes, gpusRes, ramRes, storageRes] = await Promise.all([
-          fetch(`${API_URL}/api/cpus`),
-          fetch(`${API_URL}/api/gpus`),
-          fetch(`${API_URL}/api/ram`),
-          fetch(`${API_URL}/api/storage`)
-        ]);
-        
-        const [cpus, gpus, ram, storage] = await Promise.all([
-          cpusRes.json(),
-          gpusRes.json(),
-          ramRes.json(),
-          storageRes.json()
-        ]);
-        
-        // Create component maps for lookups
-        const cpuMap = Object.fromEntries(cpus.map(cpu => [cpu.id, cpu]));
-        const gpuMap = Object.fromEntries(gpus.map(gpu => [gpu.id, gpu]));
-        const ramMap = Object.fromEntries(ram.map(ram => [ram.id, ram]));
-        const storageMap = Object.fromEntries(storage.map(storage => [storage.id, storage]));
-        
-        setComponentMaps({ cpuMap, gpuMap, ramMap, storageMap });
+        console.log("Carousel builds:", buildsData);
         setBuilds(buildsData.builds);
       } catch (error) {
         console.error("Error fetching builds:", error);
@@ -45,7 +22,7 @@ const BuildCarousel = () => {
       }
     };
     
-    fetchBuildsAndComponents();
+    fetchBuilds();
     
     // Auto rotate carousel every 5 seconds
     const interval = setInterval(() => {
@@ -88,12 +65,6 @@ const BuildCarousel = () => {
   
   if (!build) return null;
   
-  // Get component details
-  const cpuInfo = componentMaps.cpuMap?.[build.cpu_id];
-  const gpuInfo = componentMaps.gpuMap?.[build.gpu_id];
-  const ramInfo = componentMaps.ramMap?.[build.ram_id];
-  const storageInfo = componentMaps.storageMap?.[build.storage_id];
-  
   return (
     <div className="w-full max-w-4xl mx-auto relative mb-16 overflow-hidden rounded-lg shadow-xl">
       <div className="relative h-80 bg-gradient-to-r from-slate-700 to-slate-900 overflow-hidden">
@@ -103,10 +74,10 @@ const BuildCarousel = () => {
             <div>
               <h2 className="text-3xl font-bold mb-2">{build.name}</h2>
               <p className="text-lg mb-1">
-                {cpuInfo ? cpuInfo.name : 'No CPU'} | {gpuInfo ? gpuInfo.name : 'No GPU'}
+                {build.cpu ? build.cpu.name : 'No CPU'} | {build.gpu ? build.gpu.name : 'No GPU'}
               </p>
               <p className="text-sm text-slate-300 mb-4">
-                {ramInfo ? ramInfo.name : 'No RAM'} | {storageInfo ? storageInfo.name : 'No Storage'}
+                {build.ram ? build.ram.name : 'No RAM'} | {build.storage ? build.storage.name : 'No Storage'}
               </p>
               
               {/* Show rating if available */}
