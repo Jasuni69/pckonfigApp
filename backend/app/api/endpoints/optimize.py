@@ -58,6 +58,30 @@ form_factor_compatibility = {
     "mini-itx": ["mini-itx"]
 }
 
+# Helper function to check case and motherboard form factor compatibility
+def is_case_compatible_with_motherboard(case_form_factor, motherboard_form_factor):
+    """
+    Check if a case can fit a motherboard based on their form factors
+    
+    Args:
+        case_form_factor: Normalized form factor of the case
+        motherboard_form_factor: Normalized form factor of the motherboard
+        
+    Returns:
+        Boolean indicating whether the case can fit the motherboard
+    """
+    # Handle empty values
+    if not case_form_factor or not motherboard_form_factor:
+        return False
+        
+    # Check if case form factor is in our compatibility mapping
+    if case_form_factor in form_factor_compatibility:
+        compatible_form_factors = form_factor_compatibility[case_form_factor]
+        return motherboard_form_factor in compatible_form_factors
+        
+    # If we don't have the case form factor in our mapping, check for substring match
+    return motherboard_form_factor in case_form_factor
+
 # Define the debug function at the module level
 def debug_print_gpu_objects(gpu_components):
     print("\nDEBUG - All GPU objects:")
@@ -1179,7 +1203,37 @@ async def optimize_build(
 
         # Then before creating the optimized_build, add:
         try:
-            result_components, explanation = ensure_compatible_cpu_motherboard(result_components, db, [])
+            # First fetch the component objects based on the IDs
+            component_objects = {}
+            
+            # Fetch CPU if specified
+            if result_components["cpu_id"]:
+                component_objects['cpu'] = db.query(CPU).filter(CPU.id == result_components["cpu_id"]).first()
+            
+            # Fetch motherboard if specified
+            if result_components["motherboard_id"]:
+                component_objects['motherboard'] = db.query(Motherboard).filter(Motherboard.id == result_components["motherboard_id"]).first()
+            
+            # Fetch case if specified
+            if result_components["case_id"]:
+                component_objects['case'] = db.query(Case).filter(Case.id == result_components["case_id"]).first()
+            
+            # Check compatibility with actual objects
+            explanation_parts = []
+            if component_objects:
+                component_objects, compatibility_explanation = ensure_compatible_cpu_motherboard(component_objects, db, explanation_parts)
+                
+                # Update component IDs based on possibly changed components
+                if 'cpu' in component_objects and component_objects['cpu']:
+                    result_components["cpu_id"] = component_objects['cpu'].id
+                if 'motherboard' in component_objects and component_objects['motherboard']:
+                    result_components["motherboard_id"] = component_objects['motherboard'].id
+                if 'case' in component_objects and component_objects['case']:
+                    result_components["case_id"] = component_objects['case'].id
+                
+                # Add compatibility explanation to main explanation
+                if compatibility_explanation and compatibility_explanation != "":
+                    explanation += "\n\n" + compatibility_explanation
 
             # Fetch components using final IDs
             cpu = get_component_by_id(CPU, result_components["cpu_id"], db)
@@ -1287,23 +1341,32 @@ async def optimize_build(
             logger.error(f"Error finalizing optimized build: {str(e)}")
             logger.error(traceback.format_exc())
             
-            # Return a basic response with original components to avoid breaking the UI
+            # Return a more informative error response
             raise HTTPException(
                 status_code=500, 
-                detail=f"Error creating optimized build: {str(e)}"
+                detail={
+                    "message": "Error optimizing build",
+                    "error": str(e),
+                    "trace": traceback.format_exc().split("\n")[-3:-1]  # Include shortened stack trace in response
+                }
             )
         
-    except (json.JSONDecodeError, KeyError, ValueError) as e:
-        if "Error finalizing optimized build" in str(e) or "Error in OpenAI API call" in str(e):
-            # Already handled with proper error message and HTTP status
-            raise
-        else:
-            print(f"ERROR parsing OpenAI response: {str(e)}")
-            # Return a basic response with original components to avoid breaking the UI
-            raise HTTPException(
-                status_code=400, 
-                detail=f"Error processing optimization response: {str(e)}"
-            )
+    except Exception as e:
+        # Detailed error logging for debugging
+        error_message = f"Error in optimize_build: {str(e)}"
+        stack_trace = traceback.format_exc()
+        logger.error(error_message)
+        logger.error(stack_trace)
+        
+        # Return a more informative error response
+        raise HTTPException(
+            status_code=500, 
+            detail={
+                "message": "Error optimizing build",
+                "error": str(e),
+                "trace": stack_trace.split("\n")[-3:-1]  # Include shortened stack trace in response
+            }
+        )
 
 def extract_component_id(result, component_key):
     """Extract component ID from various response formats"""

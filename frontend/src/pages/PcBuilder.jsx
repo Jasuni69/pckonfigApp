@@ -292,7 +292,7 @@ const PcBuilder = () => {
       return;
     }
 
-    if (!selectedComponents.purpose) {
+    if (!selectedComponents.purpose || !selectedComponents.purpose.name) {
       alert("Välj ett användningsområde innan du optimerar din bygg.");
       return;
     }
@@ -330,14 +330,16 @@ const PcBuilder = () => {
         body: JSON.stringify(payload)
       });
 
+      console.log('API response status:', response.status);
+      
       if (response.status === 401) {
         throw new Error('Din inloggning har upphört. Logga in igen för att fortsätta.');
       }
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Failed to optimize PC: ${response.status} - ${errorText}`);
-        alert(`Ett fel uppstod under optimering: ${response.status} ${response.statusText}. Försök igen senare eller välj komponenter manuellt.`);
+        const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+        console.error('Failed to optimize PC:', response.status, errorData);
+        alert(`Ett fel uppstod under optimering: ${errorData.detail || response.statusText}. Försök igen senare eller välj komponenter manuellt.`);
         return;
       }
 
