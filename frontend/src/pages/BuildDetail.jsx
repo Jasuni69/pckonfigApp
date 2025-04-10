@@ -310,7 +310,7 @@ const BuildDetail = () => {
                   </div>
                 </div>
                 
-                {/* Price summary */}
+                {/* ===== PRICE SUMMARY ===== */}
                 <div className="flex justify-between items-center pt-4 border-t border-gray-800">
                   <span className="text-lg font-bold">Total</span>
                   <span className="text-lg font-bold">{totalPrice} kr</span>
@@ -322,7 +322,7 @@ const BuildDetail = () => {
           {/* ===== COMMENTS SECTION ===== */}
           <div className="p-6 bg-gray-50 border-t">
             <h2 className="text-xl font-semibold mb-4">Leave a Comment</h2>
-            {/* Comment Form */}
+            {/* ===== COMMENT FORM ===== */}
             <form onSubmit={handleCommentSubmit} className="space-y-4">
               <div>
                 <label className="block mb-2">Rating</label>

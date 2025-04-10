@@ -104,7 +104,7 @@ async def read_users_me(token: str = Depends(oauth2_scheme), db: Session = Depen
         max_age = timedelta(minutes=int(settings.ACCESS_TOKEN_EXPIRE_MINUTES))
         db_token = db.query(Token).filter(
             Token.token == token,
-            Token.created_at >= datetime.now(UTC) - max_age
+            Token.created >= datetime.now(UTC) - max_age
         ).first()
         
         if not db_token:
@@ -129,7 +129,7 @@ async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depen
         max_age = timedelta(minutes=int(settings.ACCESS_TOKEN_EXPIRE_MINUTES))
         db_token = db.query(Token).filter(
             Token.token == token,
-            Token.created_at >= datetime.now(UTC) - max_age
+            Token.created >= datetime.now(UTC) - max_age
         ).first()
         
         if not db_token:
@@ -140,7 +140,7 @@ async def refresh_token(token: str = Depends(oauth2_scheme), db: Session = Depen
             )
         
         # Update token timestamp
-        db_token.created_at = datetime.now(UTC)
+        db_token.created = datetime.now(UTC)
         db.commit()
         db.refresh(db_token)
         
