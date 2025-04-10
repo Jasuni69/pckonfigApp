@@ -2,13 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Dict, Any, List, Optional
 from database import get_db
-from .auth import oauth2_scheme, get_current_user
+from core.deps import get_current_user
+from fastapi.security import OAuth2PasswordBearer
 import logging
 from models import CPU, GPU, Motherboard, RAM, Storage, PSU, Cooler, Case
 from pydantic import BaseModel
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+# Define the OAuth2 scheme for token authentication
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 class ComponentRecommendation(BaseModel):
     component_type: str
