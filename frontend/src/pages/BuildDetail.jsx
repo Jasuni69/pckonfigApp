@@ -2,7 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { API_URL } from '../config';
 
+/**
+ * BuildDetail - Displays comprehensive information about a specific PC build
+ * Shows components, pricing, user ratings and comments for a public build
+ */
 const BuildDetail = () => {
+  // ===== STATE MANAGEMENT =====
   const { id } = useParams();
   const [build, setBuild] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +40,7 @@ const BuildDetail = () => {
     }
   }, [id]);
 
-  // ===== FORM HANDLERS =====
+  // ===== EVENT HANDLERS =====
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!rating) {
@@ -158,6 +163,7 @@ const BuildDetail = () => {
     );
   }
 
+  // ===== DATA PROCESSING =====
   const buildData = build.build;
   
   // Calculate total price from all components
@@ -172,11 +178,12 @@ const BuildDetail = () => {
     buildData.cooler?.price || 0
   ].reduce((sum, price) => sum + price, 0);
 
+  // ===== MAIN RENDER =====
   return (
     <div className="min-h-screen bg-slate-100 py-8 mt-28">
       <div className="container mx-auto px-4">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          {/* HEADER: Build title, rating and purpose */}
+          {/* ===== HEADER SECTION ===== */}
           <div className="bg-gray-800 text-white p-6">
             <h1 className="text-2xl font-bold">{buildData.name}</h1>
             <div className="mt-2 flex items-center">
@@ -200,9 +207,9 @@ const BuildDetail = () => {
             <p className="mt-2 text-gray-300">Användningsområde: {buildData.purpose || 'Ej specificerat'}</p>
           </div>
           
-          {/* CONTENT: Image and component list */}
+          {/* ===== BUILD DETAILS SECTION ===== */}
           <div className="p-6 flex flex-col md:flex-row gap-8">
-            {/* IMAGE: Build preview */}
+            {/* Build Image */}
             <div className="md:w-1/3">
               <img 
                 src="/placeholder-image.jpg" 
@@ -211,7 +218,7 @@ const BuildDetail = () => {
               />
             </div>
             
-            {/* COMPONENTS: List of PC parts */}
+            {/* ===== COMPONENTS LIST ===== */}
             <div className="md:w-2/3">
               <h2 className="text-xl font-semibold mb-4">Components</h2>
               <div className="space-y-4">
@@ -312,10 +319,10 @@ const BuildDetail = () => {
             </div>
           </div>
           
-          {/* COMMENTS SECTION */}
+          {/* ===== COMMENTS SECTION ===== */}
           <div className="p-6 bg-gray-50 border-t">
             <h2 className="text-xl font-semibold mb-4">Leave a Comment</h2>
-            {/* FORM: Rating and comment submission */}
+            {/* Comment Form */}
             <form onSubmit={handleCommentSubmit} className="space-y-4">
               <div>
                 <label className="block mb-2">Rating</label>
@@ -358,7 +365,7 @@ const BuildDetail = () => {
               </button>
             </form>
             
-            {/* REVIEWS: Existing comments display */}
+            {/* ===== REVIEWS LIST ===== */}
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">Comments</h2>
               {build.ratings && build.ratings.length > 0 ? (

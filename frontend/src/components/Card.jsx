@@ -10,6 +10,7 @@ const normalizeFormFactor = (formFactor) => {
   
   // Handle common variations and Swedish translations
   if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'e-atx';
+  if (ff.includes('ssi eeb') || ff.includes('eeb')) return 'ssi-eeb';
   if (ff.includes('micro')) return 'micro-atx';
   if (ff.includes('mini-mini')) return 'mini-itx'; 
   if (ff.includes('mini')) return 'mini-itx';
@@ -20,8 +21,9 @@ const normalizeFormFactor = (formFactor) => {
   return ff; // Return lowercase trimmed version 
 };
 
-// Updated compatibility map with lowercase keys
+// Updated compatibility map with lowercase keys and SSI EEB support
 const formFactorCompatibility = {
+  "ssi-eeb": ["ssi-eeb", "e-atx", "atx", "micro-atx", "mini-itx"],
   "e-atx": ["e-atx", "atx", "micro-atx", "mini-itx"],
   "atx": ["atx", "micro-atx", "mini-itx"],
   "micro-atx": ["micro-atx", "mini-itx"],
@@ -83,9 +85,11 @@ const GuideContent = ({ type }) => {
             </ul>
             <li><span className="font-semibold">Intel Socklar:</span></li>
             <ul className="ml-4">
-              <li>- LGA 1700: 12:e/13:e gen</li>
+              <li>- LGA 1851: Intel Ultra (Arrow Lake)</li>
+              <li>- LGA 1700: 12:e/13:e/14:e gen</li>
               <li>- LGA 1200: 10:e/11:e gen</li>
             </ul>
+            <li className="mt-2 text-red-600 font-semibold">OBS: Intel Ultra (Socket 1851) kräver särskilda moderkort designade för denna socket.</li>
           </ul>
         </div>
       );
@@ -246,7 +250,15 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               if (filterRequirements.socket && (options === 'cpus' || options === 'motherboards')) {
                 const reqSocket = filterRequirements.socket.toLowerCase().replace('socket ', '');
                 const compSocket = (component.socket || '').toLowerCase().replace('socket ', '');
-                const matches = compSocket.includes(reqSocket);
+                
+                // Special case for Intel Ultra Socket 1851 - only compatible with 1851 motherboards
+                if (reqSocket.includes('1851') || compSocket.includes('1851')) {
+                  // Exact match required for Arrow Lake processors and motherboards
+                  return reqSocket.includes('1851') && compSocket.includes('1851');
+                }
+                
+                // For other sockets, partial matching is okay (e.g., 1700 matches 1700 Raptor Lake)
+                const matches = compSocket.includes(reqSocket) || reqSocket.includes(compSocket);
                 return matches;
               }
               
@@ -317,9 +329,28 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
           }
           
           // If no motherboards are found after filtering, show all with a warning
-          if (options === 'motherboards' && filteredData.length === 0 && filterRequirements && filterRequirements.formFactor) {
+          if (options === 'motherboards' && filteredData.length === 0 && filterRequirements) {
             console.warn('No compatible motherboards found! Showing all motherboards instead.');
-            alert(`Hittade inga moderkort som är kompatibla med detta chassi (${filterRequirements.formFactor}). Visar alla moderkort istället.`);
+            
+            let errorMessage = '';
+            
+            // Special message for Socket 1851 (Intel Ultra) processors
+            if (filterRequirements.socket && filterRequirements.socket.toLowerCase().includes('1851')) {
+              errorMessage = `Hittade inga moderkort som är kompatibla med både Intel Ultra-processorn (Socket 1851) och detta chassi (${filterRequirements.formFactor}). Visar alla moderkort istället.`;
+            } 
+            // General message for form factor issues
+            else if (filterRequirements.formFactor) {
+              errorMessage = `Hittade inga moderkort som är kompatibla med detta chassi (${filterRequirements.formFactor}). Visar alla moderkort istället.`;
+            }
+            // General message for socket issues
+            else if (filterRequirements.socket) {
+              errorMessage = `Hittade inga moderkort som är kompatibla med denna processor (Socket ${filterRequirements.socket}). Visar alla moderkort istället.`;
+            }
+            
+            if (errorMessage) {
+              alert(errorMessage);
+            }
+            
             filteredData = data;
           }
           

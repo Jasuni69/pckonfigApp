@@ -17,6 +17,42 @@ import re
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+# Helper function to normalize form factors consistently with frontend
+def normalize_form_factor(form_factor):
+    """Normalize form factor strings for consistent handling"""
+    if not form_factor:
+        return ''
+    
+    # Convert to string in case it's not
+    ff = str(form_factor).lower().strip()
+    
+    # Handle common variations and Swedish translations
+    if 'utökad' in ff or 'extended' in ff or 'e-atx' in ff:
+        return 'e-atx'
+    if 'ssi eeb' in ff or 'eeb' in ff:
+        return 'ssi-eeb'
+    if 'micro' in ff:
+        return 'micro-atx'
+    if 'mini-mini' in ff:
+        return 'mini-itx'
+    if 'mini' in ff:
+        return 'mini-itx'
+    if ff == 'atx' or ('atx' in ff and 'micro' not in ff and 'mini' not in ff):
+        return 'atx'
+    
+    # Log unexpected form factors
+    logger.warning(f"Unexpected form factor: {form_factor}")
+    return ff  # Return lowercase trimmed version
+
+# Form factor compatibility mapping
+form_factor_compatibility = {
+    "ssi-eeb": ["ssi-eeb", "e-atx", "atx", "micro-atx", "mini-itx"],
+    "e-atx": ["e-atx", "atx", "micro-atx", "mini-itx"],
+    "atx": ["atx", "micro-atx", "mini-itx"],
+    "micro-atx": ["micro-atx", "mini-itx"],
+    "mini-itx": ["mini-itx"]
+}
+
 # Define the debug function at the module level
 def debug_print_gpu_objects(gpu_components):
     print("\nDEBUG - All GPU objects:")
@@ -592,20 +628,49 @@ async def optimize_build(
                 essential_fields.append("wattage")
             if "form_factor" in component_dict:
                 essential_fields.append("form_factor")
+                # Normalize form factor if it exists
+                if component_dict.get("form_factor"):
+                    try:
+                        component_dict["normalized_form_factor"] = normalize_form_factor(component_dict["form_factor"])
+                        essential_fields.append("normalized_form_factor")
+                    except Exception as e:
+                        logger.warning(f"Error normalizing form factor '{component_dict.get('form_factor')}': {e}")
             if "capacity" in component_dict:
                 essential_fields.append("capacity")
             
             return {k: v for k, v in component_dict.items() if k in essential_fields}
 
-        # Then simplify before sending to OpenAI
-        simplified_current = {k: simplify_component_data(v) for k, v in current_components.items()}
-        simplified_recommendations = {}
-        for component_type, components_list in recommendations.items():
-            simplified_recommendations[component_type] = [simplify_component_data(c) for c in components_list[:2]]  # Only include top 2
+        # Process form factors that might contain multiple values
+        def handle_multiple_form_factors(form_factor_string):
+            """Handle form factor strings that might contain multiple values separated by commas"""
+            if not form_factor_string or not isinstance(form_factor_string, str):
+                return []
+                
+            # Split by commas or similar separators
+            form_factors = re.split(r'[,;/]', form_factor_string)
+            # Normalize each form factor
+            normalized = [normalize_form_factor(ff.strip()) for ff in form_factors if ff.strip()]
+            # Return unique form factors
+            return list(set(normalized))
 
-        # Calculate total price before prompt
-        current_total = sum(comp.get('price', 0) for comp in simplified_current.values())
-        recommended_total = sum(comp.get('price', 0) for comp in simplified_recommendations.values())
+        # Then simplify before sending to OpenAI
+        try:
+            simplified_current = {k: simplify_component_data(v) for k, v in current_components.items()}
+            simplified_recommendations = {}
+            for component_type, components_list in recommendations.items():
+                simplified_recommendations[component_type] = [simplify_component_data(c) for c in components_list[:2]]  # Only include top 2
+                
+            # Calculate total price before prompt
+            current_total = sum(comp.get('price', 0) for comp in simplified_current.values())
+            recommended_total = sum(comp.get('price', 0) for comp in simplified_recommendations.values())
+        except Exception as e:
+            logger.error(f"Error preparing recommendation data: {e}")
+            logger.error(traceback.format_exc())
+            # Continue with empty recommendations if there's an error
+            simplified_current = {}
+            simplified_recommendations = {}
+            current_total = 0
+            recommended_total = 0
 
         prompt = f"""
         Analyze this PC build for {purpose}:
@@ -696,50 +761,93 @@ async def optimize_build(
         # Before sending to OpenAI
         logger.debug("Sending prompt to OpenAI:\n%s", prompt)
 
-        response = openai.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {
-                    "role": "system", 
-                    "content": """You are a PC building expert specializing in component compatibility and performance optimization. 
-                    Your recommendations should:
-                    1. Ensure all components are compatible with each other
-                    2. Match the user's specific purpose and requirements
-                    3. Consider power efficiency and cooling requirements
-                    4. Provide detailed explanations for each component choice
-                    5. Maintain a reasonable price-to-performance ratio
-                    6. Consider future upgrade paths
-                    Respond with JSON only."""
-                },
-                {
-                    "role": "user", 
-                    "content": prompt + "\n\nRespond with JSON only."
+        try:
+            # Try to safely serialize to JSON
+            serialized_current = json.dumps(simplified_current)
+            serialized_recommendations = json.dumps(simplified_recommendations)
+        except Exception as e:
+            logger.error(f"Error serializing data to JSON: {e}")
+            logger.error(traceback.format_exc())
+            # Create simplified versions with just names as fallback
+            fallback_current = {}
+            for component_type, component in current_components.items():
+                fallback_current[component_type] = {
+                    "id": component.get("id", 0),
+                    "name": component.get("name", "Unknown")
                 }
-            ],
-            temperature=0.7,
-            max_tokens=800
-        )
+            
+            fallback_recommendations = {}
+            for component_type, components in recommendations.items():
+                fallback_recommendations[component_type] = []
+                for component in components[:2]:
+                    fallback_recommendations[component_type].append({
+                        "id": component.get("id", 0),
+                        "name": component.get("name", "Unknown")
+                    })
+            
+            # Use fallback data
+            serialized_current = json.dumps(fallback_current)
+            serialized_recommendations = json.dumps(fallback_recommendations)
         
-        print(f"\nOpenAI response: {response.choices[0].message.content}")
-        
-        # More defensive response handling
-        choices = getattr(response, "choices", [])
-        if not choices:
-            raise ValueError("No choices in OpenAI response")
-        
-        if not hasattr(choices[0], "message") or not hasattr(choices[0].message, "content"):
-            raise ValueError("Invalid response structure from OpenAI")
-        
-        response_data = choices[0].message.content
-        
-        # Continue with validation and parsing
-        if not response_data.strip().startswith('{'):
-            logger.error("Invalid JSON response: %s...", response_data[:100])
-            raise ValueError("Invalid JSON response from OpenAI")
-        
-        result = json.loads(response_data)
-        print("DEBUG - OpenAI response parsed successfully")
-        
+        # Replace the JSON in the prompt
+        prompt = prompt.replace(json.dumps(simplified_current), serialized_current)
+        prompt = prompt.replace(json.dumps(simplified_recommendations), serialized_recommendations)
+
+        try:
+            response = openai.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {
+                        "role": "system", 
+                        "content": """You are a PC building expert specializing in component compatibility and performance optimization. 
+                        Your recommendations should:
+                        1. Ensure all components are compatible with each other
+                        2. Match the user's specific purpose and requirements
+                        3. Consider power efficiency and cooling requirements
+                        4. Provide detailed explanations for each component choice
+                        5. Maintain a reasonable price-to-performance ratio
+                        6. Consider future upgrade paths
+                        Respond with JSON only."""
+                    },
+                    {
+                        "role": "user", 
+                        "content": prompt + "\n\nRespond with JSON only."
+                    }
+                ],
+                temperature=0.7,
+                max_tokens=800
+            )
+            
+            print(f"\nOpenAI response: {response.choices[0].message.content}")
+            
+            # More defensive response handling
+            choices = getattr(response, "choices", [])
+            if not choices:
+                raise ValueError("No choices in OpenAI response")
+            
+            if not hasattr(choices[0], "message") or not hasattr(choices[0].message, "content"):
+                raise ValueError("Invalid response structure from OpenAI")
+            
+            response_data = choices[0].message.content
+            
+            # Continue with validation and parsing
+            if not response_data.strip().startswith('{'):
+                logger.error("Invalid JSON response: %s...", response_data[:100])
+                raise ValueError("Invalid JSON response from OpenAI")
+            
+            result = json.loads(response_data)
+            print("DEBUG - OpenAI response parsed successfully")
+            
+        except Exception as e:
+            logger.error(f"Error in OpenAI API call or parsing response: {str(e)}")
+            logger.error(traceback.format_exc())
+            
+            # Provide a fallback response if API call fails
+            result = {
+                "explanation": f"Failed to generate optimization due to technical error: {str(e)}. Using current components instead.",
+                "components": {}
+            }
+
         # Initialize components to preserve current components
         components_dict = {}
         
@@ -779,107 +887,172 @@ async def optimize_build(
         # Add this function inside the optimize_build function, right before creating the optimized_build object
         def ensure_compatible_cpu_motherboard(components, explanation):
             """Ensure CPU and motherboard are compatible, fixing if needed"""
-            if not components.get("cpu_id") or not components.get("motherboard_id"):
+            try:
+                if not components.get("cpu_id") or not components.get("motherboard_id"):
+                    return components, explanation
+                
+                # Fetch both components
+                cpu = db.query(CPU).filter(CPU.id == components["cpu_id"]).first()
+                mb = db.query(Motherboard).filter(Motherboard.id == components["motherboard_id"]).first()
+                
+                if not cpu or not mb or not cpu.socket or not mb.socket:
+                    return components, explanation
+                
+                # Normalize sockets for comparison
+                cpu_socket = cpu.socket.lower().replace('socket ', '').strip()
+                mb_socket = mb.socket.lower().replace('socket ', '').strip()
+                
+                # Special case for Socket 1851 (Intel Ultra)
+                if ('1851' in cpu_socket or '1851' in mb_socket) and cpu_socket != mb_socket:
+                    logger.warning(f"Socket 1851 incompatibility: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket})")
+                    socket_compatible = False
+                else:
+                    # Check if compatible
+                    socket_compatible = (cpu_socket == mb_socket or cpu_socket in mb_socket or mb_socket in cpu_socket)
+                
+                # Check motherboard and case compatibility if case is selected
+                case_compatible = True
+                if components.get("case_id") and mb.form_factor:
+                    case = db.query(Case).filter(Case.id == components["case_id"]).first()
+                    if case and case.form_factor:
+                        # Get all possible form factors from the case string (might have multiple values)
+                        case_form_factors = handle_multiple_form_factors(case.form_factor)
+                        mb_form_factor = normalize_form_factor(mb.form_factor)
+                        
+                        # Case is compatible if any of its form factors can accommodate the motherboard
+                        case_compatible = False
+                        for case_ff in case_form_factors:
+                            compatible_form_factors = form_factor_compatibility.get(case_ff, [case_ff])
+                            if mb_form_factor in compatible_form_factors:
+                                case_compatible = True
+                                break
+                        
+                        logger.info(f"Case compatibility check: Motherboard {mb.name} ({mb_form_factor}) with Case {case.name} ({case.form_factor}): {case_compatible}")
+                        if not case_compatible:
+                            logger.warning(f"Incompatible form factors: Motherboard {mb.name} ({mb_form_factor}) doesn't fit in Case {case.name} ({case.form_factor})")
+                
+                # If everything is compatible, return as is
+                if socket_compatible and case_compatible:
+                    logger.info(f"CPU {cpu.name} is compatible with motherboard {mb.name}")
+                    return components, explanation
+                
+                # Socket incompatibility - try to fix
+                if not socket_compatible:
+                    logger.warning(f"Incompatible components: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket})")
+                    
+                    # Try to find a better motherboard for this CPU from our recommendations
+                    found_compatible_mb = False
+                    for mb_rec in recommendations.get("motherboards", []):
+                        rec_mb_socket = mb_rec.get("socket", "").lower().replace('socket ', '').strip()
+                        
+                        # Special case for Socket 1851
+                        if ('1851' in cpu_socket or '1851' in rec_mb_socket):
+                            socket_match = cpu_socket == rec_mb_socket
+                        else:
+                            socket_match = (cpu_socket == rec_mb_socket or cpu_socket in rec_mb_socket or rec_mb_socket in cpu_socket)
+                        
+                        if socket_match:
+                            components["motherboard_id"] = mb_rec["id"]
+                            logger.info(f"Found compatible motherboard: {mb_rec['name']} for CPU {cpu.name}")
+                            explanation += f" NOTE: Updated motherboard to {mb_rec['name']} for compatibility with {cpu.name}."
+                            found_compatible_mb = True
+                            break
+                    
+                    # If no compatible motherboard found, try a compatible CPU instead
+                    if not found_compatible_mb:
+                        for cpu_rec in recommendations.get("cpus", []):
+                            rec_cpu_socket = cpu_rec.get("socket", "").lower().replace('socket ', '').strip()
+                            
+                            # Special case for Socket 1851
+                            if ('1851' in mb_socket or '1851' in rec_cpu_socket):
+                                socket_match = mb_socket == rec_cpu_socket
+                            else:
+                                socket_match = (rec_cpu_socket == mb_socket or rec_cpu_socket in mb_socket or mb_socket in rec_cpu_socket)
+                            
+                            if socket_match:
+                                components["cpu_id"] = cpu_rec["id"]
+                                logger.info(f"Found compatible CPU: {cpu_rec['name']} for motherboard {mb.name}")
+                                explanation += f" NOTE: Updated CPU to {cpu_rec['name']} for compatibility with {mb.name}."
+                                break
+                
                 return components, explanation
-            
-            # Fetch both components
-            cpu = db.query(CPU).filter(CPU.id == components["cpu_id"]).first()
-            mb = db.query(Motherboard).filter(Motherboard.id == components["motherboard_id"]).first()
-            
-            if not cpu or not mb or not cpu.socket or not mb.socket:
+            except Exception as e:
+                logger.error(f"Error in ensure_compatible_cpu_motherboard: {e}")
+                logger.error(traceback.format_exc())
                 return components, explanation
-            
-            # Normalize sockets for comparison
-            cpu_socket = cpu.socket.lower().replace('socket ', '').strip()
-            mb_socket = mb.socket.lower().replace('socket ', '').strip()
-            
-            # Check if compatible
-            if cpu_socket == mb_socket or cpu_socket in mb_socket or mb_socket in cpu_socket:
-                logger.info(f"CPU {cpu.name} is compatible with motherboard {mb.name}")
-                return components, explanation
-            
-            logger.warning(f"Incompatible components: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket})")
-            
-            # Try to find a better motherboard for this CPU from our recommendations
-            found_compatible_mb = False
-            for mb_rec in recommendations.get("motherboards", []):
-                rec_mb_socket = mb_rec.get("socket", "").lower().replace('socket ', '').strip()
-                if cpu_socket == rec_mb_socket or cpu_socket in rec_mb_socket or rec_mb_socket in cpu_socket:
-                    components["motherboard_id"] = mb_rec["id"]
-                    logger.info(f"Found compatible motherboard: {mb_rec['name']} for CPU {cpu.name}")
-                    explanation += f" NOTE: Updated motherboard to {mb_rec['name']} for compatibility with {cpu.name}."
-                    found_compatible_mb = True
-                    break
-            
-            # If no compatible motherboard found, try a compatible CPU instead
-            if not found_compatible_mb:
-                for cpu_rec in recommendations.get("cpus", []):
-                    rec_cpu_socket = cpu_rec.get("socket", "").lower().replace('socket ', '').strip()
-                    if rec_cpu_socket == mb_socket or rec_cpu_socket in mb_socket or mb_socket in rec_cpu_socket:
-                        components["cpu_id"] = cpu_rec["id"]
-                        logger.info(f"Found compatible CPU: {cpu_rec['name']} for motherboard {mb.name}")
-                        explanation += f" NOTE: Updated CPU to {cpu_rec['name']} for compatibility with {mb.name}."
-                        break
-            
-            return components, explanation
 
         # Then before creating the optimized_build, add:
-        result_components, explanation = ensure_compatible_cpu_motherboard(result_components, explanation)
+        try:
+            result_components, explanation = ensure_compatible_cpu_motherboard(result_components, explanation)
 
-        # Fetch components using final IDs
-        cpu = get_component_by_id(CPU, result_components["cpu_id"], db)
-        if not cpu and result_components["cpu_id"]:
-            logger.warning("CPU with ID %s not found in database", result_components["cpu_id"])
+            # Fetch components using final IDs
+            cpu = get_component_by_id(CPU, result_components["cpu_id"], db)
+            if not cpu and result_components["cpu_id"]:
+                logger.warning("CPU with ID %s not found in database", result_components["cpu_id"])
 
-        gpu = get_component_by_id(GPU, result_components["gpu_id"], db)
-        if not gpu and result_components["gpu_id"]:
-            logger.warning("GPU with ID %s not found in database", result_components["gpu_id"])
+            gpu = get_component_by_id(GPU, result_components["gpu_id"], db)
+            if not gpu and result_components["gpu_id"]:
+                logger.warning("GPU with ID %s not found in database", result_components["gpu_id"])
 
-        motherboard = get_component_by_id(Motherboard, result_components["motherboard_id"], db)
-        ram = get_component_by_id(RAM, result_components["ram_id"], db)
-        psu = get_component_by_id(PSU, result_components["psu_id"], db)
-        case = get_component_by_id(Case, result_components["case_id"], db)
-        storage = get_component_by_id(Storage, result_components["storage_id"], db)
-        cooler = get_component_by_id(Cooler, result_components["cooler_id"], db)
+            motherboard = get_component_by_id(Motherboard, result_components["motherboard_id"], db)
+            ram = get_component_by_id(RAM, result_components["ram_id"], db)
+            psu = get_component_by_id(PSU, result_components["psu_id"], db)
+            case = get_component_by_id(Case, result_components["case_id"], db)
+            storage = get_component_by_id(Storage, result_components["storage_id"], db)
+            cooler = get_component_by_id(Cooler, result_components["cooler_id"], db)
 
-        # Create the optimized build 
-        optimized_build = OptimizedBuildOut(
-            id=1,
-            name="Optimized Build",
-            purpose=purpose,
-            user_id=current_user.id,
-            cpu_id=result_components["cpu_id"],
-            gpu_id=result_components["gpu_id"],
-            motherboard_id=result_components["motherboard_id"],
-            ram_id=result_components["ram_id"],
-            psu_id=result_components["psu_id"],
-            case_id=result_components["case_id"],
-            storage_id=result_components["storage_id"],
-            cooler_id=result_components["cooler_id"],
-            cpu=cpu,
-            gpu=gpu,
-            motherboard=motherboard,
-            ram=ram,
-            psu=psu,
-            case=case,
-            storage=storage,
-            cooler=cooler,
-            explanation=explanation,
-            similarity_score=0.95,
-            created_at=current_time,
-            updated_at=current_time
-        )
+            # Create the optimized build 
+            optimized_build = OptimizedBuildOut(
+                id=1,
+                name="Optimized Build",
+                purpose=purpose,
+                user_id=current_user.id,
+                cpu_id=result_components["cpu_id"],
+                gpu_id=result_components["gpu_id"],
+                motherboard_id=result_components["motherboard_id"],
+                ram_id=result_components["ram_id"],
+                psu_id=result_components["psu_id"],
+                case_id=result_components["case_id"],
+                storage_id=result_components["storage_id"],
+                cooler_id=result_components["cooler_id"],
+                cpu=cpu,
+                gpu=gpu,
+                motherboard=motherboard,
+                ram=ram,
+                psu=psu,
+                case=case,
+                storage=storage,
+                cooler=cooler,
+                explanation=explanation,
+                similarity_score=0.95,
+                created_at=current_time,
+                updated_at=current_time
+            )
 
-        print("\n==== OPTIMIZE BUILD COMPLETE ====\n")
-        return optimized_build
+            print("\n==== OPTIMIZE BUILD COMPLETE ====\n")
+            return optimized_build
+            
+        except Exception as e:
+            logger.error(f"Error finalizing optimized build: {str(e)}")
+            logger.error(traceback.format_exc())
+            
+            # Return a basic response with original components to avoid breaking the UI
+            raise HTTPException(
+                status_code=500, 
+                detail=f"Error creating optimized build: {str(e)}"
+            )
         
     except (json.JSONDecodeError, KeyError, ValueError) as e:
-        print(f"ERROR parsing OpenAI response: {str(e)}")
-        # Return a basic response with original components to avoid breaking the UI
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Error processing optimization response: {str(e)}"
-        )
+        if "Error finalizing optimized build" in str(e) or "Error in OpenAI API call" in str(e):
+            # Already handled with proper error message and HTTP status
+            raise
+        else:
+            print(f"ERROR parsing OpenAI response: {str(e)}")
+            # Return a basic response with original components to avoid breaking the UI
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Error processing optimization response: {str(e)}"
+            )
 
 def extract_component_id(result, component_key):
     """Extract component ID from various response formats"""

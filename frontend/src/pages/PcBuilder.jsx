@@ -22,6 +22,7 @@ const normalizeFormFactor = (formFactor) => {
   
   // Handle common variations and Swedish translations
   if (ff.includes('utökad') || ff.includes('extended') || ff.includes('e-atx')) return 'e-atx';
+  if (ff.includes('ssi eeb') || ff.includes('eeb')) return 'ssi-eeb';
   if (ff.includes('micro')) return 'micro-atx';
   if (ff.includes('mini-mini')) return 'mini-itx'; 
   if (ff.includes('mini')) return 'mini-itx';
@@ -33,6 +34,7 @@ const normalizeFormFactor = (formFactor) => {
 };
 
 const formFactorCompatibility = {
+  "ssi-eeb": ["ssi-eeb", "e-atx", "atx", "micro-atx", "mini-itx"],
   "e-atx": ["e-atx", "atx", "micro-atx", "mini-itx"],
   "atx": ["atx", "micro-atx", "mini-itx"],
   "micro-atx": ["micro-atx", "mini-itx"],
@@ -100,6 +102,11 @@ const PcBuilder = () => {
         if (selectedComponents.cpu) {
           requirements.socket = selectedComponents.cpu.socket;
           console.log('Found CPU, adding socket requirement:', selectedComponents.cpu.socket);
+          
+          // Special case for Intel Ultra (Socket 1851)
+          if (requirements.socket && requirements.socket.toLowerCase().includes('1851')) {
+            console.log('Intel Ultra processor detected (Socket 1851) - requires specific motherboards');
+          }
         }
         
         if (selectedComponents.case) {
@@ -124,8 +131,16 @@ const PcBuilder = () => {
         
       case 'cpus':
         if (selectedComponents.motherboard) {
-          console.log('Found motherboard, creating CPU filter with socket:', selectedComponents.motherboard.socket);
-          return { socket: selectedComponents.motherboard.socket };
+          const socket = selectedComponents.motherboard.socket;
+          console.log('Found motherboard, creating CPU filter with socket:', socket);
+          
+          // Special case for Socket 1851 motherboards - they need exact matches
+          if (socket && socket.toLowerCase().includes('1851')) {
+            console.log('Socket 1851 motherboard detected - requires Intel Ultra processors');
+            return { socket: socket };
+          }
+          
+          return { socket: socket };
         }
         console.log('No motherboard selected for CPU filtering');
         return null;
@@ -259,7 +274,7 @@ const PcBuilder = () => {
     }
   };
 
-  const handleOptimizePC = async () => {
+  const handleOptimize = async () => {
     if (!isAuthenticated) {
       if (window.confirm('Du måste logga in för att använda denna funktion. Vill du logga in nu?')) {
         navigate('/login');
@@ -275,8 +290,34 @@ const PcBuilder = () => {
       return;
     }
 
+    if (!selectedComponents.purpose) {
+      alert("Välj ett användningsområde innan du optimerar din bygg.");
+      return;
+    }
+
+    // Check that we have at least CPU or GPU selected
+    if (!selectedComponents.cpu && !selectedComponents.gpu) {
+      alert("Välj minst en CPU eller GPU innan du optimerar din bygg.");
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      setIsLoading(true);
+      // Create payload with all component IDs
+      const payload = {
+        cpu_id: selectedComponents.cpu?.id,
+        gpu_id: selectedComponents.gpu?.id,
+        motherboard_id: selectedComponents.motherboard?.id,
+        ram_id: selectedComponents.ram?.id,
+        psu_id: selectedComponents.psu?.id,
+        case_id: selectedComponents.case?.id,
+        storage_id: selectedComponents.hdd?.id,
+        cooler_id: selectedComponents['cpu-cooler']?.id,
+        purpose: selectedComponents.purpose?.name || "general use"
+      }
+
+      console.log('Sending optimization request:', payload);
       
       const response = await fetch(`${API_URL}/api/optimize/build`, {
         method: 'POST',
@@ -284,26 +325,18 @@ const PcBuilder = () => {
           'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          cpu_id: selectedComponents.cpu?.id,
-          gpu_id: selectedComponents.gpu?.id,
-          motherboard_id: selectedComponents.motherboard?.id,
-          ram_id: selectedComponents.ram?.id,
-          psu_id: selectedComponents.psu?.id,
-          case_id: selectedComponents.case?.id,
-          storage_id: selectedComponents.hdd?.id,
-          cooler_id: selectedComponents['cpu-cooler']?.id,
-          purpose: selectedComponents.purpose?.name || "general use"
-        })
+        body: JSON.stringify(payload)
       });
 
       if (response.status === 401) {
         throw new Error('Din inloggning har upphört. Logga in igen för att fortsätta.');
       }
-      
+
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to optimize PC: ${response.status} - ${errorText}`);
+        console.error(`Failed to optimize PC: ${response.status} - ${errorText}`);
+        alert(`Ett fel uppstod under optimering: ${response.status} ${response.statusText}. Försök igen senare eller välj komponenter manuellt.`);
+        return;
       }
 
       const data = await response.json();
@@ -365,7 +398,7 @@ const PcBuilder = () => {
         alert(error.message);
         navigate('/login');
       } else {
-        alert('Kunde inte optimera datorn. Försök igen senare.');
+        alert(`Ett tekniskt fel uppstod: ${error.message}. Försök igen senare eller välj komponenter manuellt.`);
       }
     } finally {
       setIsLoading(false);
@@ -498,7 +531,7 @@ const PcBuilder = () => {
                     {isSaving ? 'Sparar...' : 'Spara dator'}
                   </button>
                   <button 
-                    onClick={handleOptimizePC}
+                    onClick={handleOptimize}
                     disabled={isLoading}
                     className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg"
                   >
