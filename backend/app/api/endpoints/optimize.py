@@ -13,6 +13,7 @@ from datetime import datetime
 import traceback
 import sys
 import re
+from sqlalchemy import or_
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -1049,110 +1050,136 @@ async def optimize_build(
         explanation = result.get("explanation", "No explanation provided")
         
         # Add this function inside the optimize_build function, right before creating the optimized_build object
-        def ensure_compatible_cpu_motherboard(components, explanation):
-            """Ensure CPU and motherboard are compatible, fixing if needed"""
+        def ensure_compatible_cpu_motherboard(components, db, explanation_parts):
+            """
+            Ensures compatibility between CPU and motherboard, and between motherboard and case.
+            Attempts to resolve incompatibilities if detected.
+            
+            Args:
+                components: Dictionary of component objects
+                db: Database session
+                explanation_parts: List to store explanation strings
+                
+            Returns:
+                Tuple of (updated components, explanation string)
+            """
             try:
-                if not components.get("cpu_id") or not components.get("motherboard_id"):
-                    return components, explanation
+                # Initialize logs for compatibility checks
+                logger.info("Checking CPU and motherboard compatibility...")
                 
-                # Fetch both components
-                cpu = db.query(CPU).filter(CPU.id == components["cpu_id"]).first()
-                mb = db.query(Motherboard).filter(Motherboard.id == components["motherboard_id"]).first()
+                if not components.get('cpu') or not components.get('motherboard'):
+                    logger.warning("Missing CPU or motherboard for compatibility check")
+                    return components, "Could not check CPU/motherboard compatibility (components missing)"
                 
-                if not cpu or not mb or not cpu.socket or not mb.socket:
-                    return components, explanation
+                cpu = components['cpu']
+                motherboard = components['motherboard']
                 
-                # Normalize sockets for comparison
-                cpu_socket = cpu.socket.lower().replace('socket ', '').strip()
-                mb_socket = mb.socket.lower().replace('socket ', '').strip()
+                # Normalize socket names for comparison
+                cpu_socket = cpu.socket.lower().strip() if cpu.socket else ""
+                mb_socket = motherboard.socket.lower().strip() if motherboard.socket else ""
                 
-                # Special case for Socket 1851 (Intel Ultra)
-                if ('1851' in cpu_socket or '1851' in mb_socket) and cpu_socket != mb_socket:
-                    logger.warning(f"Socket 1851 incompatibility: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket})")
-                    socket_compatible = False
-                # Special case for AM4/AM5
-                elif (cpu_socket == 'am4' and mb_socket == 'am4') or (cpu_socket == 'am5' and mb_socket == 'am5'):
-                    socket_compatible = True
-                    logger.info(f"Exact socket match: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket})")
+                compatible = False
+                
+                # Handle Socket 1851 special case
+                if "1851" in cpu_socket or "1851" in mb_socket:
+                    if cpu_socket == mb_socket:
+                        compatible = True
+                        logger.info(f"Socket 1851 match confirmed: {cpu_socket} = {mb_socket}")
+                    else:
+                        logger.warning(f"Socket 1851 mismatch: CPU {cpu_socket} vs MB {mb_socket}")
+                
+                # Handle AM4/AM5 special case
+                elif "am4" in cpu_socket or "am5" in cpu_socket:
+                    if cpu_socket == mb_socket:
+                        compatible = True
+                        logger.info(f"AM4/AM5 exact match confirmed: {cpu_socket} = {mb_socket}")
+                    else:
+                        logger.warning(f"AM4/AM5 socket mismatch: CPU {cpu_socket} vs MB {mb_socket}")
+                
+                # General compatibility check
                 else:
-                    # Check if compatible
-                    socket_compatible = (cpu_socket == mb_socket or cpu_socket in mb_socket or mb_socket in cpu_socket)
-                    logger.info(f"Socket compatibility check: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket}): {socket_compatible}")
+                    compatible = cpu_socket == mb_socket
+                    logger.info(f"Socket compatibility: {cpu_socket} and {mb_socket} are {'compatible' if compatible else 'not compatible'}")
                 
-                # Check motherboard and case compatibility if case is selected
-                case_compatible = True
-                if components.get("case_id") and mb.form_factor:
-                    case = db.query(Case).filter(Case.id == components["case_id"]).first()
-                    if case and case.form_factor:
-                        # Get all possible form factors from the case string (might have multiple values)
-                        case_form_factors = handle_multiple_form_factors(case.form_factor)
-                        mb_form_factor = normalize_form_factor(mb.form_factor)
-                        
-                        # Case is compatible if any of its form factors can accommodate the motherboard
-                        case_compatible = False
-                        for case_ff in case_form_factors:
-                            compatible_form_factors = form_factor_compatibility.get(case_ff, [case_ff])
-                            if mb_form_factor in compatible_form_factors:
-                                case_compatible = True
-                                break
-                        
-                        logger.info(f"Case compatibility check: Motherboard {mb.name} ({mb_form_factor}) with Case {case.name} ({case.form_factor}): {case_compatible}")
-                        if not case_compatible:
-                            logger.warning(f"Incompatible form factors: Motherboard {mb.name} ({mb_form_factor}) doesn't fit in Case {case.name} ({case.form_factor})")
-                
-                # If everything is compatible, return as is
-                if socket_compatible and case_compatible:
-                    logger.info(f"CPU {cpu.name} is compatible with motherboard {mb.name}")
-                    return components, explanation
-                
-                # Socket incompatibility - try to fix
-                if not socket_compatible:
-                    logger.warning(f"Incompatible components: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket})")
+                if not compatible:
+                    # Log the incompatibility
+                    logger.warning(f"CPU {cpu.name} (Socket {cpu.socket}) is incompatible with motherboard {motherboard.name} (Socket {motherboard.socket})")
+                    explanation_parts.append(f"⚠️ Original CPU {cpu.name} (Socket {cpu.socket}) is incompatible with motherboard {motherboard.name} (Socket {motherboard.socket})")
                     
-                    # Try to find a better motherboard for this CPU from our recommendations
-                    found_compatible_mb = False
-                    for mb_rec in recommendations.get("motherboards", []):
-                        rec_mb_socket = mb_rec.get("socket", "").lower().replace('socket ', '').strip()
+                    # Try to find a compatible motherboard
+                    logger.info("Trying to find a compatible motherboard...")
+                    try:
+                        compatible_motherboard = db.query(Motherboard).filter(
+                            Motherboard.socket == cpu.socket,
+                            Motherboard.id != motherboard.id
+                        ).first()
                         
-                        # Special case for Socket 1851
-                        if ('1851' in cpu_socket or '1851' in rec_mb_socket):
-                            socket_match = cpu_socket == rec_mb_socket
+                        if compatible_motherboard:
+                            components['motherboard'] = compatible_motherboard
+                            logger.info(f"Found compatible motherboard: {compatible_motherboard.name} (Socket {compatible_motherboard.socket})")
+                            explanation_parts.append(f"✅ Replaced with compatible motherboard: {compatible_motherboard.name} (Socket {compatible_motherboard.socket})")
                         else:
-                            socket_match = (cpu_socket == rec_mb_socket or cpu_socket in rec_mb_socket or rec_mb_socket in cpu_socket)
-                        
-                        if socket_match:
-                            components["motherboard_id"] = mb_rec["id"]
-                            logger.info(f"Found compatible motherboard: {mb_rec['name']} for CPU {cpu.name}")
-                            explanation += f" NOTE: Updated motherboard to {mb_rec['name']} for compatibility with {cpu.name}."
-                            found_compatible_mb = True
-                            break
-                    
-                    # If no compatible motherboard found, try a compatible CPU instead
-                    if not found_compatible_mb:
-                        for cpu_rec in recommendations.get("cpus", []):
-                            rec_cpu_socket = cpu_rec.get("socket", "").lower().replace('socket ', '').strip()
+                            # If no compatible motherboard found, try finding a compatible CPU
+                            logger.info("No compatible motherboard found. Trying to find a compatible CPU...")
+                            compatible_cpu = db.query(CPU).filter(
+                                CPU.socket == motherboard.socket,
+                                CPU.id != cpu.id
+                            ).first()
                             
-                            # Special case for Socket 1851
-                            if ('1851' in mb_socket or '1851' in rec_cpu_socket):
-                                socket_match = mb_socket == rec_cpu_socket
+                            if compatible_cpu:
+                                components['cpu'] = compatible_cpu
+                                logger.info(f"Found compatible CPU: {compatible_cpu.name} (Socket {compatible_cpu.socket})")
+                                explanation_parts.append(f"✅ Replaced with compatible CPU: {compatible_cpu.name} (Socket {compatible_cpu.socket})")
                             else:
-                                socket_match = (rec_cpu_socket == mb_socket or rec_cpu_socket in mb_socket or mb_socket in rec_cpu_socket)
-                            
-                            if socket_match:
-                                components["cpu_id"] = cpu_rec["id"]
-                                logger.info(f"Found compatible CPU: {cpu_rec['name']} for motherboard {mb.name}")
-                                explanation += f" NOTE: Updated CPU to {cpu_rec['name']} for compatibility with {mb.name}."
-                                break
+                                logger.warning("Could not find compatible CPU or motherboard")
+                                explanation_parts.append("❌ Could not find compatible CPU or motherboard. Manual inspection required.")
+                    except Exception as e:
+                        logger.error(f"Error finding compatible components: {str(e)}")
+                        explanation_parts.append("❌ Error finding compatible components. Manual inspection required.")
                 
-                return components, explanation
+                # Also check case compatibility with motherboard
+                if components.get('case') and components.get('motherboard'):
+                    case = components['case']
+                    motherboard = components['motherboard']
+                    
+                    case_form_factor = normalize_form_factor(case.form_factor)
+                    mb_form_factor = normalize_form_factor(motherboard.form_factor)
+                    
+                    case_compatible = is_case_compatible_with_motherboard(case_form_factor, mb_form_factor)
+                    logger.info(f"Case compatibility: {case.name} ({case_form_factor}) and {motherboard.name} ({mb_form_factor}) are {'compatible' if case_compatible else 'not compatible'}")
+                    
+                    if not case_compatible:
+                        explanation_parts.append(f"⚠️ Case {case.name} (supports {case.form_factor}) may not fit motherboard {motherboard.name} ({motherboard.form_factor})")
+                        
+                        # Try to find a compatible case
+                        try:
+                            logger.info(f"Trying to find a case compatible with {mb_form_factor}...")
+                            compatible_cases = db.query(Case).filter(
+                                or_(
+                                    Case.form_factor.like(f"%{mb_form_factor}%"),
+                                    Case.form_factor.like("%ATX%") if "ATX" in mb_form_factor else False
+                                ),
+                                Case.id != case.id
+                            ).limit(5).all()
+                            
+                            if compatible_cases:
+                                components['case'] = compatible_cases[0]  # Choose the first one
+                                logger.info(f"Found compatible case: {compatible_cases[0].name} (supports {compatible_cases[0].form_factor})")
+                                explanation_parts.append(f"✅ Replaced with compatible case: {compatible_cases[0].name} (supports {compatible_cases[0].form_factor})")
+                        except Exception as e:
+                            logger.error(f"Error finding compatible case: {str(e)}")
+                            explanation_parts.append("❌ Error finding compatible case. Manual inspection required.")
+                
+                return components, "\n".join(explanation_parts)
             except Exception as e:
-                logger.error(f"Error in ensure_compatible_cpu_motherboard: {e}")
+                logger.error(f"Error in compatibility check: {str(e)}")
                 logger.error(traceback.format_exc())
-                return components, explanation
+                explanation_parts.append(f"❌ Error checking component compatibility: {str(e)}")
+                return components, "\n".join(explanation_parts)
 
         # Then before creating the optimized_build, add:
         try:
-            result_components, explanation = ensure_compatible_cpu_motherboard(result_components, explanation)
+            result_components, explanation = ensure_compatible_cpu_motherboard(result_components, db, [])
 
             # Fetch components using final IDs
             cpu = get_component_by_id(CPU, result_components["cpu_id"], db)
@@ -1190,15 +1217,40 @@ async def optimize_build(
             if current_components:
                 try:
                     # Convert component analysis to the proper model
+                    # Ensure all fields are proper lists
+                    analysis_list = component_analysis.get("analysis", [])
+                    missing_components_list = component_analysis.get("missing_components", [])
+                    compatibility_issues_list = component_analysis.get("compatibility_issues", [])
+                    suggested_upgrades_list = component_analysis.get("suggested_upgrades", [])
+                    
+                    # Ensure the lists contain correctly formatted dictionaries
+                    for i, item in enumerate(analysis_list):
+                        if not isinstance(item, dict):
+                            analysis_list[i] = {"message": str(item)}
+                    
+                    for lists in [missing_components_list, compatibility_issues_list, suggested_upgrades_list]:
+                        for i, item in enumerate(lists):
+                            if not isinstance(item, dict):
+                                lists[i] = {"component_type": "unknown", "message": str(item)}
+                    
                     component_analysis_model = ComponentAnalysis(
-                        analysis=component_analysis["analysis"],
-                        missing_components=component_analysis["missing_components"],
-                        compatibility_issues=component_analysis["compatibility_issues"],
-                        suggested_upgrades=component_analysis["suggested_upgrades"]
+                        analysis=analysis_list,
+                        missing_components=missing_components_list,
+                        compatibility_issues=compatibility_issues_list,
+                        suggested_upgrades=suggested_upgrades_list
                     )
+                    logger.info("Successfully created ComponentAnalysis model")
                 except Exception as e:
                     logger.error(f"Error creating ComponentAnalysis model: {str(e)}")
-                    # Don't include it if there's an error
+                    logger.error(traceback.format_exc())
+                    # Don't include it if there's an error - just create an empty one
+                    component_analysis_model = ComponentAnalysis(
+                        analysis=[],
+                        missing_components=[],
+                        compatibility_issues=[],
+                        suggested_upgrades=[]
+                    )
+                    logger.info("Created fallback empty ComponentAnalysis model")
             
             optimized_build = OptimizedBuildOut(
                 id=1,
