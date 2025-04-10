@@ -603,9 +603,21 @@ async def optimize_build(
         for component_type, components_list in recommendations.items():
             simplified_recommendations[component_type] = [simplify_component_data(c) for c in components_list[:2]]  # Only include top 2
 
-        # Update your prompt to use these simplified versions
+        # Calculate total price before prompt
+        current_total = sum(comp.get('price', 0) for comp in simplified_current.values())
+        recommended_total = sum(comp.get('price', 0) for comp in simplified_recommendations.values())
+
         prompt = f"""
         Analyze this PC build for {purpose}:
+
+        Component Priority (1 = highest):
+        - 4K Gaming: GPU(1), CPU(2), RAM(3), PSU(4), Storage(5), Case(6), Cooler(7)
+        - 1440p Gaming: GPU(1), CPU(2), RAM(3), PSU(4), Storage(5), Case(6), Cooler(7)
+        - Workstation: CPU(1), RAM(2), Storage(3), GPU(4), PSU(5), Case(6), Cooler(7)
+        - General Use: CPU(1), RAM(2), Storage(3), PSU(4), Case(5), GPU(6), Cooler(7)
+
+        Current build total: {current_total} SEK
+        Recommended components total: {recommended_total} SEK
 
         Current components:
         ```json
@@ -618,14 +630,48 @@ async def optimize_build(
         ```
 
         Requirements by purpose:
-        - 4K Gaming: High-end GPU (12GB+ VRAM), 850W+ PSU, 32GB RAM
-        - Gaming: Mid/high GPU, 750W+ PSU, 16GB+ RAM
-        - Workstation: Strong CPU, 32GB+ RAM, Large SSD
-        - General Use: Balanced components, 650W+ PSU
+        - 4K Gaming: 
+          * GPU: 12GB+ VRAM, RTX 4070 Ti or better
+          * CPU: 8+ cores, i7/Ryzen 7 or better
+          * RAM: 32GB DDR5, 6000MHz+
+          * PSU: 850W+ Gold rated
+          * Storage: 1TB+ NVMe SSD
+          * Cooling: High-end air or AIO liquid cooler
+
+        - 1440p Gaming:
+          * GPU: 8GB+ VRAM, RTX 4060 Ti or better
+          * CPU: 6+ cores, i5/Ryzen 5 or better
+          * RAM: 16GB DDR4/5, 3600MHz+
+          * PSU: 750W+ Bronze rated
+          * Storage: 1TB SSD
+          * Cooling: Mid-range air cooler
+
+        - Workstation:
+          * CPU: 12+ cores, i9/Ryzen 9 or better
+          * RAM: 32GB+ DDR5, 4800MHz+
+          * GPU: Professional card or high-end gaming GPU
+          * PSU: 850W+ Gold rated
+          * Storage: 2TB+ NVMe SSD
+          * Cooling: High-end air or AIO liquid cooler
+
+        - General Use:
+          * CPU: 4+ cores, i3/Ryzen 3 or better
+          * RAM: 16GB DDR4, 3200MHz+
+          * GPU: Integrated or entry-level discrete
+          * PSU: 650W+ Bronze rated
+          * Storage: 500GB+ SSD
+          * Cooling: Basic air cooler
+
+        Compatibility Rules:
+        1. CPU socket must match motherboard socket
+        2. Case must support motherboard form factor
+        3. PSU wattage must exceed total system requirements by 20%
+        4. RAM must be compatible with motherboard (DDR4/DDR5)
+        5. Cooler must support CPU socket
 
         Format:
         {{
-          "explanation": "Brief explanation of needed changes",
+          "explanation": "Detailed explanation of needed changes and why",
           "components": {{
             "cpu_id": 1,
             "gpu_id": 2,
@@ -637,6 +683,14 @@ async def optimize_build(
             "cooler_id": 8
           }}
         }}
+
+        Future-Proofing Guidelines:
+        - CPU: Consider socket longevity and upgrade path
+        - GPU: Ensure sufficient VRAM for future games
+        - RAM: Leave room for expansion
+        - Storage: Consider NVMe for future speed requirements
+        - PSU: Headroom for future upgrades
+        - Case: Support for larger components
         """
 
         # Before sending to OpenAI
@@ -647,7 +701,15 @@ async def optimize_build(
             messages=[
                 {
                     "role": "system", 
-                    "content": "You are a PC expert. Recommend components based on the user's specific purpose. Ensure power supply and cooling match component requirements. JSON response only."
+                    "content": """You are a PC building expert specializing in component compatibility and performance optimization. 
+                    Your recommendations should:
+                    1. Ensure all components are compatible with each other
+                    2. Match the user's specific purpose and requirements
+                    3. Consider power efficiency and cooling requirements
+                    4. Provide detailed explanations for each component choice
+                    5. Maintain a reasonable price-to-performance ratio
+                    6. Consider future upgrade paths
+                    Respond with JSON only."""
                 },
                 {
                     "role": "user", 

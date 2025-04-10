@@ -3,15 +3,19 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import pcLogo from "../assets/logos/pc.svg";
 
+/**
+ * Main navigation component for the application
+ * Contains branding, authentication controls, and primary navigation links
+ */
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
 
   return (
     <nav className="h-auto min-w-full max-w-full fixed top-0 bg-white z-50">
-      {/* Top Bar with subtle gradient */}
+      {/* ===== TOP NAVIGATION BAR ===== */}
       <div className="flex h-16 items-center px-6 bg-gradient-to-r from-slate-50 to-white border-b border-slate-200">
-        {/* Logo Section */}
+        {/* LOGO & BRANDING */}
         <div className="flex flex-1">
           <Link 
             to="/" 
@@ -28,9 +32,10 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Auth Section */}
+        {/* USER AUTHENTICATION */}
         <div className="flex items-center gap-6">
           {isAuthenticated ? (
+            // LOGGED IN USER CONTROLS
             <div className="flex items-center gap-4">
               <span className="text-slate-600 hidden sm:inline font-medium">
                 Välkommen, {user?.email}
@@ -43,6 +48,7 @@ const Navbar = () => {
               </button>
             </div>
           ) : (
+            // LOGIN/REGISTER BUTTONS
             <div className="flex items-center gap-3">
               <Link 
                 to="/login" 
@@ -61,9 +67,10 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Navigation Bar */}
+      {/* ===== MAIN NAVIGATION LINKS ===== */}
       <div className="bg-gradient-to-r from-slate-700 to-slate-800 h-12 flex items-center px-6 shadow-md">
         <div className="flex gap-3 items-center">
+          {/* PRIMARY APPLICATION LINKS */}
           <NavLink to="/pcbuilder" currentPath={location.pathname}>
             Bygg din PC
           </NavLink>
@@ -81,7 +88,10 @@ const Navbar = () => {
   );
 };
 
-// Custom NavLink component with modern styling
+/**
+ * Custom NavLink component with active state styling
+ * Shows different background/text colors based on current route
+ */
 const NavLink = ({ to, children, currentPath }) => (
   <Link 
     to={to} 

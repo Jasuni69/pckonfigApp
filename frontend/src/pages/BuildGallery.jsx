@@ -4,6 +4,8 @@ import { API_URL } from '../config'
 import { Link } from 'react-router-dom'
 
 export default function BuildGallery() {
+  // ===== STATE MANAGEMENT =====
+  // Component data state
   const [components, setComponents] = useState({
     purpose: [],
     case: [],
@@ -19,7 +21,7 @@ export default function BuildGallery() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   
-  // State for component maps to look up details by ID
+  // Component lookup maps for efficient data access
   const [componentMaps, setComponentMaps] = useState({
     cpuMap: {},
     gpuMap: {},
@@ -28,7 +30,7 @@ export default function BuildGallery() {
     caseMap: {}
   })
 
-  // State for filters
+  // Filter criteria state
   const [filters, setFilters] = useState({
     purpose: null,
     cpu_id: null,
@@ -44,14 +46,15 @@ export default function BuildGallery() {
     limit: 20
   })
 
-  // Function to fetch published builds with current filters
+  // ===== DATA FETCHING =====
+  // Fetch builds based on current filter criteria
   const fetchPublishedBuilds = async (isInitialLoad = false) => {
     try {
       if (isInitialLoad) {
         setLoading(true);
       }
       
-      // Build query parameters from filters
+      // Build query parameters from active filters
       const queryParams = new URLSearchParams();
       if (filters.purpose) queryParams.append('purpose', filters.purpose);
       if (filters.cpu_id) queryParams.append('cpu_id', filters.cpu_id);
@@ -82,7 +85,7 @@ export default function BuildGallery() {
     }
   };
 
-  // Fetch components and builds
+  // Initial data loading - fetch all component data and builds
   useEffect(() => {
     const fetchComponents = async () => {
       try {
@@ -101,7 +104,7 @@ export default function BuildGallery() {
           responses.map(res => res.json())
         )
 
-        // Create component maps for looking up details
+        // Create lookup maps for efficient component access by ID
         const cpuMap = Object.fromEntries(cpus.map(cpu => [cpu.id, cpu]));
         const gpuMap = Object.fromEntries(gpus.map(gpu => [gpu.id, gpu]));
         const ramMap = Object.fromEntries(rams.map(ram => [ram.id, ram]));
@@ -122,7 +125,7 @@ export default function BuildGallery() {
           psu: psus
         })
         
-        // Fetch published builds after components are loaded
+        // Fetch builds after components are loaded
         fetchPublishedBuilds(true);
       } catch (err) {
         console.error('Error fetching components:', err)
@@ -134,26 +137,26 @@ export default function BuildGallery() {
     fetchComponents()
   }, [])
 
-  // Add a useEffect to fetch builds when filters change
+  // Refresh builds when filters change
   useEffect(() => {
     // Skip the initial render when components aren't loaded yet
     if (Object.keys(componentMaps.cpuMap).length > 0) {
       console.log("Filters changed, fetching builds:", filters);
       fetchPublishedBuilds(false);
     }
-  }, [filters, componentMaps.cpuMap]); // Add componentMaps.cpuMap as a dependency to ensure it's loaded
+  }, [filters, componentMaps.cpuMap]);
 
-  // Handle filter changes
+  // ===== EVENT HANDLERS =====
+  // Update filter state when a filter value changes
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({
       ...prev,
       [filterName]: value,
       skip: 0 // Reset pagination when changing filters
     }));
-    // Removed fetchPublishedBuilds() call - now handled by useEffect
   };
 
-  // Clear all filters
+  // Reset all filters to default values
   const clearFilters = () => {
     setFilters({
       purpose: null,
@@ -169,21 +172,21 @@ export default function BuildGallery() {
       skip: 0,
       limit: 20
     });
-    // Removed fetchPublishedBuilds() call - now handled by useEffect
   };
 
+  // ===== LOADING STATE UI =====
   if (loading) {
     return (
       <div className="flex min-h-screen">
+        {/* SKELETON: Sidebar */}
         <div className="w-64 bg-white border-r border-gray-200 p-4 mt-40">
-          {/* Skeleton sidebar */}
           <div className="flex flex-col gap-4">
             <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
             <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
             <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
             <div className="h-8 bg-gray-200 rounded animate-pulse w-full mt-2"></div>
             
-            {/* Skeleton dropdowns */}
+            {/* SKELETON: Filter dropdowns */}
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="flex flex-col gap-1">
                 <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
@@ -193,10 +196,11 @@ export default function BuildGallery() {
           </div>
         </div>
 
+        {/* SKELETON: Content area */}
         <div className="flex-1 p-4 bg-gradient-to-b from-slate-400 to-slate-200 mt-28">
           <div className="h-8 bg-gray-200 rounded animate-pulse w-48 mb-6"></div>
           
-          {/* Skeleton cards grid */}
+          {/* SKELETON: Build cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -215,6 +219,7 @@ export default function BuildGallery() {
     )
   }
 
+  // ===== ERROR STATE UI =====
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -225,9 +230,10 @@ export default function BuildGallery() {
 
   return (
     <div className="flex min-h-screen">
+      {/* SIDEBAR: Filters panel */}
       <div className="w-64 bg-white border-r border-gray-200 p-4 mt-40">
         <section role="search" className="flex flex-col gap-4">
-          {/* Header */}
+          {/* FILTER HEADER: Title and summary */}
           <div className="flex flex-col gap-2">
             <h2 className="text-lg font-semibold">Build Filters</h2>
             <div className="text-sm text-gray-600">
@@ -241,7 +247,7 @@ export default function BuildGallery() {
             </button>
           </div>
 
-          {/* Search Input */}
+          {/* SEARCH: Text search input */}
           <div className="relative">
             <input
               type="search"
@@ -250,7 +256,7 @@ export default function BuildGallery() {
             />
           </div>
 
-          {/* Searchable Dropdowns */}
+          {/* FILTER DROPDOWNS: Component selection */}
           <SearchBuildDropdown
             label="Användningsområde" 
             placeholder="Alla användningsområden"
@@ -329,7 +335,7 @@ export default function BuildGallery() {
             value={filters.psu_id ? components.psu.find(p => p.id === filters.psu_id)?.name : null}
           />
 
-          {/* Price Range */}
+          {/* PRICE RANGE: Min/max price filtering */}
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium">Pris</label>
             <div className="flex items-center gap-2">
@@ -357,7 +363,7 @@ export default function BuildGallery() {
                 min="0"
               />
             </div>
-            {/* Price Range Bar */}
+            {/* Price range visual indicator */}
             <div className="h-1 bg-gray-200 rounded">
               <div 
                 className="h-full bg-blue-600 rounded"
@@ -372,12 +378,13 @@ export default function BuildGallery() {
         </section>
       </div>
 
+      {/* MAIN CONTENT: Build cards grid */}
       <div className="flex-1 p-4 bg-gradient-to-b from-slate-400 to-slate-200 mt-28">
         <h1 className="text-2xl font-bold mb-6">Build Gallery</h1>
         
-        {/* Display builds grid */}
+        {/* Display builds grid or loading state */}
         {loading && Object.keys(componentMaps.cpuMap).length === 0 ? (
-          // Only show full skeleton loader for initial page load
+          // Show full skeleton loader only for initial page load
           <div className="space-y-4">
             <div className="h-8 bg-gray-200 rounded animate-pulse w-48 mb-6"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -401,7 +408,7 @@ export default function BuildGallery() {
                 // Get the associated saved build
                 const build = publishedBuild.build;
                 
-                // Calculate approximate total price
+                // Calculate total price from all components
                 const totalPrice = [
                   build.cpu?.price || 0,
                   build.gpu?.price || 0,
@@ -415,7 +422,9 @@ export default function BuildGallery() {
                 
                 return (
                   <div key={publishedBuild.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+                    {/* BUILD CARD: Individual build card with link */}
                     <Link to={`/build/${publishedBuild.id}`} className="block">
+                      {/* BUILD IMAGE */}
                       <div className="relative h-48 bg-gray-100">
                         <img 
                           src="/placeholder-image.jpg" 
@@ -424,13 +433,14 @@ export default function BuildGallery() {
                         />
                       </div>
                       
+                      {/* BUILD INFO */}
                       <div className="p-4">
                         <h3 className="font-semibold text-lg">{build.name}</h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          {/* Display key components */}
                           {build.cpu ? build.cpu.name : 'No CPU'} | {build.gpu ? build.gpu.name : 'No GPU'} | {build.ram ? build.ram.name : 'No RAM'} | {build.storage ? build.storage.name : 'No Storage'}
                         </p>
                         
+                        {/* RATING */}
                         {publishedBuild.avg_rating > 0 && (
                           <div className="flex items-center mt-2">
                             <div className="flex">
@@ -452,6 +462,7 @@ export default function BuildGallery() {
                           </div>
                         )}
                         
+                        {/* PRICE */}
                         <div className="mt-3">
                           <span className="font-bold text-lg">{totalPrice} kr</span>
                         </div>

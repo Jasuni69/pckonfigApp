@@ -11,8 +11,8 @@ const BuildDetail = () => {
   const [rating, setRating] = useState(0);
   const [commentSubmitting, setCommentSubmitting] = useState(false);
 
+  // ===== DATA FETCHING =====
   useEffect(() => {
-    // Fetch build details
     const fetchBuild = async () => {
       try {
         const response = await fetch(`${API_URL}/api/builds/public/${id}`);
@@ -35,6 +35,7 @@ const BuildDetail = () => {
     }
   }, [id]);
 
+  // ===== FORM HANDLERS =====
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!rating) {
@@ -44,7 +45,6 @@ const BuildDetail = () => {
 
     setCommentSubmitting(true);
     try {
-      // Get token from localStorage (assuming you store it there)
       const token = localStorage.getItem('token');
       if (!token) {
         alert('Du måste vara inloggad för att lämna en kommentar');
@@ -67,12 +67,10 @@ const BuildDetail = () => {
         throw new Error('Misslyckades att skicka kommentar');
       }
 
-      // Reset form
       setComment('');
       setRating(0);
       alert('Din kommentar har skickats!');
       
-      // Reload build to show updated ratings
       window.location.reload();
     } catch (err) {
       console.error('Error submitting comment:', err);
@@ -82,12 +80,13 @@ const BuildDetail = () => {
     }
   };
 
+  // ===== LOADING STATE UI =====
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-100 py-8 mt-28">
         <div className="container mx-auto px-4">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            {/* Skeleton Header */}
+            {/* SKELETON: Header */}
             <div className="bg-gray-800 p-6">
               <div className="h-8 bg-gray-700 rounded animate-pulse w-1/3 mb-3"></div>
               <div className="flex items-center mt-2">
@@ -101,14 +100,14 @@ const BuildDetail = () => {
               <div className="h-4 bg-gray-700 rounded animate-pulse w-1/2 mt-2"></div>
             </div>
             
-            {/* Skeleton Content */}
+            {/* SKELETON: Content */}
             <div className="p-6 flex flex-col md:flex-row gap-8">
-              {/* Skeleton Image */}
+              {/* SKELETON: Image */}
               <div className="md:w-1/3">
                 <div className="w-full h-64 bg-gray-200 rounded-lg animate-pulse"></div>
               </div>
               
-              {/* Skeleton Components List */}
+              {/* SKELETON: Components List */}
               <div className="md:w-2/3">
                 <div className="h-6 bg-gray-200 rounded animate-pulse w-1/4 mb-4"></div>
                 <div className="space-y-4">
@@ -126,7 +125,7 @@ const BuildDetail = () => {
               </div>
             </div>
             
-            {/* Skeleton Comments */}
+            {/* SKELETON: Comments */}
             <div className="p-6 bg-gray-50 border-t">
               <div className="h-6 bg-gray-200 rounded animate-pulse w-1/4 mb-4"></div>
               <div className="space-y-3">
@@ -141,6 +140,7 @@ const BuildDetail = () => {
     );
   }
 
+  // ===== ERROR STATE UI =====
   if (error) {
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
@@ -149,6 +149,7 @@ const BuildDetail = () => {
     );
   }
 
+  // ===== EMPTY STATE UI =====
   if (!build) {
     return (
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
@@ -159,7 +160,7 @@ const BuildDetail = () => {
 
   const buildData = build.build;
   
-  // Calculate total price
+  // Calculate total price from all components
   const totalPrice = [
     buildData.cpu?.price || 0,
     buildData.gpu?.price || 0,
@@ -175,7 +176,7 @@ const BuildDetail = () => {
     <div className="min-h-screen bg-slate-100 py-8 mt-28">
       <div className="container mx-auto px-4">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          {/* Build Header */}
+          {/* HEADER: Build title, rating and purpose */}
           <div className="bg-gray-800 text-white p-6">
             <h1 className="text-2xl font-bold">{buildData.name}</h1>
             <div className="mt-2 flex items-center">
@@ -196,12 +197,12 @@ const BuildDetail = () => {
                 {build.avg_rating ? build.avg_rating.toFixed(1) : 'No ratings'} ({build.rating_count || 0} reviews)
               </span>
             </div>
-            <p className="mt-2 text-gray-300">Purpose: {buildData.purpose || 'Not specified'}</p>
+            <p className="mt-2 text-gray-300">Användningsområde: {buildData.purpose || 'Ej specificerat'}</p>
           </div>
           
-          {/* Build Content */}
+          {/* CONTENT: Image and component list */}
           <div className="p-6 flex flex-col md:flex-row gap-8">
-            {/* Build Image */}
+            {/* IMAGE: Build preview */}
             <div className="md:w-1/3">
               <img 
                 src="/placeholder-image.jpg" 
@@ -210,11 +211,11 @@ const BuildDetail = () => {
               />
             </div>
             
-            {/* Components List */}
+            {/* COMPONENTS: List of PC parts */}
             <div className="md:w-2/3">
               <h2 className="text-xl font-semibold mb-4">Components</h2>
               <div className="space-y-4">
-                {/* CPU */}
+                {/* CPU item */}
                 <div className="flex justify-between items-center border-b pb-2">
                   <div>
                     <span className="font-medium capitalize">CPU: </span>
@@ -225,7 +226,7 @@ const BuildDetail = () => {
                   </div>
                 </div>
                 
-                {/* GPU */}
+                {/* GPU item */}
                 <div className="flex justify-between items-center border-b pb-2">
                   <div>
                     <span className="font-medium capitalize">GPU: </span>
@@ -236,7 +237,7 @@ const BuildDetail = () => {
                   </div>
                 </div>
                 
-                {/* Motherboard */}
+                {/* Motherboard item */}
                 <div className="flex justify-between items-center border-b pb-2">
                   <div>
                     <span className="font-medium capitalize">Motherboard: </span>
@@ -247,7 +248,7 @@ const BuildDetail = () => {
                   </div>
                 </div>
                 
-                {/* RAM */}
+                {/* RAM item */}
                 <div className="flex justify-between items-center border-b pb-2">
                   <div>
                     <span className="font-medium capitalize">RAM: </span>
@@ -258,7 +259,7 @@ const BuildDetail = () => {
                   </div>
                 </div>
                 
-                {/* Storage */}
+                {/* Storage item */}
                 <div className="flex justify-between items-center border-b pb-2">
                   <div>
                     <span className="font-medium capitalize">Storage: </span>
@@ -269,7 +270,7 @@ const BuildDetail = () => {
                   </div>
                 </div>
                 
-                {/* PSU */}
+                {/* PSU item */}
                 <div className="flex justify-between items-center border-b pb-2">
                   <div>
                     <span className="font-medium capitalize">PSU: </span>
@@ -280,7 +281,7 @@ const BuildDetail = () => {
                   </div>
                 </div>
                 
-                {/* Case */}
+                {/* Case item */}
                 <div className="flex justify-between items-center border-b pb-2">
                   <div>
                     <span className="font-medium capitalize">Case: </span>
@@ -291,7 +292,7 @@ const BuildDetail = () => {
                   </div>
                 </div>
                 
-                {/* Cooler */}
+                {/* Cooler item */}
                 <div className="flex justify-between items-center border-b pb-2">
                   <div>
                     <span className="font-medium capitalize">Cooler: </span>
@@ -302,7 +303,7 @@ const BuildDetail = () => {
                   </div>
                 </div>
                 
-                {/* Total Price */}
+                {/* Price summary */}
                 <div className="flex justify-between items-center pt-4 border-t border-gray-800">
                   <span className="text-lg font-bold">Total</span>
                   <span className="text-lg font-bold">{totalPrice} kr</span>
@@ -311,9 +312,10 @@ const BuildDetail = () => {
             </div>
           </div>
           
-          {/* Comments Section */}
+          {/* COMMENTS SECTION */}
           <div className="p-6 bg-gray-50 border-t">
             <h2 className="text-xl font-semibold mb-4">Leave a Comment</h2>
+            {/* FORM: Rating and comment submission */}
             <form onSubmit={handleCommentSubmit} className="space-y-4">
               <div>
                 <label className="block mb-2">Rating</label>
@@ -356,7 +358,7 @@ const BuildDetail = () => {
               </button>
             </form>
             
-            {/* Existing Comments */}
+            {/* REVIEWS: Existing comments display */}
             <div className="mt-8">
               <h2 className="text-xl font-semibold mb-4">Comments</h2>
               {build.ratings && build.ratings.length > 0 ? (
