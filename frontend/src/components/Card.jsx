@@ -14,6 +14,8 @@ const normalizeFormFactor = (formFactor) => {
   if (ff.includes('micro')) return 'micro-atx';
   if (ff.includes('mini-mini')) return 'mini-itx'; 
   if (ff.includes('mini')) return 'mini-itx';
+  if (ff === 'itx') return 'mini-itx'; // Explicitly handle ITX as mini-itx
+  if (ff.includes('itx')) return 'mini-itx'; // Handle any variant containing ITX
   if (ff === 'atx' || (ff.includes('atx') && !ff.includes('micro') && !ff.includes('mini'))) return 'atx';
   
   // Log unexpected form factors
@@ -257,8 +259,15 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
                   return reqSocket.includes('1851') && compSocket.includes('1851');
                 }
                 
+                // Special case for AM4/AM5 vs Socket AM4/AM5
+                if ((reqSocket === 'am4' && compSocket === 'am4') ||
+                    (reqSocket === 'am5' && compSocket === 'am5')) {
+                  return true;
+                }
+                
                 // For other sockets, partial matching is okay (e.g., 1700 matches 1700 Raptor Lake)
                 const matches = compSocket.includes(reqSocket) || reqSocket.includes(compSocket);
+                console.log(`Socket compatibility check: required='${reqSocket}', component='${compSocket}', matches=${matches}`);
                 return matches;
               }
               

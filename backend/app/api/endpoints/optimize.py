@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from core.deps import get_current_user
-from schemas import OptimizationRequest, OptimizedBuildOut
+from schemas import OptimizationRequest, OptimizedBuildOut, ComponentAnalysis
 from models import CPU, GPU, RAM, PSU, Case, Storage, Cooler, Motherboard
 from ChromaDB.manager import search_components
 from typing import List, Dict, Any, Optional, Tuple
@@ -37,6 +37,10 @@ def normalize_form_factor(form_factor):
         return 'mini-itx'
     if 'mini' in ff:
         return 'mini-itx'
+    if ff == 'itx':
+        return 'mini-itx'  # Explicitly handle ITX as mini-itx
+    if 'itx' in ff:
+        return 'mini-itx'  # Handle any variant containing ITX
     if ff == 'atx' or ('atx' in ff and 'micro' not in ff and 'mini' not in ff):
         return 'atx'
     
@@ -171,6 +175,166 @@ async def optimize_build(
         # Define the purpose for component search
         purpose = request.purpose or "general use"
         
+        # Current logic processes a request to optimize a PC build
+        # Let's analyze the current components first before making recommendations
+        
+        # Initialize analytics for current components
+        component_analysis = {
+            "analysis": [],
+            "missing_components": [],
+            "compatibility_issues": [],
+            "suggested_upgrades": []
+        }
+        
+        # Check if required components are missing
+        essential_components = ["cpu", "motherboard", "ram", "psu", "storage"]
+        for comp in essential_components:
+            if comp not in current_components:
+                message = f"Din dator saknar {comp} (translated component name)."
+                component_analysis["missing_components"].append({
+                    "component_type": comp,
+                    "message": message
+                })
+        
+        # Analyze compatibility of existing components
+        if "cpu" in current_components and "motherboard" in current_components:
+            cpu_socket = current_components["cpu"]["socket"].lower() if current_components["cpu"].get("socket") else ""
+            mb_socket = current_components["motherboard"]["socket"].lower() if current_components["motherboard"].get("socket") else ""
+            
+            if cpu_socket and mb_socket:
+                # Normalize socket names for comparison
+                cpu_socket = cpu_socket.replace('socket ', '').strip()
+                mb_socket = mb_socket.replace('socket ', '').strip()
+                
+                # Special case for Socket 1851
+                if "1851" in cpu_socket or "1851" in mb_socket:
+                    if "1851" not in cpu_socket or "1851" not in mb_socket:
+                        component_analysis["compatibility_issues"].append({
+                            "component_types": ["cpu", "motherboard"],
+                            "message": "CPU och moderkort är inte kompatibla. Socket 1851 (Intel Ultra) kräver särskilt moderkort."
+                        })
+                # Special case for AM4/AM5
+                elif (cpu_socket == "am4" and mb_socket != "am4") or (cpu_socket == "am5" and mb_socket != "am5"):
+                    component_analysis["compatibility_issues"].append({
+                        "component_types": ["cpu", "motherboard"],
+                        "message": f"CPU Socket {cpu_socket.upper()} är inte kompatibel med moderkort socket {mb_socket.upper()}."
+                    })
+                # General compatibility check
+                elif not (cpu_socket in mb_socket or mb_socket in cpu_socket):
+                    component_analysis["compatibility_issues"].append({
+                        "component_types": ["cpu", "motherboard"],
+                        "message": f"CPU Socket {cpu_socket.upper()} och moderkort socket {mb_socket.upper()} är inte kompatibla."
+                    })
+        
+        # Analyze motherboard and case compatibility
+        if "motherboard" in current_components and "case" in current_components:
+            mobo_ff = normalize_form_factor(current_components["motherboard"].get("form_factor", ""))
+            case_ff = normalize_form_factor(current_components["case"].get("form_factor", ""))
+            
+            if mobo_ff and case_ff:
+                if case_ff in form_factor_compatibility:
+                    compatible_ffs = form_factor_compatibility[case_ff]
+                    if mobo_ff not in compatible_ffs:
+                        component_analysis["compatibility_issues"].append({
+                            "component_types": ["motherboard", "case"],
+                            "message": f"Moderkortets formfaktor ({mobo_ff}) passar inte i chassit ({case_ff})."
+                        })
+                else:
+                    logger.warning(f"Unknown case form factor for compatibility check: {case_ff}")
+        
+        # Check if PSU has enough wattage for GPU
+        if "gpu" in current_components and "psu" in current_components:
+            gpu_wattage = 0
+            if current_components["gpu"].get("recommended_wattage"):
+                try:
+                    gpu_wattage = int(current_components["gpu"]["recommended_wattage"])
+                except (ValueError, TypeError):
+                    gpu_wattage = 0
+            else:
+                # Estimate based on GPU memory if available
+                if current_components["gpu"].get("memory"):
+                    try:
+                        memory_gb = extract_gb(current_components["gpu"]["memory"])
+                        if memory_gb:
+                            # Rough estimation based on VRAM
+                            gpu_wattage = 75 + (memory_gb * 20)
+                    except Exception as e:
+                        logger.error(f"Error estimating GPU wattage: {str(e)}")
+            
+            # Minimum system wattage = GPU + base components (CPU, motherboard, etc.)
+            min_system_wattage = gpu_wattage + 150  # Base system wattage
+            if "cpu" in current_components:
+                min_system_wattage += 100  # Typical CPU wattage
+            
+            recommended_wattage = int(min_system_wattage * 1.2)  # Add 20% headroom
+            
+            psu_wattage = 0
+            try:
+                psu_wattage = int(current_components["psu"].get("wattage", 0))
+            except (ValueError, TypeError):
+                psu_wattage = 0
+            
+            if psu_wattage < recommended_wattage:
+                component_analysis["compatibility_issues"].append({
+                    "component_types": ["gpu", "psu"],
+                    "message": f"Nätaggregatet ({psu_wattage}W) kan vara för svagt för ditt grafikkort. Vi rekommenderar minst {recommended_wattage}W."
+                })
+        
+        # Analyze components for purpose-specific suitability
+        purpose_lower = purpose.lower()
+        
+        # Check if RAM is sufficient for the purpose
+        if "ram" in current_components:
+            ram_capacity = 0
+            if current_components["ram"].get("capacity"):
+                try:
+                    ram_capacity = float(current_components["ram"]["capacity"])
+                except (ValueError, TypeError):
+                    ram_str = str(current_components["ram"]["capacity"])
+                    ram_match = re.search(r"(\d+(?:\.\d+)?)", ram_str)
+                    if ram_match:
+                        ram_capacity = float(ram_match.group(1))
+            
+            needed_ram = 8  # Default minimal RAM
+            if "gaming" in purpose_lower:
+                if "4k" in purpose_lower:
+                    needed_ram = 32
+                else:
+                    needed_ram = 16
+            elif any(p in purpose_lower for p in ["utveckling", "development", "programmering", "coding"]):
+                needed_ram = 16
+            elif any(p in purpose_lower for p in ["video", "editing", "redigering", "rendering"]):
+                needed_ram = 32
+            elif any(p in purpose_lower for p in ["ai", "machine learning", "deep learning"]):
+                needed_ram = 32
+            
+            if ram_capacity < needed_ram:
+                component_analysis["suggested_upgrades"].append({
+                    "component_type": "ram",
+                    "message": f"För '{purpose}' rekommenderas minst {int(needed_ram)}GB RAM. Du har {int(ram_capacity)}GB."
+                })
+        
+        # Check if GPU is suitable for 4K gaming
+        if "gaming" in purpose_lower and "4k" in purpose_lower and "gpu" in current_components:
+            gpu_vram = extract_gb(current_components["gpu"].get("memory", ""))
+            
+            if gpu_vram is not None and gpu_vram < 8:
+                component_analysis["suggested_upgrades"].append({
+                    "component_type": "gpu",
+                    "message": f"För 4K-gaming rekommenderas ett grafikkort med minst 8GB VRAM. Ditt kort har endast {int(gpu_vram)}GB."
+                })
+        
+        # Add the component analysis to the API response
+        processed_components = {}
+        for comp_type, comp in current_components.items():
+            processed_components[comp_type] = simplify_component_data(comp)
+        
+        # Check if we are starting with no components - if so, populate suggestions
+        if not current_components:
+            component_analysis["analysis"].append({
+                "message": "Du har inte valt några komponenter än. Här är förslag på komponenter baserat på ditt användningsområde."
+            })
+
         # Function to extract and format component data from ChromaDB results
         def extract_components_from_results(results: Dict[str, Any], component_type: str, limit: int = 3) -> List[Dict[str, Any]]:
             components = []
@@ -906,9 +1070,14 @@ async def optimize_build(
                 if ('1851' in cpu_socket or '1851' in mb_socket) and cpu_socket != mb_socket:
                     logger.warning(f"Socket 1851 incompatibility: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket})")
                     socket_compatible = False
+                # Special case for AM4/AM5
+                elif (cpu_socket == 'am4' and mb_socket == 'am4') or (cpu_socket == 'am5' and mb_socket == 'am5'):
+                    socket_compatible = True
+                    logger.info(f"Exact socket match: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket})")
                 else:
                     # Check if compatible
                     socket_compatible = (cpu_socket == mb_socket or cpu_socket in mb_socket or mb_socket in cpu_socket)
+                    logger.info(f"Socket compatibility check: CPU {cpu.name} ({cpu_socket}) and motherboard {mb.name} ({mb_socket}): {socket_compatible}")
                 
                 # Check motherboard and case compatibility if case is selected
                 case_compatible = True
@@ -1001,6 +1170,26 @@ async def optimize_build(
             storage = get_component_by_id(Storage, result_components["storage_id"], db)
             cooler = get_component_by_id(Cooler, result_components["cooler_id"], db)
 
+            # Convert component analysis to the proper model
+            component_analysis_model = ComponentAnalysis(
+                analysis=component_analysis["analysis"],
+                missing_components=component_analysis["missing_components"],
+                compatibility_issues=component_analysis["compatibility_issues"],
+                suggested_upgrades=component_analysis["suggested_upgrades"]
+            )
+            
+            # Add component analysis to explanation if there are issues
+            if component_analysis["compatibility_issues"] or component_analysis["suggested_upgrades"]:
+                explanation += "\n\nViktig analys av dina valda komponenter:"
+                
+                if component_analysis["compatibility_issues"]:
+                    explanation += "\n• Kompatibilitetsproblem hittades mellan dina komponenter."
+                
+                if component_analysis["suggested_upgrades"]:
+                    explanation += "\n• Vissa komponenter kan behöva uppgraderas för ditt användningsområde."
+                
+                explanation += "\n\nSe detaljerad analys nedan för mer information."
+            
             # Create the optimized build 
             optimized_build = OptimizedBuildOut(
                 id=1,
@@ -1025,6 +1214,7 @@ async def optimize_build(
                 cooler=cooler,
                 explanation=explanation,
                 similarity_score=0.95,
+                component_analysis=component_analysis_model,
                 created_at=current_time,
                 updated_at=current_time
             )

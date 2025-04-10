@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, ConfigDict
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 # Component schemas
@@ -187,9 +187,24 @@ class OptimizationRequest(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+class ComponentAnalysisItem(BaseModel):
+    component_type: str
+    message: str
+
+class ComponentCompatibilityIssue(BaseModel):
+    component_types: List[str]
+    message: str
+
+class ComponentAnalysis(BaseModel):
+    analysis: List[Dict[str, Any]] = []
+    missing_components: List[ComponentAnalysisItem] = []
+    compatibility_issues: List[ComponentCompatibilityIssue] = []
+    suggested_upgrades: List[ComponentAnalysisItem] = []
+
 class OptimizedBuildOut(SavedBuildOut):
     explanation: str  # AI's explanation for the recommendations
     similarity_score: float  # ChromaDB similarity score
+    component_analysis: Optional[ComponentAnalysis] = None  # New field for component analysis
 
     model_config = ConfigDict(from_attributes=True)
 

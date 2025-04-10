@@ -381,3 +381,38 @@ async def get_published_build(
             status_code=500,
             detail=f"Det gick inte att hämta den publicerade datorn: {str(e)}"
         )
+
+@router.get("/extras")
+def get_extras(db: Session = Depends(get_db)):
+    """Return extra/optional components or accessories for PC builds"""
+    # This is a placeholder endpoint, now enhanced with a reference to AI recommendations
+    return [
+        {
+            "id": 1,
+            "name": "AI Rekommendationer",
+            "description": "Använd den nya AI-rekommendationsknappen istället för detta alternativ",
+            "price": "0",
+            "type": "ai"
+        },
+        {
+            "id": 2,
+            "name": "Wifi-Kort",
+            "description": "Extra wifi-anslutning om ditt moderkort saknar inbyggt wifi",
+            "price": "599 kr",
+            "type": "network"
+        },
+        {
+            "id": 3,
+            "name": "RGB Belysning",
+            "description": "Dekorativ belysning för din dator",
+            "price": "399 kr",
+            "type": "aesthetic"
+        },
+        {
+            "id": 4,
+            "name": "Extra Fläktar",
+            "description": "Förbättrad kylning för din dator",
+            "price": "249 kr",
+            "type": "cooling"
+        }
+    ]

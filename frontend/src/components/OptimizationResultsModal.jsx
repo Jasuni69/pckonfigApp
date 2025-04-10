@@ -4,7 +4,7 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
   if (!isOpen || !optimizationResult) return null;
 
   const {
-    cpu, gpu, motherboard, ram, psu, case: pcCase, storage, cooler, explanation
+    cpu, gpu, motherboard, ram, psu, case: pcCase, storage, cooler, explanation, component_analysis
   } = optimizationResult;
 
   // Helper function to create component cards
@@ -20,6 +20,97 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
             {detail.label}: {component[detail.property] || 'N/A'}
           </p>
         ))}
+      </div>
+    );
+  };
+
+  // Component Analysis section
+  const ComponentAnalysis = () => {
+    if (!component_analysis) return null;
+    
+    const { compatibility_issues, suggested_upgrades, missing_components, analysis } = component_analysis;
+    
+    // If there's nothing to show, don't render the section
+    if (
+      (!compatibility_issues || compatibility_issues.length === 0) && 
+      (!suggested_upgrades || suggested_upgrades.length === 0) &&
+      (!missing_components || missing_components.length === 0) &&
+      (!analysis || analysis.length === 0)
+    ) {
+      return null;
+    }
+    
+    // Helper function to translate component type to Swedish
+    const translateComponentType = (type) => {
+      const translations = {
+        'cpu': 'Processor',
+        'gpu': 'Grafikkort',
+        'motherboard': 'Moderkort',
+        'ram': 'RAM-minne',
+        'psu': 'Nätaggregat',
+        'case': 'Chassi',
+        'storage': 'Lagring',
+        'cpu-cooler': 'CPU-kylare'
+      };
+      return translations[type] || type;
+    };
+    
+    return (
+      <div className="mt-6 mb-6">
+        <h3 className="font-bold mb-3 text-slate-800">Komponentanalys</h3>
+        
+        {/* General Analysis */}
+        {analysis && analysis.length > 0 && (
+          <div className="mb-4 p-3 bg-slate-100 rounded-lg">
+            {analysis.map((item, index) => (
+              <p key={index} className="mb-2">{item.message}</p>
+            ))}
+          </div>
+        )}
+        
+        {/* Missing Components */}
+        {missing_components && missing_components.length > 0 && (
+          <div className="mb-4">
+            <h4 className="font-semibold mb-2 text-slate-700">Saknade komponenter</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              {missing_components.map((item, index) => (
+                <li key={index} className="text-amber-700">
+                  <span className="font-medium">{translateComponentType(item.component_type)}:</span> {item.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        
+        {/* Compatibility Issues */}
+        {compatibility_issues && compatibility_issues.length > 0 && (
+          <div className="mb-4">
+            <h4 className="font-semibold mb-2 text-slate-700">Kompatibilitetsproblem</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              {compatibility_issues.map((item, index) => (
+                <li key={index} className="text-red-600">
+                  <span className="font-medium">
+                    {item.component_types.map(type => translateComponentType(type)).join(' & ')}:
+                  </span> {item.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        
+        {/* Suggested Upgrades */}
+        {suggested_upgrades && suggested_upgrades.length > 0 && (
+          <div className="mb-4">
+            <h4 className="font-semibold mb-2 text-slate-700">Föreslagna uppgraderingar</h4>
+            <ul className="list-disc pl-5 space-y-1">
+              {suggested_upgrades.map((item, index) => (
+                <li key={index} className="text-blue-600">
+                  <span className="font-medium">{translateComponentType(item.component_type)}:</span> {item.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     );
   };
@@ -41,8 +132,11 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
           {/* Explanation Section */}
           <div className="mb-6 p-4 bg-slate-100 rounded-lg">
             <h3 className="font-bold mb-2 text-slate-800">AI Rekommendation</h3>
-            <p className="text-slate-700">{explanation}</p>
+            <p className="text-slate-700 whitespace-pre-line">{explanation}</p>
           </div>
+          
+          {/* Component Analysis */}
+          <ComponentAnalysis />
           
           {/* Components Grid */}
           <h3 className="font-bold mb-3 text-slate-800">Rekommenderade komponenter</h3>

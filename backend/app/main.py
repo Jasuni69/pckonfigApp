@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.endpoints import components, auth, optimize
+from api.endpoints import components, auth, optimize, recommendations
 import threading
 import os
 import sys
@@ -30,3 +30,4 @@ except Exception as e:
 app.include_router(components.router, prefix="/api")
 app.include_router(auth.router, prefix="/api/auth")
 app.include_router(optimize.router, prefix="/api/optimize")
+app.include_router(recommendations.router, prefix="/api/recommend")

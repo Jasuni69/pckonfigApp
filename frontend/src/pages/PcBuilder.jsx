@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import SaveBuildModal from '../components/SaveBuildModal';
 import { API_URL } from '../config';
 import OptimizationResultsModal from '../components/OptimizationResultsModal';
+import { FiCpu } from 'react-icons/fi';  // Import AI recommendations icon
 
 const normalizeFormFactor = (formFactor) => {
   if (!formFactor) return '';
@@ -26,6 +27,8 @@ const normalizeFormFactor = (formFactor) => {
   if (ff.includes('micro')) return 'micro-atx';
   if (ff.includes('mini-mini')) return 'mini-itx'; 
   if (ff.includes('mini')) return 'mini-itx';
+  if (ff === 'itx') return 'mini-itx'; // Explicitly handle ITX as mini-itx
+  if (ff.includes('itx')) return 'mini-itx'; // Handle any variant containing ITX
   if (ff === 'atx' || (ff.includes('atx') && !ff.includes('micro') && !ff.includes('mini'))) return 'atx';
   
   // Log unexpected form factors
@@ -52,9 +55,11 @@ const PcBuilder = () => {
   const navigate = useNavigate();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGettingRecommendations, setIsGettingRecommendations] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showOptimizationModal, setShowOptimizationModal] = useState(false);
   const [optimizationData, setOptimizationData] = useState(null);
+  const [recommendations, setRecommendations] = useState(null);
 
   const handleComponentSelect = (component, type) => {
     console.log(`Selected ${type}:`, component);
@@ -405,6 +410,136 @@ const PcBuilder = () => {
     }
   };
 
+  const handleGetRecommendations = async () => {
+    if (!isAuthenticated) {
+      if (window.confirm('Du måste logga in för att använda denna funktion. Vill du logga in nu?')) {
+        navigate('/login');
+      }
+      return;
+    }
+
+    // Check if there are at least 2 components selected to provide meaningful recommendations
+    const componentCount = Object.keys(selectedComponents).filter(key => 
+      key !== 'purpose' && selectedComponents[key]
+    ).length;
+    
+    if (componentCount < 2) {
+      alert("Välj minst två komponenter för att få rekommendationer.");
+      return;
+    }
+
+    setIsGettingRecommendations(true);
+
+    try {
+      // Create payload with all component IDs and names for context
+      const payload = {
+        cpu: selectedComponents.cpu ? {
+          id: selectedComponents.cpu.id,
+          name: selectedComponents.cpu.name,
+          socket: selectedComponents.cpu.socket,
+          price: selectedComponents.cpu.price
+        } : null,
+        gpu: selectedComponents.gpu ? {
+          id: selectedComponents.gpu.id,
+          name: selectedComponents.gpu.name,
+          vram: selectedComponents.gpu.vram,
+          price: selectedComponents.gpu.price
+        } : null,
+        motherboard: selectedComponents.motherboard ? {
+          id: selectedComponents.motherboard.id,
+          name: selectedComponents.motherboard.name,
+          socket: selectedComponents.motherboard.socket,
+          form_factor: selectedComponents.motherboard.form_factor,
+          price: selectedComponents.motherboard.price
+        } : null,
+        ram: selectedComponents.ram ? {
+          id: selectedComponents.ram.id,
+          name: selectedComponents.ram.name,
+          capacity: selectedComponents.ram.capacity,
+          price: selectedComponents.ram.price
+        } : null,
+        psu: selectedComponents.psu ? {
+          id: selectedComponents.psu.id,
+          name: selectedComponents.psu.name,
+          wattage: selectedComponents.psu.wattage,
+          price: selectedComponents.psu.price
+        } : null,
+        case: selectedComponents.case ? {
+          id: selectedComponents.case.id,
+          name: selectedComponents.case.name,
+          form_factor: selectedComponents.case.form_factor,
+          price: selectedComponents.case.price
+        } : null,
+        storage: selectedComponents.hdd ? {
+          id: selectedComponents.hdd.id,
+          name: selectedComponents.hdd.name,
+          capacity: selectedComponents.hdd.capacity,
+          price: selectedComponents.hdd.price
+        } : null,
+        cooler: selectedComponents['cpu-cooler'] ? {
+          id: selectedComponents['cpu-cooler'].id,
+          name: selectedComponents['cpu-cooler'].name,
+          price: selectedComponents['cpu-cooler'].price
+        } : null,
+        purpose: selectedComponents.purpose?.name || "unknown"
+      };
+
+      console.log('Requesting AI recommendations for build:', payload);
+      
+      // This would be your actual API endpoint for recommendations
+      const response = await fetch(`${API_URL}/api/recommend`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('AI recommendations:', data);
+      
+      // Store the recommendations
+      setRecommendations(data);
+    } catch (error) {
+      console.error('Failed to get recommendations:', error);
+      
+      // Fallback recommendations if API is not yet implemented
+      setRecommendations({
+        suggestions: [
+          {
+            component_type: "general",
+            message: "API för rekommendationer är inte tillgänglig än. Implementera API:et för att få personliga rekommendationer."
+          }
+        ]
+      });
+      
+      alert(`Kunde inte hämta rekommendationer: ${error.message}`);
+    } finally {
+      setIsGettingRecommendations(false);
+    }
+  };
+
+  // A custom component to display recommendations
+  const RecommendationsDisplay = ({ recommendations }) => {
+    if (!recommendations) return <p>Klicka för att få rekommendationer för din dator.</p>;
+    
+    return (
+      <div className="space-y-2 max-h-48 overflow-y-auto">
+        {recommendations.suggestions?.map((suggestion, index) => (
+          <div key={index} className="p-2 bg-slate-100 rounded text-sm">
+            <p className="font-semibold">{suggestion.component_type === "general" ? "Allmänt" : componentLabels[suggestion.component_type] || suggestion.component_type}</p>
+            <p>{suggestion.message}</p>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="wrapper bg-gradient-to-b from-slate-400 to-slate-200 pb-28 -mt-24">
       <div className="sticky top-28 z-10">
@@ -419,7 +554,7 @@ const PcBuilder = () => {
               className="row-span-3" 
               options="cases"
               onSelect={(component) => handleComponentSelect(component, 'case')}
-              filterRequirements={getFilterRequirements('case')}
+              filterRequirements={getFilterRequirements('cases')}
             />
             <Card 
               title="Moderkort" 
@@ -474,12 +609,40 @@ const PcBuilder = () => {
               onSelect={(component) => handleComponentSelect(component, 'psu')} 
               filterRequirements={getFilterRequirements('psus')}
             />
-            <Card 
-              title="Extra" 
-              className="row-span-3 col-start-5 row-start-4" 
-              options="extras"
-              onSelect={(component) => handleComponentSelect(component, 'extra')} 
-            />
+            
+            {/* Hidden Card for backwards compatibility */}
+            <div className="hidden">
+              <Card 
+                title="Extra" 
+                options="extras"
+                onSelect={(component) => handleComponentSelect(component, 'extra')} 
+              />
+            </div>
+            
+            {/* Visible AI Recommendations Panel */}
+            <div className="row-span-3 col-start-5 row-start-4 bg-slate-200 rounded-lg p-4 relative">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <FiCpu className="w-8 h-8" />
+                  <h3 className="text-lg font-semibold">AI Rekommendationer</h3>
+                </div>
+              </div>
+              
+              <div className="bg-slate-300 shadow-md p-4 h-[calc(100%-3rem)] overflow-hidden">
+                <RecommendationsDisplay recommendations={recommendations} />
+                
+                <div className="absolute bottom-4 right-4 left-4">
+                  <button
+                    onClick={handleGetRecommendations}
+                    disabled={isGettingRecommendations}
+                    className="w-full mt-2 bg-slate-400 hover:bg-slate-500 text-white font-semibold py-2 px-4 rounded transition-colors"
+                  >
+                    {isGettingRecommendations ? 'Hämtar...' : 'Få rekommendationer'}
+                  </button>
+                </div>
+              </div>
+            </div>
+            
             <Card 
               title="Användning" 
               className="row-span-3 col-start-4 row-start-4" 
