@@ -1170,27 +1170,36 @@ async def optimize_build(
             storage = get_component_by_id(Storage, result_components["storage_id"], db)
             cooler = get_component_by_id(Cooler, result_components["cooler_id"], db)
 
-            # Convert component analysis to the proper model
-            component_analysis_model = ComponentAnalysis(
-                analysis=component_analysis["analysis"],
-                missing_components=component_analysis["missing_components"],
-                compatibility_issues=component_analysis["compatibility_issues"],
-                suggested_upgrades=component_analysis["suggested_upgrades"]
-            )
-            
-            # Add component analysis to explanation if there are issues
+            # Add component analysis to explanation
+            component_analysis_content = ""
             if component_analysis["compatibility_issues"] or component_analysis["suggested_upgrades"]:
-                explanation += "\n\nViktig analys av dina valda komponenter:"
+                component_analysis_content = "\n\nViktig analys av dina valda komponenter:"
                 
                 if component_analysis["compatibility_issues"]:
-                    explanation += "\n• Kompatibilitetsproblem hittades mellan dina komponenter."
+                    component_analysis_content += "\n• Kompatibilitetsproblem hittades mellan dina komponenter."
                 
                 if component_analysis["suggested_upgrades"]:
-                    explanation += "\n• Vissa komponenter kan behöva uppgraderas för ditt användningsområde."
+                    component_analysis_content += "\n• Vissa komponenter kan behöva uppgraderas för ditt användningsområde."
                 
-                explanation += "\n\nSe detaljerad analys nedan för mer information."
+                component_analysis_content += "\n\nSe detaljerad analys nedan för mer information."
             
-            # Create the optimized build 
+            explanation += component_analysis_content
+            
+            # Only include component_analysis if we have at least one valid component
+            component_analysis_model = None
+            if current_components:
+                try:
+                    # Convert component analysis to the proper model
+                    component_analysis_model = ComponentAnalysis(
+                        analysis=component_analysis["analysis"],
+                        missing_components=component_analysis["missing_components"],
+                        compatibility_issues=component_analysis["compatibility_issues"],
+                        suggested_upgrades=component_analysis["suggested_upgrades"]
+                    )
+                except Exception as e:
+                    logger.error(f"Error creating ComponentAnalysis model: {str(e)}")
+                    # Don't include it if there's an error
+            
             optimized_build = OptimizedBuildOut(
                 id=1,
                 name="Optimized Build",
