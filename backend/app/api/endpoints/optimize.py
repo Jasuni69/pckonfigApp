@@ -995,16 +995,21 @@ async def optimize_build(
             
             logger.info("Generated prompt successfully")
             
-            # For FastAPI validation, either we need to populate ALL required fields or set to None
-            # Let's set component fields to None to avoid validation errors
-            selected_cpu = None
-            selected_gpu = None
-            selected_motherboard = None
-            selected_ram = None
-            selected_psu = None
-            selected_case = None
-            selected_storage = None
-            selected_cooler = None
+            # Extract top recommended components for individual fields
+            # Instead of setting them to None, we'll take the first recommendation of each type
+            selected_cpu = simplified_recommendations.get("cpus", [None])[0] if simplified_recommendations.get("cpus") else None
+            selected_gpu = simplified_recommendations.get("gpus", [None])[0] if simplified_recommendations.get("gpus") else None
+            selected_motherboard = simplified_recommendations.get("motherboards", [None])[0] if simplified_recommendations.get("motherboards") else None
+            selected_ram = simplified_recommendations.get("ram", [None])[0] if simplified_recommendations.get("ram") else None
+            selected_psu = simplified_recommendations.get("psus", [None])[0] if simplified_recommendations.get("psus") else None
+            selected_case = simplified_recommendations.get("cases", [None])[0] if simplified_recommendations.get("cases") else None
+            selected_storage = simplified_recommendations.get("storage", [None])[0] if simplified_recommendations.get("storage") else None
+            selected_cooler = simplified_recommendations.get("coolers", [None])[0] if simplified_recommendations.get("coolers") else None
+            
+            # Debug log the component recommendations
+            logger.info(f"Selected CPU: {selected_cpu}")
+            logger.info(f"Selected GPU: {selected_gpu}")
+            logger.info(f"Selected Motherboard: {selected_motherboard}")
             
             # Fix: Don't nest the required fields inside 'data'
             return {
