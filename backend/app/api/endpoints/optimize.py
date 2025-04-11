@@ -867,7 +867,11 @@ async def optimize_build(
                 
             # Calculate total price before prompt
             current_total = sum(comp.get('price', 0) for comp in simplified_current.values())
-            recommended_total = sum(comp.get('price', 0) for comp in simplified_recommendations.values())
+            recommended_total = 0
+            # Fix: Handle the case where simplified_recommendations.values() contains lists
+            for component_list in simplified_recommendations.values():
+                for comp in component_list:
+                    recommended_total += comp.get('price', 0)
         except Exception as e:
             logger.error(f"Error preparing recommendation data: {e}")
             logger.error(traceback.format_exc())
@@ -940,9 +944,9 @@ async def optimize_build(
         5. Cooler must support CPU socket
 
         Format:
-        {
+        {{
           "explanation": "Detailed explanation of needed changes and why",
-          "components": {
+          "components": {{
             "cpu_id": 1,
             "gpu_id": 2,
             "motherboard_id": 3,
@@ -951,8 +955,8 @@ async def optimize_build(
             "case_id": 6,
             "storage_id": 7,
             "cooler_id": 8
-          }
-        }
+          }}
+        }}
 
         Future-Proofing Guidelines:
         - CPU: Consider socket longevity and upgrade path
