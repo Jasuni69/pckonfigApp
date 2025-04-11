@@ -411,10 +411,16 @@ async def optimize_build(
         if "gaming" in purpose_lower and "4k" in purpose_lower and "gpu" in current_components:
             gpu_vram = extract_gb(current_components["gpu"].get("memory", ""))
             
-            if gpu_vram is not None and gpu_vram < 8:
+            if gpu_vram is not None and gpu_vram < 12:
+                message = ""
+                if gpu_vram < 8:
+                    message = f"För 4K-gaming är 8GB VRAM minimum, men ditt kort har endast {int(gpu_vram)}GB. För optimal 4K-upplevelse rekommenderas 12GB+ VRAM."
+                else:
+                    message = f"För optimal 4K-gaming rekommenderas ett grafikkort med minst 12GB VRAM för bästa prestanda. Ditt kort har {int(gpu_vram)}GB."
+                
                 component_analysis["suggested_upgrades"].append({
                     "component_type": "gpu",
-                    "message": f"För 4K-gaming rekommenderas ett grafikkort med minst 8GB VRAM. Ditt kort har endast {int(gpu_vram)}GB."
+                    "message": message
                 })
         
         # Add the component analysis to the API response
@@ -651,12 +657,16 @@ async def optimize_build(
                         if isinstance(memory_str, str) and "gb" in memory_str.lower():
                             try:
                                 memory_value = int(memory_str.lower().split("gb")[0].strip())
-                                if memory_value >= 12:
-                                    score += 30
+                                if memory_value >= 16:  # Ultra premium
+                                    score += 50
+                                elif memory_value >= 12:  # Optimal for 4K
+                                    score += 40
                                 elif memory_value >= 10:
                                     score += 20
-                                elif memory_value >= 8:
-                                    score += 10
+                                elif memory_value >= 8:  # Minimum viable
+                                    score += 5
+                                else:  # Less than 8GB - not recommended
+                                    score -= 40  # Stronger negative score
                             except (ValueError, TypeError):
                                 pass
                         
@@ -772,7 +782,7 @@ async def optimize_build(
             
             memory_value = extract_gb(gpu.get('memory', ''))
             logger.debug("Extracted GPU Memory: %s GB", memory_value)
-            return memory_value is not None and memory_value >= 12
+            return memory_value is not None and memory_value >= 12  # Changed from 8 to 12 for optimal experience
         
         # Prepare component recommendations using ChromaDB
         recommendations = {}
@@ -921,7 +931,7 @@ async def optimize_build(
 
             Requirements by purpose:
             - 4K Gaming: 
-              * GPU: 12GB+ VRAM, RTX 4070 Ti or better
+              * GPU: 12GB+ VRAM required for optimal experience, RTX 4070 Ti/4080/4090 or equivalent AMD
               * CPU: 8+ cores, i7/Ryzen 7 or better
               * RAM: 32GB DDR5, 6000MHz+
               * PSU: 850W+ Gold rated
