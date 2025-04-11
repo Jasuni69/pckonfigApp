@@ -985,22 +985,20 @@ async def optimize_build(
             
             logger.info("Generated prompt successfully")
             
+            # Fix: Don't nest the required fields inside 'data'
             return {
-                "status": "success",
-                "data": {
-                    "prompt": prompt,
-                    "current_components": simplified_current,
-                    "recommended_components": simplified_recommendations,
-                    "current_total": current_total,
-                    "recommended_total": recommended_total,
-                    "id": 1,  # Adding required fields for OptimizedBuildOut model
-                    "name": "Optimized Build",
-                    "user_id": current_user.id if current_user else 1,
-                    "created_at": current_time,
-                    "updated_at": current_time,
-                    "explanation": "PC build optimization",
-                    "similarity_score": 0.85
-                }
+                "id": 1,
+                "name": "Optimized Build",
+                "user_id": current_user.id if current_user else 1,
+                "created_at": current_time,
+                "updated_at": current_time,
+                "explanation": "PC build optimization",
+                "similarity_score": 0.85,
+                "prompt": prompt,
+                "current_components": simplified_current,
+                "recommended_components": simplified_recommendations,
+                "current_total": current_total,
+                "recommended_total": recommended_total
             }
         except Exception as e:
             logger.error(f"Error generating prompt: {str(e)}")
