@@ -18,6 +18,17 @@ from sqlalchemy import or_
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+# Helper function to extract gigabyte values
+def extract_gb(memory_str):
+    """Extract gigabyte value from memory strings like '12GB', '8 GB', etc."""
+    if not memory_str or not isinstance(memory_str, str):
+        return None
+    
+    match = re.search(r"(\d+(?:\.\d+)?)\s*gb", memory_str.lower())
+    if match:
+        return float(match.group(1))
+    return None
+
 # Helper function to normalize form factors consistently with frontend
 def normalize_form_factor(form_factor):
     """Normalize form factor strings for consistent handling"""
@@ -696,17 +707,6 @@ async def optimize_build(
             scored_components.sort(reverse=True, key=lambda x: x[0])
             return [comp for score, comp in scored_components[:limit]]
         
-        # First, add this validation function near the top of the file
-        def extract_gb(memory_str):
-            """Extract gigabyte value from memory strings like '12GB', '8 GB', etc."""
-            if not memory_str or not isinstance(memory_str, str):
-                return None
-            
-            match = re.search(r"(\d+(?:\.\d+)?)\s*gb", memory_str.lower())
-            if match:
-                return float(match.group(1))
-            return None
-
         def validate_gpu_for_4k(gpu):
             """Check if GPU has sufficient VRAM for 4K gaming"""
             logger.debug("Validating GPU for 4K: %s", gpu)
