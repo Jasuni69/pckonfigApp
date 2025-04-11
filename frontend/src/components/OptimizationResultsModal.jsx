@@ -184,7 +184,7 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult, onApply
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 bg-opacity-30">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="bg-white rounded-lg w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
         <div className="p-4 border-b border-slate-200 flex justify-between items-center">
           <h2 className="text-xl font-bold text-slate-800">Optimeringsresultat</h2>
