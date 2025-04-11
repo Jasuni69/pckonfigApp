@@ -409,6 +409,70 @@ const PcBuilder = () => {
     }
   };
 
+  // Add handleApplyRecommendations function
+  const handleApplyRecommendations = (recommendations) => {
+    console.log('Applying recommendations to build:', recommendations);
+    
+    // Create a new components object with the recommendations
+    const updatedComponents = { ...selectedComponents };
+    
+    // Update each component if it exists in recommendations
+    if (recommendations.cpu) {
+      updatedComponents.cpu = recommendations.cpu;
+    }
+    
+    if (recommendations.gpu) {
+      updatedComponents.gpu = recommendations.gpu;
+    }
+    
+    if (recommendations.motherboard) {
+      updatedComponents.motherboard = recommendations.motherboard;
+    }
+    
+    if (recommendations.ram) {
+      updatedComponents.ram = recommendations.ram;
+    }
+    
+    if (recommendations.psu) {
+      updatedComponents.psu = recommendations.psu;
+    }
+    
+    if (recommendations.case) {
+      updatedComponents.case = recommendations.case;
+    }
+    
+    if (recommendations.storage) {
+      updatedComponents.hdd = recommendations.storage;
+    }
+    
+    if (recommendations.cooler) {
+      updatedComponents['cpu-cooler'] = recommendations.cooler;
+    }
+    
+    // Update compatibility state based on new components
+    let newCompatibility = { ...compatibility };
+    
+    if (recommendations.cpu) {
+      newCompatibility.socket = recommendations.cpu.socket;
+    }
+    
+    if (recommendations.motherboard) {
+      newCompatibility.socket = recommendations.motherboard.socket;
+      newCompatibility.formFactor = recommendations.motherboard.form_factor;
+    }
+    
+    if (recommendations.gpu) {
+      newCompatibility.requiredWattage = recommendations.gpu.recommended_wattage;
+    }
+    
+    // Update state
+    setSelectedComponents(updatedComponents);
+    setCompatibility(newCompatibility);
+    
+    // Show a confirmation message
+    alert('Rekommenderade komponenter har applicerats på din byggkonfiguration!');
+  };
+
   return (
     <div className="wrapper bg-gradient-to-b from-slate-400 to-slate-200 pb-28 -mt-24">
       <div className="sticky top-28 z-10">
@@ -558,6 +622,7 @@ const PcBuilder = () => {
         isOpen={showOptimizationModal}
         onClose={() => setShowOptimizationModal(false)}
         optimizationResult={optimizationData}
+        onApplyRecommendations={handleApplyRecommendations}
       />
     </div>
   );

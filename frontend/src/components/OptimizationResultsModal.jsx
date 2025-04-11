@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
+const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult, onApplyRecommendations }) => {
   if (!isOpen || !optimizationResult) return null;
 
   // Add debug logging to check what data we're receiving
@@ -43,6 +43,29 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
   const pcCase = getFirstRecommendation('cases');
   const storage = getFirstRecommendation('storage');
   const cooler = getFirstRecommendation('coolers');
+
+  // Function to handle applying recommendations
+  const handleApplyRecommendations = () => {
+    // Create an object with the recommended components
+    const recommendations = {
+      cpu: cpu,
+      gpu: gpu,
+      motherboard: motherboard,
+      ram: ram,
+      psu: psu,
+      case: pcCase,
+      storage: storage,
+      cooler: cooler
+    };
+    
+    console.log("Applying recommendations:", recommendations);
+    
+    // Call the parent component's function to apply these recommendations
+    if (onApplyRecommendations) {
+      onApplyRecommendations(recommendations);
+      onClose(); // Close the modal after applying
+    }
+  };
 
   // Helper function to create component cards
   const ComponentCard = ({ title, component, details = [] }) => {
@@ -192,52 +215,52 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
                   title="Processor" 
                   component={cpu} 
                   details={[
-                    { label: "Socket", property: "socket" },
-                    { label: "Cores", property: "cores" }
+                    { label: "Sockel", property: "socket" },
+                    { label: "Kärnor", property: "cores" }
                   ]} 
                 />
                 <ComponentCard 
                   title="Grafikkort" 
                   component={gpu} 
                   details={[
-                    { label: "Memory", property: "memory" }
+                    { label: "Minne", property: "memory" }
                   ]} 
                 />
                 <ComponentCard 
                   title="Moderkort" 
                   component={motherboard} 
                   details={[
-                    { label: "Socket", property: "socket" },
-                    { label: "Form Factor", property: "form_factor" }
+                    { label: "Sockel", property: "socket" },
+                    { label: "Formfaktor", property: "form_factor" }
                   ]} 
                 />
                 <ComponentCard 
                   title="RAM-minne" 
                   component={ram} 
                   details={[
-                    { label: "Capacity", property: "capacity" },
-                    { label: "Speed", property: "speed" }
+                    { label: "Kapacitet", property: "capacity" },
+                    { label: "Hastighet", property: "speed" }
                   ]} 
                 />
                 <ComponentCard 
                   title="Nätaggregat" 
                   component={psu} 
                   details={[
-                    { label: "Wattage", property: "wattage" }
+                    { label: "Watt", property: "wattage" }
                   ]} 
                 />
                 <ComponentCard 
                   title="Chassi" 
                   component={pcCase} 
                   details={[
-                    { label: "Form Factor", property: "form_factor" }
+                    { label: "Formfaktor", property: "form_factor" }
                   ]} 
                 />
                 <ComponentCard 
                   title="Lagring" 
                   component={storage} 
                   details={[
-                    { label: "Capacity", property: "capacity" }
+                    { label: "Kapacitet", property: "capacity" }
                   ]} 
                 />
                 <ComponentCard 
@@ -259,6 +282,14 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
           
           {/* Action Buttons */}
           <div className="flex justify-end mt-4 space-x-3">
+            {hasRecommendations && (
+              <button
+                onClick={handleApplyRecommendations}
+                className="bg-blue-600 text-white hover:bg-blue-700 hover:scale-105 border-2 border-blue-700 rounded-lg px-4 py-2 shadow-lg"
+              >
+                Tillämpa rekommendationer
+              </button>
+            )}
             <button
               onClick={onClose}
               className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg px-4 py-2 shadow-lg"
