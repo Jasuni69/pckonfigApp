@@ -985,9 +985,20 @@ async def optimize_build(
             
             logger.info("Generated prompt successfully")
             
+            # Extract individual components for the response
+            # Get the first recommended component of each type, or None if not available
+            selected_cpu = simplified_recommendations.get("cpus", [None])[0] if simplified_recommendations.get("cpus") else None
+            selected_gpu = simplified_recommendations.get("gpus", [None])[0] if simplified_recommendations.get("gpus") else None
+            selected_motherboard = simplified_recommendations.get("motherboards", [None])[0] if simplified_recommendations.get("motherboards") else None
+            selected_ram = simplified_recommendations.get("ram", [None])[0] if simplified_recommendations.get("ram") else None
+            selected_psu = simplified_recommendations.get("psus", [None])[0] if simplified_recommendations.get("psus") else None
+            selected_case = simplified_recommendations.get("cases", [None])[0] if simplified_recommendations.get("cases") else None
+            selected_storage = simplified_recommendations.get("storage", [None])[0] if simplified_recommendations.get("storage") else None
+            selected_cooler = simplified_recommendations.get("coolers", [None])[0] if simplified_recommendations.get("coolers") else None
+            
             # Fix: Don't nest the required fields inside 'data'
             return {
-                "id": 1,
+                "id": 1,  # Adding required fields for OptimizedBuildOut model
                 "name": "Optimized Build",
                 "user_id": current_user.id if current_user else 1,
                 "created_at": current_time,
@@ -998,7 +1009,19 @@ async def optimize_build(
                 "current_components": simplified_current,
                 "recommended_components": simplified_recommendations,
                 "current_total": current_total,
-                "recommended_total": recommended_total
+                "recommended_total": recommended_total,
+                "purpose": request.purpose,
+                # Add individual components to the response
+                "cpu": selected_cpu,
+                "gpu": selected_gpu,
+                "motherboard": selected_motherboard,
+                "ram": selected_ram,
+                "psu": selected_psu,
+                "case": selected_case,
+                "storage": selected_storage,
+                "cooler": selected_cooler,
+                # Add component analysis for better debugging
+                "component_analysis": component_analysis
             }
         except Exception as e:
             logger.error(f"Error generating prompt: {str(e)}")
