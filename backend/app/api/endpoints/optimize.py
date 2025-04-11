@@ -60,6 +60,47 @@ def normalize_form_factor(form_factor):
     logger.warning(f"Unexpected form factor: {form_factor}")
     return ff  # Return lowercase trimmed version
 
+# Process form factors that might contain multiple values
+def handle_multiple_form_factors(form_factor_string):
+    """Handle form factor strings that might contain multiple values separated by commas"""
+    if not form_factor_string or not isinstance(form_factor_string, str):
+        return []
+        
+    # Split by commas or similar separators
+    form_factors = re.split(r'[,;/]', form_factor_string)
+    # Normalize each form factor
+    normalized = [normalize_form_factor(ff.strip()) for ff in form_factors if ff.strip()]
+    # Return unique form factors
+    return list(set(normalized))
+
+# Helper function to simplify component data for token reduction
+def simplify_component_data(component_dict):
+    """Remove unnecessary fields to reduce token usage"""
+    essential_fields = ["id", "name", "price"]  # Always include price
+    
+    # Add other key fields based on component type
+    if "socket" in component_dict:
+        essential_fields.append("socket")
+    if "cores" in component_dict:
+        essential_fields.append("cores")
+    if "memory" in component_dict:
+        essential_fields.append("memory")
+    if "wattage" in component_dict:
+        essential_fields.append("wattage")
+    if "form_factor" in component_dict:
+        essential_fields.append("form_factor")
+        # Normalize form factor if it exists
+        if component_dict.get("form_factor"):
+            try:
+                component_dict["normalized_form_factor"] = normalize_form_factor(component_dict["form_factor"])
+                essential_fields.append("normalized_form_factor")
+            except Exception as e:
+                logger.warning(f"Error normalizing form factor '{component_dict.get('form_factor')}': {e}")
+    if "capacity" in component_dict:
+        essential_fields.append("capacity")
+    
+    return {k: v for k, v in component_dict.items() if k in essential_fields}
+
 # Form factor compatibility mapping
 form_factor_compatibility = {
     "ssi-eeb": ["ssi-eeb", "e-atx", "atx", "micro-atx", "mini-itx"],
@@ -801,47 +842,6 @@ async def optimize_build(
         
         print(f"\nRecommendations count: CPU={len(recommendations['cpus'])}, GPU={len(recommendations['gpus'])}, MB={len(recommendations['motherboards'])}, RAM={len(recommendations['ram'])}, PSU={len(recommendations['psus'])}, Case={len(recommendations['cases'])}, Storage={len(recommendations['storage'])}, Cooler={len(recommendations['coolers'])}")
         
-        # Create simplified component dictionaries
-        def simplify_component_data(component_dict):
-            """Remove unnecessary fields to reduce token usage"""
-            essential_fields = ["id", "name", "price"]  # Always include price
-            
-            # Add other key fields based on component type
-            if "socket" in component_dict:
-                essential_fields.append("socket")
-            if "cores" in component_dict:
-                essential_fields.append("cores")
-            if "memory" in component_dict:
-                essential_fields.append("memory")
-            if "wattage" in component_dict:
-                essential_fields.append("wattage")
-            if "form_factor" in component_dict:
-                essential_fields.append("form_factor")
-                # Normalize form factor if it exists
-                if component_dict.get("form_factor"):
-                    try:
-                        component_dict["normalized_form_factor"] = normalize_form_factor(component_dict["form_factor"])
-                        essential_fields.append("normalized_form_factor")
-                    except Exception as e:
-                        logger.warning(f"Error normalizing form factor '{component_dict.get('form_factor')}': {e}")
-            if "capacity" in component_dict:
-                essential_fields.append("capacity")
-            
-            return {k: v for k, v in component_dict.items() if k in essential_fields}
-
-        # Process form factors that might contain multiple values
-        def handle_multiple_form_factors(form_factor_string):
-            """Handle form factor strings that might contain multiple values separated by commas"""
-            if not form_factor_string or not isinstance(form_factor_string, str):
-                return []
-                
-            # Split by commas or similar separators
-            form_factors = re.split(r'[,;/]', form_factor_string)
-            # Normalize each form factor
-            normalized = [normalize_form_factor(ff.strip()) for ff in form_factors if ff.strip()]
-            # Return unique form factors
-            return list(set(normalized))
-
         # Then simplify before sending to OpenAI
         try:
             simplified_current = {k: simplify_component_data(v) for k, v in current_components.items()}
