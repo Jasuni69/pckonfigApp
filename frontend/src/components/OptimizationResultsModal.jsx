@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
   if (!isOpen || !optimizationResult) return null;
 
+  // Add debug logging to check what data we're receiving
+  useEffect(() => {
+    console.log("Optimization result received:", optimizationResult);
+    console.log("Recommended components:", optimizationResult.recommended_components);
+  }, [optimizationResult]);
+
   const {
-    explanation, component_analysis, recommended_components
+    explanation, component_analysis, recommended_components = {}
   } = optimizationResult;
   
   // Get the first recommended component of each type
@@ -13,7 +19,7 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
     return components.length > 0 ? components[0] : null;
   };
   
-  // Get CPU, GPU, etc. from recommended_components instead of directly from optimizationResult
+  // Get CPU, GPU, etc. from recommended_components
   const cpu = getFirstRecommendation('cpus');
   const gpu = getFirstRecommendation('gpus');
   const motherboard = getFirstRecommendation('motherboards');
@@ -32,10 +38,13 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
         <h3 className="font-bold text-slate-800">{title}</h3>
         <p className="text-base mb-1">{component.name}</p>
         {details.map((detail, index) => (
-          <p key={index} className="text-sm text-slate-600">
-            {detail.label}: {component[detail.property] || 'N/A'}
-          </p>
+          component[detail.property] ? (
+            <p key={index} className="text-sm text-slate-600">
+              {detail.label}: {component[detail.property]}
+            </p>
+          ) : null
         ))}
+        <p className="text-sm font-semibold text-blue-600 mt-2">{component.price ? `${component.price} kr` : ''}</p>
       </div>
     );
   };
@@ -66,7 +75,7 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
         'psu': 'Nätaggregat',
         'case': 'Chassi',
         'storage': 'Lagring',
-        'cpu-cooler': 'CPU-kylare'
+        'cooler': 'CPU-kylare'
       };
       return translations[type] || type;
     };
@@ -131,6 +140,11 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
     );
   };
 
+  // Check if we have any recommended components to display
+  const hasRecommendations = Object.values(recommended_components || {}).some(
+    list => Array.isArray(list) && list.length > 0
+  );
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 bg-opacity-30">
       <div className="bg-white rounded-lg w-11/12 max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
@@ -155,69 +169,78 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
           <ComponentAnalysis />
           
           {/* Components Grid */}
-          <h3 className="font-bold mb-3 text-slate-800">Rekommenderade komponenter</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <ComponentCard 
-              title="Processor" 
-              component={cpu} 
-              details={[
-                { label: "Socket", property: "socket" },
-                { label: "Cores", property: "cores" }
-              ]} 
-            />
-            <ComponentCard 
-              title="Grafikkort" 
-              component={gpu} 
-              details={[
-                { label: "Memory", property: "memory" }
-              ]} 
-            />
-            <ComponentCard 
-              title="Moderkort" 
-              component={motherboard} 
-              details={[
-                { label: "Socket", property: "socket" },
-                { label: "Form Factor", property: "form_factor" }
-              ]} 
-            />
-            <ComponentCard 
-              title="RAM-minne" 
-              component={ram} 
-              details={[
-                { label: "Capacity", property: "capacity" },
-                { label: "Speed", property: "speed" }
-              ]} 
-            />
-            <ComponentCard 
-              title="Nätaggregat" 
-              component={psu} 
-              details={[
-                { label: "Wattage", property: "wattage" }
-              ]} 
-            />
-            <ComponentCard 
-              title="Chassi" 
-              component={pcCase} 
-              details={[
-                { label: "Form Factor", property: "form_factor" }
-              ]} 
-            />
-            <ComponentCard 
-              title="Lagring" 
-              component={storage} 
-              details={[
-                { label: "Capacity", property: "capacity" },
-                { label: "Type", property: "type" }
-              ]} 
-            />
-            <ComponentCard 
-              title="CPU-kylare" 
-              component={cooler} 
-              details={[
-                { label: "Type", property: "type" }
-              ]} 
-            />
-          </div>
+          {hasRecommendations && (
+            <>
+              <h3 className="font-bold mb-3 text-slate-800">Rekommenderade komponenter</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <ComponentCard 
+                  title="Processor" 
+                  component={cpu} 
+                  details={[
+                    { label: "Socket", property: "socket" },
+                    { label: "Cores", property: "cores" }
+                  ]} 
+                />
+                <ComponentCard 
+                  title="Grafikkort" 
+                  component={gpu} 
+                  details={[
+                    { label: "Memory", property: "memory" }
+                  ]} 
+                />
+                <ComponentCard 
+                  title="Moderkort" 
+                  component={motherboard} 
+                  details={[
+                    { label: "Socket", property: "socket" },
+                    { label: "Form Factor", property: "form_factor" }
+                  ]} 
+                />
+                <ComponentCard 
+                  title="RAM-minne" 
+                  component={ram} 
+                  details={[
+                    { label: "Capacity", property: "capacity" },
+                    { label: "Speed", property: "speed" }
+                  ]} 
+                />
+                <ComponentCard 
+                  title="Nätaggregat" 
+                  component={psu} 
+                  details={[
+                    { label: "Wattage", property: "wattage" }
+                  ]} 
+                />
+                <ComponentCard 
+                  title="Chassi" 
+                  component={pcCase} 
+                  details={[
+                    { label: "Form Factor", property: "form_factor" }
+                  ]} 
+                />
+                <ComponentCard 
+                  title="Lagring" 
+                  component={storage} 
+                  details={[
+                    { label: "Capacity", property: "capacity" }
+                  ]} 
+                />
+                <ComponentCard 
+                  title="CPU-kylare" 
+                  component={cooler} 
+                  details={[]} 
+                />
+              </div>
+            </>
+          )}
+          {!hasRecommendations && (
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg mb-6">
+              <p className="text-amber-800">
+                Inga specifika komponentrekommendationer tillgängliga för tillfället. 
+                Vänligen se komponentanalys ovan för förslag på uppgraderingar.
+              </p>
+            </div>
+          )}
           
           {/* Action Buttons */}
           <div className="flex justify-end mt-4 space-x-3">
