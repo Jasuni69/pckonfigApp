@@ -4,8 +4,24 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
   if (!isOpen || !optimizationResult) return null;
 
   const {
-    cpu, gpu, motherboard, ram, psu, case: pcCase, storage, cooler, explanation, component_analysis
+    explanation, component_analysis, recommended_components
   } = optimizationResult;
+  
+  // Get the first recommended component of each type
+  const getFirstRecommendation = (type) => {
+    const components = recommended_components?.[type] || [];
+    return components.length > 0 ? components[0] : null;
+  };
+  
+  // Get CPU, GPU, etc. from recommended_components instead of directly from optimizationResult
+  const cpu = getFirstRecommendation('cpus');
+  const gpu = getFirstRecommendation('gpus');
+  const motherboard = getFirstRecommendation('motherboards');
+  const ram = getFirstRecommendation('ram');
+  const psu = getFirstRecommendation('psus');
+  const pcCase = getFirstRecommendation('cases');
+  const storage = getFirstRecommendation('storage');
+  const cooler = getFirstRecommendation('coolers');
 
   // Helper function to create component cards
   const ComponentCard = ({ title, component, details = [] }) => {
