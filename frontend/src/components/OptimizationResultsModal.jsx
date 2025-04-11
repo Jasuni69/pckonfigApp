@@ -6,7 +6,22 @@ const OptimizationResultsModal = ({ isOpen, onClose, optimizationResult }) => {
   // Add debug logging to check what data we're receiving
   useEffect(() => {
     console.log("Optimization result received:", optimizationResult);
-    console.log("Recommended components:", optimizationResult.recommended_components);
+    
+    // Log specifically to check if recommended_components exists
+    console.log("recommended_components exists:", 'recommended_components' in optimizationResult);
+    console.log("recommended_components value:", optimizationResult.recommended_components);
+    
+    // Check if it's empty or has content
+    if (optimizationResult.recommended_components) {
+      console.log("recommended_components keys:", Object.keys(optimizationResult.recommended_components));
+      
+      // Check counts for each component type
+      const counts = {};
+      Object.entries(optimizationResult.recommended_components).forEach(([key, value]) => {
+        counts[key] = Array.isArray(value) ? value.length : 0;
+      });
+      console.log("Component counts:", counts);
+    }
   }, [optimizationResult]);
 
   const {

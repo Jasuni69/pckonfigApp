@@ -205,6 +205,10 @@ class OptimizedBuildOut(SavedBuildOut):
     explanation: str  # AI's explanation for the recommendations
     similarity_score: float  # ChromaDB similarity score
     component_analysis: Optional[ComponentAnalysis] = None  # New field for component analysis
+    recommended_components: Optional[Dict[str, List[Dict[str, Any]]]] = None  # Add this field for component recommendations
+    current_components: Optional[Dict[str, Dict[str, Any]]] = None  # User's current components
+    current_total: Optional[float] = None  # Total price of current components
+    recommended_total: Optional[float] = None  # Total price of recommended components
 
     model_config = ConfigDict(from_attributes=True)
 

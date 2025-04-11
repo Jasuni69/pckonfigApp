@@ -1010,8 +1010,15 @@ async def optimize_build(
             logger.info(f"Using simplified_recommendations for component data instead of individual fields")
             logger.info(f"Recommendation counts: cpus={len(simplified_recommendations.get('cpus', []))}, gpus={len(simplified_recommendations.get('gpus', []))}")
             
+            # Add more detailed logging to see what's in simplified_recommendations
+            logger.info(f"Simplified recommendations keys: {simplified_recommendations.keys()}")
+            for comp_type, comps in simplified_recommendations.items():
+                logger.info(f"{comp_type} recommendations: {len(comps)} items")
+                if len(comps) > 0:
+                    logger.info(f"First {comp_type} recommendation: {comps[0]}")
+            
             # Fix: Don't nest the required fields inside 'data'
-            return {
+            return_data = {
                 "id": 1,  # Adding required fields for OptimizedBuildOut model
                 "name": "Optimized Build",
                 "user_id": current_user.id if current_user else 1,
@@ -1021,7 +1028,7 @@ async def optimize_build(
                 "similarity_score": 0.85,
                 "prompt": prompt,
                 "current_components": simplified_current,
-                "recommended_components": simplified_recommendations,
+                "recommended_components": simplified_recommendations,  # Make sure this is included
                 "current_total": current_total,
                 "recommended_total": recommended_total,
                 "purpose": request.purpose,
@@ -1037,6 +1044,12 @@ async def optimize_build(
                 # Add component analysis for better debugging
                 "component_analysis": component_analysis
             }
+            
+            # Log the final return data keys
+            logger.info(f"Return data keys: {return_data.keys()}")
+            logger.info(f"Return data has recommended_components: {'recommended_components' in return_data}")
+            
+            return return_data
         except Exception as e:
             logger.error(f"Error generating prompt: {str(e)}")
             logger.error(traceback.format_exc())
