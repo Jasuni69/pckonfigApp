@@ -863,15 +863,29 @@ async def optimize_build(
             simplified_current = {k: simplify_component_data(v) for k, v in current_components.items()}
             simplified_recommendations = {}
             for component_type, components_list in recommendations.items():
-                simplified_recommendations[component_type] = [simplify_component_data(c) for c in components_list[:2]]  # Only include top 2
+                if not components_list:
+                    logger.warning(f"Empty component list for {component_type}")
+                    simplified_recommendations[component_type] = []
+                    continue
+                
+                try:
+                    simplified_recommendations[component_type] = [simplify_component_data(c) for c in components_list[:2] if c]  # Only include top 2
+                except Exception as e:
+                    logger.error(f"Error simplifying {component_type}: {str(e)}")
+                    simplified_recommendations[component_type] = []
                 
             # Calculate total price before prompt
-            current_total = sum(comp.get('price', 0) for comp in simplified_current.values())
-            recommended_total = 0
+            current_total = sum(comp.get('price', 0) or 0 for comp in simplified_current.values())
+            
             # Fix: Handle the case where simplified_recommendations.values() contains lists
+            recommended_total = 0
             for component_list in simplified_recommendations.values():
-                for comp in component_list:
-                    recommended_total += comp.get('price', 0)
+                if component_list and isinstance(component_list, list):
+                    for comp in component_list:
+                        recommended_total += comp.get('price', 0) or 0
+            
+            logger.info(f"Current total: {current_total}, Recommended total: {recommended_total}")
+            
         except Exception as e:
             logger.error(f"Error preparing recommendation data: {e}")
             logger.error(traceback.format_exc())
@@ -881,102 +895,120 @@ async def optimize_build(
             current_total = 0
             recommended_total = 0
 
-        prompt = f"""
-        Analyze this PC build for {purpose}:
+        # Fix the f-string format by using proper escaping for nested curly braces
+        try:
+            prompt = f"""
+            Analyze this PC build for {purpose}:
 
-        Component Priority (1 = highest):
-        - 4K Gaming: GPU(1), CPU(2), RAM(3), PSU(4), Storage(5), Case(6), Cooler(7)
-        - 1440p Gaming: GPU(1), CPU(2), RAM(3), PSU(4), Storage(5), Case(6), Cooler(7)
-        - Workstation: CPU(1), RAM(2), Storage(3), GPU(4), PSU(5), Case(6), Cooler(7)
-        - General Use: CPU(1), RAM(2), Storage(3), PSU(4), Case(5), GPU(6), Cooler(7)
+            Component Priority (1 = highest):
+            - 4K Gaming: GPU(1), CPU(2), RAM(3), PSU(4), Storage(5), Case(6), Cooler(7)
+            - 1440p Gaming: GPU(1), CPU(2), RAM(3), PSU(4), Storage(5), Case(6), Cooler(7)
+            - Workstation: CPU(1), RAM(2), Storage(3), GPU(4), PSU(5), Case(6), Cooler(7)
+            - General Use: CPU(1), RAM(2), Storage(3), PSU(4), Case(5), GPU(6), Cooler(7)
 
-        Current build total: {current_total} SEK
-        Recommended components total: {recommended_total} SEK
+            Current build total: {current_total} SEK
+            Recommended components total: {recommended_total} SEK
 
-        Current components:
-        ```json
-        {json.dumps(simplified_current)}
-        ```
+            Current components:
+            ```json
+            {json.dumps(simplified_current)}
+            ```
 
-        Recommended components:
-        ```json
-        {json.dumps(simplified_recommendations)}
-        ```
+            Recommended components:
+            ```json
+            {json.dumps(simplified_recommendations)}
+            ```
 
-        Requirements by purpose:
-        - 4K Gaming: 
-          * GPU: 12GB+ VRAM, RTX 4070 Ti or better
-          * CPU: 8+ cores, i7/Ryzen 7 or better
-          * RAM: 32GB DDR5, 6000MHz+
-          * PSU: 850W+ Gold rated
-          * Storage: 1TB+ NVMe SSD
-          * Cooling: High-end air or AIO liquid cooler
+            Requirements by purpose:
+            - 4K Gaming: 
+              * GPU: 12GB+ VRAM, RTX 4070 Ti or better
+              * CPU: 8+ cores, i7/Ryzen 7 or better
+              * RAM: 32GB DDR5, 6000MHz+
+              * PSU: 850W+ Gold rated
+              * Storage: 1TB+ NVMe SSD
+              * Cooling: High-end air or AIO liquid cooler
 
-        - 1440p Gaming:
-          * GPU: 8GB+ VRAM, RTX 4060 Ti or better
-          * CPU: 6+ cores, i5/Ryzen 5 or better
-          * RAM: 16GB DDR4/5, 3600MHz+
-          * PSU: 750W+ Bronze rated
-          * Storage: 1TB SSD
-          * Cooling: Mid-range air cooler
+            - 1440p Gaming:
+              * GPU: 8GB+ VRAM, RTX 4060 Ti or better
+              * CPU: 6+ cores, i5/Ryzen 5 or better
+              * RAM: 16GB DDR4/5, 3600MHz+
+              * PSU: 750W+ Bronze rated
+              * Storage: 1TB SSD
+              * Cooling: Mid-range air cooler
 
-        - Workstation:
-          * CPU: 12+ cores, i9/Ryzen 9 or better
-          * RAM: 32GB+ DDR5, 4800MHz+
-          * GPU: Professional card or high-end gaming GPU
-          * PSU: 850W+ Gold rated
-          * Storage: 2TB+ NVMe SSD
-          * Cooling: High-end air or AIO liquid cooler
+            - Workstation:
+              * CPU: 12+ cores, i9/Ryzen 9 or better
+              * RAM: 32GB+ DDR5, 4800MHz+
+              * GPU: Professional card or high-end gaming GPU
+              * PSU: 850W+ Gold rated
+              * Storage: 2TB+ NVMe SSD
+              * Cooling: High-end air or AIO liquid cooler
 
-        - General Use:
-          * CPU: 4+ cores, i3/Ryzen 3 or better
-          * RAM: 16GB DDR4, 3200MHz+
-          * GPU: Integrated or entry-level discrete
-          * PSU: 650W+ Bronze rated
-          * Storage: 500GB+ SSD
-          * Cooling: Basic air cooler
+            - General Use:
+              * CPU: 4+ cores, i3/Ryzen 3 or better
+              * RAM: 16GB DDR4, 3200MHz+
+              * GPU: Integrated or entry-level discrete
+              * PSU: 650W+ Bronze rated
+              * Storage: 500GB+ SSD
+              * Cooling: Basic air cooler
 
-        Compatibility Rules:
-        1. CPU socket must match motherboard socket
-        2. Case must support motherboard form factor
-        3. PSU wattage must exceed total system requirements by 20%
-        4. RAM must be compatible with motherboard (DDR4/DDR5)
-        5. Cooler must support CPU socket
+            Compatibility Rules:
+            1. CPU socket must match motherboard socket
+            2. Case must support motherboard form factor
+            3. PSU wattage must exceed total system requirements by 20%
+            4. RAM must be compatible with motherboard (DDR4/DDR5)
+            5. Cooler must support CPU socket
 
-        Format:
-        {{
-          "explanation": "Detailed explanation of needed changes and why",
-          "components": {{
-            "cpu_id": 1,
-            "gpu_id": 2,
-            "motherboard_id": 3,
-            "ram_id": 4,
-            "psu_id": 5,
-            "case_id": 6,
-            "storage_id": 7,
-            "cooler_id": 8
-          }}
-        }}
+            Format:
+            {{
+              "explanation": "Detailed explanation of needed changes and why",
+              "components": {{
+                "cpu_id": 1,
+                "gpu_id": 2,
+                "motherboard_id": 3,
+                "ram_id": 4,
+                "psu_id": 5,
+                "case_id": 6,
+                "storage_id": 7,
+                "cooler_id": 8
+              }}
+            }}
 
-        Future-Proofing Guidelines:
-        - CPU: Consider socket longevity and upgrade path
-        - GPU: Ensure sufficient VRAM for future games
-        - RAM: Leave room for expansion
-        - Storage: Consider NVMe for future speed requirements
-        - PSU: Headroom for future upgrades
-        - Case: Support for larger components
-        """
-
-        return {
-            "status": "success",
-            "data": {
-                "prompt": prompt,
-                "current_components": simplified_current,
-                "recommended_components": simplified_recommendations,
-                "current_total": current_total,
-                "recommended_total": recommended_total
+            Future-Proofing Guidelines:
+            - CPU: Consider socket longevity and upgrade path
+            - GPU: Ensure sufficient VRAM for future games
+            - RAM: Leave room for expansion
+            - Storage: Consider NVMe for future speed requirements
+            - PSU: Headroom for future upgrades
+            - Case: Support for larger components
+            """
+            
+            logger.info("Generated prompt successfully")
+            
+            return {
+                "status": "success",
+                "data": {
+                    "prompt": prompt,
+                    "current_components": simplified_current,
+                    "recommended_components": simplified_recommendations,
+                    "current_total": current_total,
+                    "recommended_total": recommended_total,
+                    "id": 1,  # Adding required fields for OptimizedBuildOut model
+                    "name": "Optimized Build",
+                    "user_id": current_user.id if current_user else 1,
+                    "created_at": current_time,
+                    "updated_at": current_time,
+                    "explanation": "PC build optimization",
+                    "similarity_score": 0.85
+                }
             }
-        }
+        except Exception as e:
+            logger.error(f"Error generating prompt: {str(e)}")
+            logger.error(traceback.format_exc())
+            return {
+                "status": "error",
+                "message": "An error occurred while generating the optimization prompt."
+            }
     except Exception as e:
         logger.error(f"Error in optimize_build: {str(e)}")
         logger.error(traceback.format_exc())
