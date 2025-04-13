@@ -346,53 +346,7 @@ const PcBuilder = () => {
       const data = await response.json();
       console.log('Optimization response:', data);
       
-      // Update the components from the full objects in the response
-      const updatedComponents = { ...selectedComponents };
-      
-      // Update CPU if present in response
-      if (data.cpu) {
-        updatedComponents.cpu = data.cpu;
-      }
-      
-      // Update GPU if present in response
-      if (data.gpu) {
-        updatedComponents.gpu = data.gpu;
-      }
-      
-      // Update motherboard if present in response
-      if (data.motherboard) {
-        updatedComponents.motherboard = data.motherboard;
-      }
-      
-      // Update RAM if present in response
-      if (data.ram) {
-        updatedComponents.ram = data.ram;
-      }
-      
-      // Update PSU if present in response
-      if (data.psu) {
-        updatedComponents.psu = data.psu;
-      }
-      
-      // Update case if present in response
-      if (data.case) {
-        updatedComponents.case = data.case;
-      }
-      
-      // Update storage if present in response
-      if (data.storage) {
-        updatedComponents.hdd = data.storage;
-      }
-      
-      // Update cooler if present in response
-      if (data.cooler) {
-        updatedComponents['cpu-cooler'] = data.cooler;
-      }
-      
-      // Update selected components
-      setSelectedComponents(updatedComponents);
-      
-      // Show the explanation in a modal instead of an alert
+      // Show the explanation in a modal
       setOptimizationData(data);
       setShowOptimizationModal(true);
     } catch (error) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { API_URL } from "../config";
+import placeholderImage from "../assets/placeholder-image.jpg";
 
 const BuildCarousel = () => {
   const [builds, setBuilds] = useState([]);
@@ -71,7 +72,11 @@ const BuildCarousel = () => {
         <div className="relative h-80 bg-gradient-to-r from-slate-700 to-slate-900 overflow-hidden">
           {/* Featured build info */}
           <div className="absolute inset-0 flex flex-col justify-end p-8 text-white bg-gradient-to-t from-black/70 to-transparent">
-          <img src="frontend/public/placeholder-image.jpg" alt="" />
+            <img 
+              src={placeholderImage} 
+              alt={build.name} 
+              className="w-full h-full object-cover"
+            />
             <div className="flex justify-between items-end">
               <div>
                 <h2 className="text-3xl font-bold mb-2">{build.name}</h2>
