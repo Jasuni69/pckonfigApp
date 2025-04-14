@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router-dom';
 import SaveBuildModal from '../components/SaveBuildModal';
 import { API_URL } from '../config';
 import OptimizationResultsModal from '../components/OptimizationResultsModal';
-import Layout from '../components/Layout';
 
 const normalizeFormFactor = (formFactor) => {
   if (!formFactor) return '';
@@ -429,121 +428,139 @@ const PcBuilder = () => {
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-slate-800 text-center mb-12">
-          Konfigurera Din PC
-        </h1>
-
-        {/* Component Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Card 
-            title="Chassi" 
-            img={caseIcon} 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow" 
-            options="cases"
-            onSelect={(component) => handleComponentSelect(component, 'case')}
-            filterRequirements={getFilterRequirements('cases')}
-          />
-          <Card 
-            title="Moderkort" 
-            img={motherboardIcon} 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow row-start-2 col-start-1" 
-            options="motherboards"
-            onSelect={(component) => handleComponentSelect(component, 'motherboard')} 
-            filterRequirements={getFilterRequirements('motherboards')}
-          />
-          <Card 
-            title="Processor" 
-            img={cpuIcon} 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow row-start-2 col-start-2" 
-            options="cpus"
-            onSelect={(component) => handleComponentSelect(component, 'cpu')} 
-            filterRequirements={getFilterRequirements('cpus')}
-          />
-          <Card 
-            title="Ram-Minne" 
-            img={ramIcon} 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow row-start-2 col-start-3" 
-            options="ram"
-            onSelect={(component) => handleComponentSelect(component, 'ram')} 
-          />
-          <Card 
-            title="Grafikkort" 
-            img={gpuIcon} 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow row-start-2 col-start-4" 
-            options="gpus"
-            onSelect={(component) => handleComponentSelect(component, 'gpu')} 
-            filterRequirements={getFilterRequirements('gpus')}
-          />
-          <Card 
-            title="Hårddisk" 
-            img={hddIcon} 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow row-start-3 col-start-1" 
-            options="storage"
-            onSelect={(component) => handleComponentSelect(component, 'hdd')} 
-          />
-          <Card 
-            title="CPU-Kylare" 
-            img={cpuCoolerIcon} 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow row-start-3 col-start-2" 
-            options="coolers"
-            onSelect={(component) => handleComponentSelect(component, 'cpu-cooler')} 
-          />
-          <Card 
-            title="Nätaggregat" 
-            img={psuIcon} 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow row-start-3 col-start-3" 
-            options="psus"
-            onSelect={(component) => handleComponentSelect(component, 'psu')} 
-            filterRequirements={getFilterRequirements('psus')}
-          />
-          <Card 
-            title="Extra" 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow row-start-3 col-start-4" 
-            options="extras"
-            onSelect={(component) => handleComponentSelect(component, 'extra')} 
-          />
-          <Card 
-            title="Användning" 
-            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow row-start-4 col-start-1" 
-            options="purpose" 
-            onSelect={(component) => handleComponentSelect(component, 'purpose')} 
-          />
+    <div className="wrapper bg-gradient-to-b from-slate-400 to-slate-200 pb-28 -mt-24">
+      <div className="sticky top-28 z-10">
+        <div className="flex justify-center items-center bg-slate-200 h-16 pt-16">
+          <h1 className="flex text-2xl font-bold mt-96 text-slate-800">Konfigurera din PC!</h1>
+        </div>
+        <div className="flex flex-col justify-center items-center min-h-screen pt-28">
+          <div className="w-full max-w-7xl h-[50vh] grid grid-cols-5 grid-rows-6 gap-4 bg-slate-500 shadow-2xl border-2 border-slate-400 rounded-lg p-4">
+            <Card 
+              title="Chassi" 
+              img={caseIcon} 
+              className="row-span-3" 
+              options="cases"
+              onSelect={(component) => handleComponentSelect(component, 'case')}
+              filterRequirements={getFilterRequirements('cases')}
+            />
+            <Card 
+              title="Moderkort" 
+              img={motherboardIcon} 
+              className="row-span-3 col-start-2 row-start-1" 
+              options="motherboards"
+              onSelect={(component) => handleComponentSelect(component, 'motherboard')} 
+              filterRequirements={getFilterRequirements('motherboards')}
+            />
+            <Card 
+              title="Processor" 
+              img={cpuIcon} 
+              className="row-span-3 col-start-3 row-start-1" 
+              options="cpus"
+              onSelect={(component) => handleComponentSelect(component, 'cpu')} 
+              filterRequirements={getFilterRequirements('cpus')}
+            />
+            <Card 
+              title="Ram-Minne" 
+              img={ramIcon} 
+              className="row-span-3 col-start-4 row-start-1" 
+              options="ram"
+              onSelect={(component) => handleComponentSelect(component, 'ram')} 
+            />
+            <Card 
+              title="Grafikkort" 
+              img={gpuIcon} 
+              className="row-span-3 col-start-5 row-start-1" 
+              options="gpus"
+              onSelect={(component) => handleComponentSelect(component, 'gpu')} 
+              filterRequirements={getFilterRequirements('gpus')}
+            />
+            <Card 
+              title="Hårddisk" 
+              img={hddIcon} 
+              className="row-span-3 col-start-1 row-start-4" 
+              options="storage"
+              onSelect={(component) => handleComponentSelect(component, 'hdd')} 
+            />
+            <Card 
+              title="CPU-Kylare" 
+              img={cpuCoolerIcon} 
+              className="row-span-3 col-start-2 row-start-4" 
+              options="coolers"
+              onSelect={(component) => handleComponentSelect(component, 'cpu-cooler')} 
+            />
+            <Card 
+              title="Nätaggregat" 
+              img={psuIcon} 
+              className="row-span-3 col-start-3 row-start-4" 
+              options="psus"
+              onSelect={(component) => handleComponentSelect(component, 'psu')} 
+              filterRequirements={getFilterRequirements('psus')}
+            />
+            <Card 
+              title="Extra" 
+              className="row-span-3 col-start-5 row-start-4" 
+              options="extras"
+              onSelect={(component) => handleComponentSelect(component, 'extra')} 
+            />
+            <Card 
+              title="Användning" 
+              className="row-span-3 col-start-4 row-start-4" 
+              options="purpose" 
+              onSelect={(component) => handleComponentSelect(component, 'purpose')} 
+            />
+          </div>
         </div>
 
-        {/* Summary Panel */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-6">Valda Komponenter</h2>
-          <div className="space-y-4 mb-6">
-            {Object.entries(selectedComponents)
-              .filter(([_, comp]) => comp && typeof comp === 'object' && comp.name)
-              .map(([type, comp]) => (
-                <div key={type} className="flex justify-between items-center p-2 bg-slate-200 rounded">
-                  <span>{componentLabels[type] || type}: {comp.name}</span>
-                  <span>{comp.price ? `${comp.price} kr` : ''}</span>
-                </div>
-              ))}
-          </div>
-
-          {/* Total and Actions */}
-          <div className="flex items-center justify-between pt-6 border-t">
-            <div className="text-2xl font-bold">
-              Totalt: {calculateTotal()} kr
+        <div className="flex justify-center -mt-40">
+          <div className="w-full max-w-7xl bg-slate-300 rounded-lg shadow-lg border-2 border-slate-400 p-6">
+            <h2 className="text-xl font-bold mb-4">Valda komponenter</h2>
+            <div className="space-y-2">
+              {Object.entries(selectedComponents)
+                .filter(([_, comp]) => comp && typeof comp === 'object' && comp.name)
+                .map(([type, comp]) => (
+                  <div key={type} className="flex justify-between items-center p-2 bg-slate-200 rounded">
+                    <span>{componentLabels[type] || type}: {comp.name}</span>
+                    <span>{comp.price ? `${comp.price} kr` : ''}</span>
+                  </div>
+                ))}
             </div>
-            <div className="flex gap-4">
-              <button 
-                onClick={() => setShowSaveModal(true)}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Spara Bygg
-              </button>
-              <button 
-                onClick={handleOptimize}
-                className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Optimera
-              </button>
+            <div className="mt-4 pt-4 border-t-2 border-slate-400">
+              <div className="flex justify-between items-center font-bold text-lg">
+                <span>Totalt:</span>
+                <span>{calculateTotal()} kr</span>
+                <div className="flex justify-center items-center gap-4">
+                  <button 
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        if (window.confirm('Du måste logga in för att spara din dator. Vill du logga in nu?')) {
+                          navigate('/login');
+                          return;
+                        }
+                        return;
+                      }
+                      
+                      // Check for components before showing the modal
+                      if (Object.keys(selectedComponents).filter(key => key !== 'purpose').length === 0) {
+                        alert('Välj minst en komponent innan du sparar');
+                        return;
+                      }
+                      
+                      setShowSaveModal(true);
+                    }}
+                    disabled={isSaving}
+                    className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg"
+                  >
+                    {isSaving ? 'Sparar...' : 'Spara dator'}
+                  </button>
+                  <button 
+                    onClick={handleOptimize}
+                    disabled={isLoading}
+                    className="bg-slate-300 text-black hover:text-gray-700 hover:scale-105 border-2 hover:bg-slate-400 border-slate-600 rounded-lg p-1 shadow-lg"
+                  >
+                    {isLoading ? 'Optimerar...' : 'Optimera dator'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -561,7 +578,7 @@ const PcBuilder = () => {
         optimizationResult={optimizationData}
         onApplyRecommendations={handleApplyRecommendations}
       />
-    </Layout>
+    </div>
   );
 };
 
