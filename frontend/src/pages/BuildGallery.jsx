@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import SearchBuildDropdown from '../components/SearchBuildDropdown'
 import { API_URL } from '../config'
 import { Link } from 'react-router-dom'
+import Layout from '../components/Layout'
 
-export default function BuildGallery() {
+const BuildGallery = () => {
   // ===== STATE MANAGEMENT =====
   // Component data state
   const [components, setComponents] = useState({
@@ -177,33 +178,25 @@ export default function BuildGallery() {
   // ===== LOADING STATE UI =====
   if (loading) {
     return (
-      <div className="flex min-h-screen">
-        {/* SKELETON: Sidebar */}
-        <div className="w-64 bg-white border-r border-gray-200 p-4 mt-40">
-          <div className="flex flex-col gap-4">
-            <div className="h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
-            <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
-            <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
-            <div className="h-8 bg-gray-200 rounded animate-pulse w-full mt-2"></div>
-            
-            {/* SKELETON: Filter dropdowns */}
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="flex flex-col gap-1">
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
-                <div className="h-8 bg-gray-200 rounded animate-pulse w-full"></div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-4xl font-bold text-slate-800 text-center mb-12">
+            Bygggalleri
+          </h1>
 
-        {/* SKELETON: Content area */}
-        <div className="flex-1 p-4 bg-gradient-to-b from-slate-400 to-slate-200 mt-28">
-          <div className="h-8 bg-gray-200 rounded animate-pulse w-48 mb-6"></div>
-          
-          {/* SKELETON: Build cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Search and Filters */}
+          <div className="mb-8 flex gap-4 justify-center">
+            <input 
+              type="text"
+              placeholder="Sök byggen..."
+              className="px-4 py-2 rounded-lg border border-slate-300 w-full max-w-md"
+            />
+          </div>
+
+          {/* Builds Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div key={i} className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div className="h-48 bg-gray-200 animate-pulse"></div>
                 <div className="p-4">
                   <div className="h-5 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
@@ -215,270 +208,104 @@ export default function BuildGallery() {
             ))}
           </div>
         </div>
-      </div>
+      </Layout>
     )
   }
 
   // ===== ERROR STATE UI =====
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-lg text-red-600">{error}</div>
-      </div>
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <h1 className="text-4xl font-bold text-slate-800 text-center mb-12">
+            Bygggalleri
+          </h1>
+
+          {/* Search and Filters */}
+          <div className="mb-8 flex gap-4 justify-center">
+            <input 
+              type="text"
+              placeholder="Sök byggen..."
+              className="px-4 py-2 rounded-lg border border-slate-300 w-full max-w-md"
+            />
+          </div>
+
+          {/* Builds Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {publishedBuilds.map(build => (
+              <Link 
+                key={build.id}
+                to={`/build/${build.id}`}
+                className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+              >
+                <div className="aspect-video relative">
+                  <img 
+                    src="/placeholder-image.jpg" 
+                    alt={build.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+                    <div className="text-white">
+                      <h3 className="text-xl font-bold">{build.name}</h3>
+                      <p className="text-sm opacity-90">
+                        {build.cpu?.name} | {build.gpu?.name}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </Layout>
     )
   }
 
   return (
-    <div className="flex min-h-screen">
-      {/* SIDEBAR: Filters panel */}
-      <div className="w-64 bg-white border-r border-gray-200 p-4 mt-40">
-        <section role="search" className="flex flex-col gap-4">
-          {/* FILTER HEADER: Title and summary */}
-          <div className="flex flex-col gap-2">
-            <h2 className="text-lg font-semibold">Build Filters</h2>
-            <div className="text-sm text-gray-600">
-              Showing {publishedBuilds.length} of {totalBuilds} builds
-            </div>
-            <button 
-              className="text-sm text-blue-600 hover:text-blue-800"
-              onClick={clearFilters}
+    <Layout>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-slate-800 text-center mb-12">
+          Bygggalleri
+        </h1>
+
+        {/* Search and Filters */}
+        <div className="mb-8 flex gap-4 justify-center">
+          <input 
+            type="text"
+            placeholder="Sök byggen..."
+            className="px-4 py-2 rounded-lg border border-slate-300 w-full max-w-md"
+          />
+        </div>
+
+        {/* Builds Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {publishedBuilds.map(build => (
+            <Link 
+              key={build.id}
+              to={`/build/${build.id}`}
+              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
             >
-              Clear filters
-            </button>
-          </div>
-
-          {/* SEARCH: Text search input */}
-          <div className="relative">
-            <input
-              type="search"
-              placeholder="Search builds..."
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* FILTER DROPDOWNS: Component selection */}
-          <SearchBuildDropdown
-            label="Användningsområde" 
-            placeholder="Alla användningsområden"
-            options={components.purpose}
-            onChange={(value) => handleFilterChange('purpose', value)}
-            value={filters.purpose}
-          />
-          <SearchBuildDropdown 
-            label="Chassi" 
-            placeholder="Välj chassi"
-            options={components.case.map(c => c.name)}
-            onChange={(value) => {
-              const selectedCase = components.case.find(c => c.name === value);
-              handleFilterChange('case_id', selectedCase ? selectedCase.id : null);
-            }}
-            value={filters.case_id ? components.case.find(c => c.id === filters.case_id)?.name : null}
-          />
-          <SearchBuildDropdown 
-            label="CPU" 
-            placeholder="Välj CPU"
-            options={components.cpu.map(c => c.name)}
-            onChange={(value) => {
-              const selectedCpu = components.cpu.find(c => c.name === value);
-              handleFilterChange('cpu_id', selectedCpu ? selectedCpu.id : null);
-            }}
-            value={filters.cpu_id ? components.cpu.find(c => c.id === filters.cpu_id)?.name : null}
-          />
-          <SearchBuildDropdown 
-            label="GPU" 
-            placeholder="Välj GPU"
-            options={components.gpu.map(g => g.name)}
-            onChange={(value) => {
-              const selectedGpu = components.gpu.find(g => g.name === value);
-              handleFilterChange('gpu_id', selectedGpu ? selectedGpu.id : null);
-            }}
-            value={filters.gpu_id ? components.gpu.find(g => g.id === filters.gpu_id)?.name : null}
-          />
-          <SearchBuildDropdown 
-            label="RAM" 
-            placeholder="Välj RAM"
-            options={components.ram.map(r => r.name)}
-            onChange={(value) => {
-              const selectedRam = components.ram.find(r => r.name === value);
-              handleFilterChange('ram_id', selectedRam ? selectedRam.id : null);
-            }}
-            value={filters.ram_id ? components.ram.find(r => r.id === filters.ram_id)?.name : null}
-          />
-          <SearchBuildDropdown 
-            label="Lagring" 
-            placeholder="Välj lagring"
-            options={components.storage.map(s => s.name)}
-            onChange={(value) => {
-              const selectedStorage = components.storage.find(s => s.name === value);
-              handleFilterChange('storage_id', selectedStorage ? selectedStorage.id : null);
-            }}
-            value={filters.storage_id ? components.storage.find(s => s.id === filters.storage_id)?.name : null}
-          />
-          <SearchBuildDropdown 
-            label="Kylare" 
-            placeholder="Välj kylare"
-            options={components.cooler.map(c => c.name)}
-            onChange={(value) => {
-              const selectedCooler = components.cooler.find(c => c.name === value);
-              handleFilterChange('cooler_id', selectedCooler ? selectedCooler.id : null);
-            }}
-            value={filters.cooler_id ? components.cooler.find(c => c.id === filters.cooler_id)?.name : null}
-          />
-          <SearchBuildDropdown 
-            label="PSU" 
-            placeholder="Välj PSU"
-            options={components.psu.map(p => p.name)}
-            onChange={(value) => {
-              const selectedPsu = components.psu.find(p => p.name === value);
-              handleFilterChange('psu_id', selectedPsu ? selectedPsu.id : null);
-            }}
-            value={filters.psu_id ? components.psu.find(p => p.id === filters.psu_id)?.name : null}
-          />
-
-          {/* PRICE RANGE: Min/max price filtering */}
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Pris</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                placeholder="Min"
-                className="w-full px-2 py-1 text-sm border rounded"
-                value={filters.min_price || ''}
-                onChange={(e) => {
-                  const value = e.target.value ? parseInt(e.target.value) : null;
-                  handleFilterChange('min_price', value);
-                }}
-                min="0"
-              />
-              <span>-</span>
-              <input
-                type="number"
-                placeholder="Max"
-                className="w-full px-2 py-1 text-sm border rounded"
-                value={filters.max_price || ''}
-                onChange={(e) => {
-                  const value = e.target.value ? parseInt(e.target.value) : null;
-                  handleFilterChange('max_price', value);
-                }}
-                min="0"
-              />
-            </div>
-            {/* Price range visual indicator */}
-            <div className="h-1 bg-gray-200 rounded">
-              <div 
-                className="h-full bg-blue-600 rounded"
-                style={{ 
-                  width: filters.max_price ? 
-                    `${Math.min(100, (filters.min_price || 0) / filters.max_price * 100)}%` : 
-                    filters.min_price ? '50%' : '75%' 
-                }}
-              ></div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* MAIN CONTENT: Build cards grid */}
-      <div className="flex-1 p-4 bg-gradient-to-b from-slate-400 to-slate-200 mt-28">
-        <h1 className="text-2xl font-bold mb-6">Build Gallery</h1>
-        
-        {/* Display builds grid or loading state */}
-        {loading && Object.keys(componentMaps.cpuMap).length === 0 ? (
-          // Show full skeleton loader only for initial page load
-          <div className="space-y-4">
-            <div className="h-8 bg-gray-200 rounded animate-pulse w-48 mb-6"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <div className="h-48 bg-gray-200 animate-pulse"></div>
-                  <div className="p-4">
-                    <div className="h-5 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-full mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3 mb-2"></div>
-                    <div className="h-5 bg-gray-200 rounded animate-pulse w-1/4 mt-3"></div>
+              <div className="aspect-video relative">
+                <img 
+                  src="/placeholder-image.jpg" 
+                  alt={build.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+                  <div className="text-white">
+                    <h3 className="text-xl font-bold">{build.name}</h3>
+                    <p className="text-sm opacity-90">
+                      {build.cpu?.name} | {build.gpu?.name}
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {publishedBuilds.length > 0 ? (
-              publishedBuilds.map((publishedBuild) => {
-                // Get the associated saved build
-                const build = publishedBuild.build;
-                
-                // Calculate total price from all components
-                const totalPrice = [
-                  build.cpu?.price || 0,
-                  build.gpu?.price || 0,
-                  build.ram?.price || 0,
-                  build.storage?.price || 0,
-                  build.motherboard?.price || 0,
-                  build.psu?.price || 0,
-                  build.case?.price || 0,
-                  build.cooler?.price || 0
-                ].reduce((sum, price) => sum + price, 0);
-                
-                return (
-                  <div key={publishedBuild.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-                    {/* BUILD CARD: Individual build card with link */}
-                    <Link to={`/build/${publishedBuild.id}`} className="block">
-                      {/* BUILD IMAGE */}
-                      <div className="relative h-48 bg-gray-100">
-                        <img 
-                          src="/placeholder-image.jpg" 
-                          alt={`${build.name} Preview`} 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      
-                      {/* BUILD INFO */}
-                      <div className="p-4">
-                        <h3 className="font-semibold text-lg">{build.name}</h3>
-                        <p className="text-sm text-gray-600 mt-1">
-                          {build.cpu ? build.cpu.name : 'No CPU'} | {build.gpu ? build.gpu.name : 'No GPU'} | {build.ram ? build.ram.name : 'No RAM'} | {build.storage ? build.storage.name : 'No Storage'}
-                        </p>
-                        
-                        {/* RATING */}
-                        {publishedBuild.avg_rating > 0 && (
-                          <div className="flex items-center mt-2">
-                            <div className="flex">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <svg 
-                                  key={star} 
-                                  fill={star <= Math.round(publishedBuild.avg_rating) ? "var(--review-star-color, #FFB800)" : "var(--review-star-disabled-color, #E5E5E5)"} 
-                                  height="12" 
-                                  width="12" 
-                                  className="mr-0.5" 
-                                  viewBox="0 0 24 24">
-                                  <path d="M8.9 9H2a1 1 0 0 0-.6 1.8l5.6 4-2.2 6.7a1 1 0 0 0 1.6 1l5.6-4.1 5.6 4.1a1 1 0 0 0 1.6-1L17 14.8l5.6-4A1 1 0 0 0 22 9h-6.9l-2.15-6.6a1 1 0 0 0-1.9 0z"></path>
-                                </svg>
-                              ))}
-                            </div>
-                            <span className="text-xs text-gray-600 ml-2">
-                              ({publishedBuild.rating_count || 0} reviews)
-                            </span>
-                          </div>
-                        )}
-                        
-                        {/* PRICE */}
-                        <div className="mt-3">
-                          <span className="font-bold text-lg">{totalPrice} kr</span>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="col-span-3 text-center py-8 text-gray-500">
-                No builds found. Try adjusting your filters.
               </div>
-            )}
-          </div>
-        )}
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
+    </Layout>
   )
 }
+
+export default BuildGallery
