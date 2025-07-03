@@ -2,9 +2,33 @@ from ChromaDB.client import get_chroma_client
 import random
 from typing import Dict, List, Optional, Set
 
-# Initialize the Chroma client and get the collection
-client = get_chroma_client()
-collection = client.get_or_create_collection(name="components")
+# Global variables for lazy initialization
+_client = None
+_collection = None
+
+def get_client():
+    """Get ChromaDB client with lazy initialization."""
+    global _client
+    if _client is None:
+        try:
+            _client = get_chroma_client()
+        except Exception as e:
+            print(f"Warning: ChromaDB client initialization failed: {e}")
+            _client = None
+    return _client
+
+def get_collection():
+    """Get ChromaDB collection with lazy initialization."""
+    global _collection
+    if _collection is None:
+        client = get_client()
+        if client is not None:
+            try:
+                _collection = client.get_or_create_collection(name="components")
+            except Exception as e:
+                print(f"Warning: ChromaDB collection initialization failed: {e}")
+                _collection = None
+    return _collection
 
 def add_component(doc: str, metadata: dict, id: str):
     """
@@ -15,6 +39,10 @@ def add_component(doc: str, metadata: dict, id: str):
         metadata (dict): Structured data (e.g., {"type": "GPU", "price": 300}).
         id (str): Unique ID for this component.
     """
+    collection = get_collection()
+    if collection is None:
+        raise Exception("ChromaDB collection not available")
+    
     collection.add(
         documents=[doc],
         metadatas=[metadata],
@@ -43,6 +71,11 @@ def search_components(
     Returns:
         dict: Chroma result with IDs, distances, documents, and metadatas.
     """
+    collection = get_collection()
+    if collection is None:
+        # Return empty results if ChromaDB is not available
+        return {"ids": [[]], "distances": [[]], "documents": [[]], "metadatas": [[]]}
+    
     # Build where clause for filtering
     where_clause = {}
     if component_type:
@@ -70,7 +103,11 @@ def search_components(
     if where_clause:
         search_args["where"] = where_clause
     
-    results = collection.query(**search_args)
+    try:
+        results = collection.query(**search_args)
+    except Exception as e:
+        print(f"Warning: ChromaDB search failed: {e}")
+        return {"ids": [[]], "distances": [[]], "documents": [[]], "metadatas": [[]]}
     
     # Apply diversity filtering and exclusions
     if results["ids"] and results["ids"][0]:
@@ -223,22 +260,47 @@ def search_components_by_type(
     budget_range: Optional[tuple] = None
 ) -> Dict:
     """
-    Search for components of a specific type with purpose-based query optimization.
+    Search for components of a specific type optimized for a given purpose.
+    
+    Args:
+        component_type (str): Type of component (e.g., "GPU", "CPU")
+        purpose (str): Intended use case (e.g., "1440p gaming", "video editing")
+        n_results (int): Number of results to return
+        exclude_ids (Set[str], optional): Component IDs to exclude
+        budget_range (tuple, optional): (min_price, max_price) budget constraints
+    
+    Returns:
+        Dict: Search results with component recommendations
     """
-    # Create purpose-specific queries for different component types
-    queries = {
-        "CPU": f"{purpose} processor for {component_type}",
-        "GPU": f"{purpose} graphics card for {component_type}",
-        "Motherboard": f"compatible motherboard for {purpose}",
-        "RAM": f"memory RAM for {purpose}",
-        "Storage": f"storage drive for {purpose}",
-        "PSU": f"power supply for {purpose}",
-        "Case": f"computer case for {purpose}",
-        "Cooler": f"CPU cooler for {purpose}"
-    }
+    collection = get_collection()
+    if collection is None:
+        # Return empty results if ChromaDB is not available
+        return {"ids": [[]], "distances": [[]], "documents": [[]], "metadatas": [[]]}
     
-    query = queries.get(component_type, f"{component_type} for {purpose}")
+    # Build optimized query based on component type and purpose
+    query = f"{component_type} for {purpose}"
     
+    # Add type-specific optimization keywords
+    if component_type.lower() == "gpu":
+        if "gaming" in purpose.lower():
+            if "4k" in purpose.lower():
+                query += " high-end graphics 4K gaming ray tracing"
+            elif "1440p" in purpose.lower():
+                query += " high performance 1440p gaming"
+            elif "1080p" in purpose.lower():
+                query += " budget-friendly 1080p gaming"
+        elif any(term in purpose.lower() for term in ["video editing", "rendering", "3d"]):
+            query += " professional workstation VRAM"
+    
+    elif component_type.lower() == "cpu":
+        if "gaming" in purpose.lower():
+            query += " gaming processor high single-core performance"
+        elif any(term in purpose.lower() for term in ["rendering", "video editing", "3d"]):
+            query += " multi-core workstation processor"
+        elif "programming" in purpose.lower():
+            query += " development compilation multi-tasking"
+    
+    # Use the regular search function with optimized query
     return search_components(
         query=query,
         n_results=n_results,
