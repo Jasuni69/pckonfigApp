@@ -228,15 +228,52 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
     } else {
       const fetchComponents = async () => {
         try {
-          console.log('Fetching components for:', options);
-          console.log('Filter requirements:', filterRequirements);
+          console.log('🔍 DEBUGGING CARD COMPONENT:');
+          console.log('  - Component type:', options);
+          console.log('  - API_URL from config:', API_URL);
+          console.log('  - Full API endpoint:', `${API_URL}/api/${options}`);
+          console.log('  - Filter requirements:', filterRequirements);
+          
+          // Test if API_URL is accessible
+          console.log('📡 Testing API connection...');
           
           const response = await fetch(`${API_URL}/api/${options}`);
+          
+          console.log('📊 API Response Details:');
+          console.log('  - Status:', response.status);
+          console.log('  - Status Text:', response.statusText);
+          console.log('  - Headers:', Object.fromEntries(response.headers.entries()));
+          console.log('  - URL:', response.url);
+          console.log('  - OK:', response.ok);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}, statusText: ${response.statusText}`);
+          }
+          
           const data = await response.json();
+          
+          console.log('📦 Data received:');
+          console.log('  - Type:', typeof data);
+          console.log('  - Is Array:', Array.isArray(data));
+          console.log('  - Length:', data?.length || 'N/A');
+          console.log('  - First item:', data?.[0] || 'No items');
+          console.log('  - Sample data structure:', data?.slice(0, 2) || 'No data');
+          
+          if (!Array.isArray(data)) {
+            console.error('❌ Data is not an array:', data);
+            throw new Error('API response is not an array');
+          }
+          
+          if (data.length === 0) {
+            console.warn('⚠️ No data received from API');
+            setComponents([]);
+            setChoices([]);
+            return;
+          }
           
           // Log all components with their form factors before filtering
           if (options === 'motherboards' || options === 'cases') {
-            console.log(`All ${options} before filtering:`, data.map(item => ({
+            console.log(`🔧 All ${options} before filtering:`, data.map(item => ({
               name: item.name, 
               form_factor: item.form_factor,
               normalized: normalizeFormFactor(item.form_factor)
@@ -246,7 +283,7 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
           let filteredData = data;
           
           if (filterRequirements && Object.keys(filterRequirements).length > 0) {
-            console.log(`Filtering ${options} with requirements:`, filterRequirements);
+            console.log(`🔍 Filtering ${options} with requirements:`, filterRequirements);
             
             filteredData = data.filter(component => {
               // CPU/Motherboard socket compatibility
@@ -318,7 +355,7 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
               return true;
             });
             
-            console.log(`${options} filtering complete:`, {
+            console.log(`✅ ${options} filtering complete:`, {
               type: options,
               requirements: filterRequirements,
               beforeCount: data.length,
@@ -328,9 +365,9 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
             
             // Debug log all filtered components
             if (filteredData.length === 0) {
-              console.warn(`No ${options} found after filtering with:`, filterRequirements);
+              console.warn(`⚠️ No ${options} found after filtering with:`, filterRequirements);
             } else if (options === 'motherboards' || options === 'cases') {
-              console.log(`Filtered ${options}:`, filteredData.map(item => ({
+              console.log(`🔧 Filtered ${options}:`, filteredData.map(item => ({
                 name: item.name, 
                 form_factor: item.form_factor,
                 normalized: normalizeFormFactor(item.form_factor)
@@ -340,7 +377,7 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
           
           // If no motherboards are found after filtering, show all with a warning
           if (options === 'motherboards' && filteredData.length === 0 && filterRequirements) {
-            console.warn('No compatible motherboards found! Showing all motherboards instead.');
+            console.warn('⚠️ No compatible motherboards found! Showing all motherboards instead.');
             
             let errorMessage = '';
             
@@ -367,10 +404,37 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
           // Sort components by price (highest to lowest)
           filteredData = sortComponentsByPrice(filteredData);
           
+          console.log('🎯 Final data being set:');
+          console.log('  - Final filtered count:', filteredData.length);
+          console.log('  - First 3 items:', filteredData.slice(0, 3));
+          
           setComponents(filteredData);
           setChoices(filteredData);
+          
+          console.log('✅ Component state updated successfully');
+          
         } catch (error) {
-          console.error(`Error fetching ${options}:`, error);
+          console.error('❌ ERROR FETCHING COMPONENTS:');
+          console.error('  - Component type:', options);
+          console.error('  - API URL:', `${API_URL}/api/${options}`);
+          console.error('  - Error type:', error.name);
+          console.error('  - Error message:', error.message);
+          console.error('  - Full error:', error);
+          
+          // Check if it's a network error
+          if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            console.error('🌐 NETWORK ERROR: Cannot connect to backend API');
+            console.error('  - Check if backend is running');
+            console.error('  - Check if API_URL is correct:', API_URL);
+            console.error('  - Check CORS settings');
+          }
+          
+          // Check if it's a CORS error
+          if (error.message.includes('CORS')) {
+            console.error('🚫 CORS ERROR: Cross-origin request blocked');
+            console.error('  - Backend needs to allow origin:', window.location.origin);
+          }
+          
           setComponents([]);
           setChoices([]);
         }
