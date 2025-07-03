@@ -7,4 +7,4 @@ export const TOKEN_REFRESH_INTERVAL = 25 * 60 * 1000;
 // Other config constants
 export const DEFAULT_HEADERS = {
   'Content-Type': 'application/json'
-}; 
+};
