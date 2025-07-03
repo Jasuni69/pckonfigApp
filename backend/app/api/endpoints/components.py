@@ -28,14 +28,7 @@ async def get_cpus(
     search: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    query = db.query(CPU).options(
-        # Optimize query to load all needed data in one go
-        joinedload(CPU.id),
-        joinedload(CPU.name),
-        joinedload(CPU.socket),
-        joinedload(CPU.cores),
-        joinedload(CPU.price)
-    )
+    query = db.query(CPU)
     
     if search:
         search_filter = f"%{search.lower()}%"
