@@ -22,6 +22,9 @@ allowed_origins = [
     "http://localhost:3000",  # React dev server
     "http://localhost:5173",  # Vite dev server
     "http://localhost:80",    # Production frontend
+    "http://16.16.99.193",    # EC2 public IP
+    "http://16.16.99.193:3000",  # EC2 frontend
+    "http://16.16.99.193:80",    # EC2 frontend on port 80
     # Add your production domain here
 ]
 
