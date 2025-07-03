@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { FiInfo } from 'react-icons/fi';
+import { API_URL } from '../config';
 
 const normalizeFormFactor = (formFactor) => {
   if (!formFactor) return '';
@@ -230,7 +231,7 @@ const Card = ({ title, img, className = "", onSelect, options, filterRequirement
           console.log('Fetching components for:', options);
           console.log('Filter requirements:', filterRequirements);
           
-          const response = await fetch(`/api/${options}`);
+          const response = await fetch(`${API_URL}/api/${options}`);
           const data = await response.json();
           
           // Log all components with their form factors before filtering
