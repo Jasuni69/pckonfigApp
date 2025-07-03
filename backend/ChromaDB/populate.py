@@ -17,16 +17,20 @@ def clean_metadata(metadata):
     return cleaned
 
 def populate_chroma():
-    # Use host 'chromadb' for Docker networking
-    client = get_chroma_client(persist_directory="/chroma/chroma_data")
-    collection = client.get_or_create_collection(name="components")
-    
-    # Check if collection already has data
-    if collection.count() > 0:
-        print(f"ChromaDB collection already has {collection.count()} items. Skipping population.")
-        return
-
     try:
+        # Use host 'chromadb' for Docker networking
+        client = get_chroma_client(persist_directory="/chroma/chroma_data")
+        if client is None:
+            print("Warning: ChromaDB client not available, skipping population")
+            return
+            
+        collection = client.get_or_create_collection(name="components")
+        
+        # Check if collection already has data
+        if collection.count() > 0:
+            print(f"ChromaDB collection already has {collection.count()} items. Skipping population.")
+            return
+
         # Find the JSON file
         json_path = 'ChromaDB/components/chroma_components_final_polished.json'
         if not os.path.exists(json_path):
@@ -37,6 +41,9 @@ def populate_chroma():
                     json_path = alt_path
                     print(f"Found alternative path: {json_path}")
                     break
+            else:
+                print("No ChromaDB component files found, skipping population")
+                return
         
         # Load your enhanced JSON data
         with open(json_path, 'r') as f:
@@ -52,8 +59,10 @@ def populate_chroma():
             )
         
         print(f"Successfully populated ChromaDB with {len(data['chroma_components'])} components")
+        
     except Exception as e:
         print(f"Error populating ChromaDB: {str(e)}")
+        raise  # Re-raise to be caught by safe_populate_chroma
 
 if __name__ == "__main__":
     populate_chroma()

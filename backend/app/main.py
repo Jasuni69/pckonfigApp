@@ -39,11 +39,22 @@ try:
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
     
     from ChromaDB.populate import populate_chroma
+    
+    def safe_populate_chroma():
+        """Safely populate ChromaDB with error handling"""
+        try:
+            populate_chroma()
+            print("ChromaDB population completed successfully")
+        except Exception as e:
+            print(f"Warning: ChromaDB population failed: {str(e)}")
+            print("API will continue to work without ChromaDB features")
+    
     # Run in a separate thread to not block startup
-    threading.Thread(target=populate_chroma).start()
+    threading.Thread(target=safe_populate_chroma, daemon=True).start()
     print("ChromaDB population started in background")
 except Exception as e:
-    print(f"Error starting ChromaDB population: {str(e)}")
+    print(f"Warning: Could not start ChromaDB population: {str(e)}")
+    print("API will continue to work without ChromaDB features")
 
 app.include_router(components.router, prefix="/api")
 app.include_router(auth.router, prefix="/api/auth")
