@@ -1,16 +1,54 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import or_, and_, func
 from database import get_db
 from models import CPU, GPU, Motherboard, RAM, Storage, PSU, Cooler, Case, SavedBuild, Token, User, PublishedBuild, BuildRating
 from schemas import CPUModel, GPUModel, MotherboardModel, RAMModel, StorageModel, PSUModel, CoolerModel, CaseModel, SavedBuildCreate, SavedBuildOut, PublicBuildResponse, BuildRatingCreate, BuildRatingOut, PublishedBuildOut
 from .auth import oauth2_scheme
-from typing import Optional
+from typing import Optional, List
+from fastapi.security import OAuth2PasswordBearer
+from fastapi.responses import JSONResponse
+from functools import lru_cache
+import time
 
 router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
-@router.get("/cpus", response_model=list[CPUModel])
-def get_cpus(db: Session = Depends(get_db)):
-    return db.query(CPU).all()
+# Cache for component queries (5 minutes)
+@lru_cache(maxsize=100)
+def get_cached_components(component_type: str, limit: int = 50):
+    """Cache component queries to reduce database load"""
+    # This is a placeholder - in production you'd want Redis or similar
+    return None
+
+@router.get("/cpus", response_model=List[CPUModel])
+async def get_cpus(
+    limit: int = Query(50, le=100), 
+    skip: int = Query(0, ge=0),
+    search: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(CPU).options(
+        # Optimize query to load all needed data in one go
+        joinedload(CPU.id),
+        joinedload(CPU.name),
+        joinedload(CPU.socket),
+        joinedload(CPU.cores),
+        joinedload(CPU.price)
+    )
+    
+    if search:
+        search_filter = f"%{search.lower()}%"
+        query = query.filter(
+            or_(
+                func.lower(CPU.name).contains(search_filter),
+                func.lower(CPU.socket).contains(search_filter)
+            )
+        )
+    
+    # Add pagination and ordering for better performance
+    cpus = query.order_by(CPU.price.desc()).offset(skip).limit(limit).all()
+    return cpus
 
 @router.get("/gpus", response_model=list[GPUModel])
 def get_gpus(db: Session = Depends(get_db)):

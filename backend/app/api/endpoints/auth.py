@@ -1,8 +1,8 @@
 from datetime import UTC, datetime, timedelta
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from core.security import get_password_hash, verify_password
+from core.security import get_password_hash, verify_password, validate_password_strength
 from schemas import UserRegisterSchema, UserOutSchema
 from database import get_db
 from models import User, Token
@@ -10,10 +10,13 @@ from core import settings
 import base64
 from random import SystemRandom
 from pydantic import BaseModel
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 _sysrand = SystemRandom()
+limiter = Limiter(key_func=get_remote_address)
 
 def token_urlsafe(nbytes=32):
     tok = _sysrand.randbytes(nbytes)
@@ -31,8 +34,16 @@ class LoginData(BaseModel):
     password: str
 
 @router.post("/register", response_model=UserOutSchema)
-async def register_user(user: UserRegisterSchema, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")  # Limit registration attempts
+async def register_user(request: Request, user: UserRegisterSchema, db: Session = Depends(get_db)):
     try:
+        # Validate password strength
+        password_validation = validate_password_strength(user.password)
+        if not password_validation["is_valid"]:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Lösenord uppfyller inte kraven: {', '.join(password_validation['errors'])}"
+            )
       
         existing_user = db.query(User).filter(User.email == user.email).first()
         if existing_user:
@@ -62,7 +73,8 @@ async def register_user(user: UserRegisterSchema, db: Session = Depends(get_db))
         )
 
 @router.post("/login")
-async def login(login_data: LoginData, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")  # Limit login attempts
+async def login(request: Request, login_data: LoginData, db: Session = Depends(get_db)):
     try:
         # Find user
         user = db.query(User).filter(User.email == login_data.email).first()
